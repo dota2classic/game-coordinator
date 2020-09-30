@@ -3,7 +3,6 @@ import { CommandBus, EventBus } from "@nestjs/cqrs";
 import { clearRepositories } from "src/@test/clearRepository";
 import { TestEnvironment } from "src/@test/cqrsMock";
 import { EnterQueueHandler } from "src/mm/queue/command/EnterQueue/enter-queue.handler";
-import { commandHandlerTest, expectEvents } from "src/@test/expectEvents";
 import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
 import { MatchmakingMode } from "src/mm/queue/model/entity/matchmaking-mode";
 import { QueueUpdateEvent } from "src/mm/queue/event/queue-update.event";
@@ -39,16 +38,18 @@ describe("EnterQueueHandler", () => {
       new EnterQueueCommand("party", 1, MatchmakingMode.SOLOMID),
     );
     expect(queueEntryId).toBeUndefined();
-    expectEvents(ebus)();
+    expect(ebus).toEmit();
   });
 
   it("Enter queue", async () => {
     const queueEntryId = await cbus.execute(
       new EnterQueueCommand("party", 1, MatchmakingMode.SOLOMID),
     );
-    expectEvents(ebus)(
+
+    expect(ebus).toEmit(
       new QueueUpdateEvent(MatchmakingMode.SOLOMID, queueEntryId),
     );
+
   });
 
   it("duplicate enter queue", async () => {
@@ -56,11 +57,12 @@ describe("EnterQueueHandler", () => {
       new EnterQueueCommand("party", 1, MatchmakingMode.SOLOMID),
     );
     // reset publishes
-    ebus.publish = jest.fn()
-
-    await commandHandlerTest(ebus, cbus)(
+    ebus.publish = jest.fn();
+    await cbus.execute(
       new EnterQueueCommand("party", 1, MatchmakingMode.SOLOMID),
-      [],
     );
+    expect(ebus).toEmit();
   });
+
+
 });
