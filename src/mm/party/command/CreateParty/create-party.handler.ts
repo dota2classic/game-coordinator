@@ -8,25 +8,22 @@ import { PartyCreatedEvent } from "src/mm/party/event/party-created.event";
 
 @CommandHandler(CreatePartyCommand)
 export class CreatePartyHandler implements ICommandHandler<CreatePartyCommand> {
+  private readonly logger = new Logger(CreatePartyHandler.name);
 
-  private readonly logger = new Logger(CreatePartyHandler.name)
-
-  constructor(private readonly partyRepository: PartyRepository, private readonly ebus: EventBus) {
-
-  }
+  constructor(
+    private readonly partyRepository: PartyRepository,
+    private readonly ebus: EventBus,
+  ) {}
 
   async execute({ playerID }: CreatePartyCommand) {
     const existing = await this.partyRepository.findExistingParty(playerID);
-    if(existing) return existing;
-
+    if (existing) return existing;
 
     const party = new PartyModel(uuid(), playerID, [playerID]);
-    await this.partyRepository.save(party.id, party)
+    await this.partyRepository.save(party.id, party);
 
-    this.ebus.publish(new PartyCreatedEvent(party.id, playerID))
+    this.ebus.publish(new PartyCreatedEvent(party.id, playerID));
 
-    return party;
-
+    return party.id;
   }
-
 }

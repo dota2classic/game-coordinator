@@ -12,7 +12,7 @@ import { TestEnvironment } from "src/@test/cqrsMock";
 import { QueueProviders } from "src/mm/queue";
 
 
-describe('CreateQueueCommand', () => {
+describe('CreateQueueHandler', () => {
   let handler: CreateQueueHandler;
   let events$: EventBus;
   let cbus: CommandBus;

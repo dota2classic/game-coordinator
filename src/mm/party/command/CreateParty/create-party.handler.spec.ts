@@ -37,9 +37,9 @@ describe('CreatePartyHandler', () => {
   });
 
   it('new party', async () => {
-    const party = await cbus.execute(new CreatePartyCommand("test"))
+    const partyId = await cbus.execute(new CreatePartyCommand("test"))
     await expectEvents(events$)(
-      new PartyCreatedEvent(party.id, "test")
+      new PartyCreatedEvent(partyId, "test")
     )
   });
 
