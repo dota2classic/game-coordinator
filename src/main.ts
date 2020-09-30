@@ -4,10 +4,14 @@ import { CommandBus, EventBus, EventPublisher } from '@nestjs/cqrs';
 import { QueueModel } from 'src/mm/queue/model/queue.model';
 import { Subscriber } from 'rxjs';
 import { Logger } from '@nestjs/common';
-import { StartEvent } from 'src/mm/general/event/start.event';
+import { StartEvent } from 'src/mm/start.event';
+import { PartyModel } from "src/mm/party/model/party.model";
+import { PlayerModel } from "src/mm/player/model/player.model";
 
 function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
+  publisher.mergeClassContext(PartyModel);
+  publisher.mergeClassContext(PlayerModel);
 }
 
 async function bootstrap() {

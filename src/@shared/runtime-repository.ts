@@ -11,7 +11,9 @@ export abstract class RuntimeRepository<
 > {
   protected cache = new Map<Key, T>();
 
-  protected constructor(protected readonly publisher: EventPublisher) {}
+  protected constructor(protected readonly publisher: EventPublisher) {
+    RuntimeRepository.list.push(this)
+  }
 
   get = async (id: Key): Promise<T | null> => {
     const t = this.cache.get(id) || null;
@@ -36,4 +38,11 @@ export abstract class RuntimeRepository<
   debugLog = () => {
     new Logger(RuntimeRepository.name).log(inspect([...this.cache.values()]));
   };
+
+
+  private static list: RuntimeRepository<any, any>[] = [];
+
+  private static clearAll(){
+    this.list.forEach(it => it.cache.clear())
+  }
 }

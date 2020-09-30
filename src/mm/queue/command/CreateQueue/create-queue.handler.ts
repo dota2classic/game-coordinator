@@ -1,8 +1,8 @@
-import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
-import { Logger } from '@nestjs/common';
-import { CreateQueueCommand } from 'src/mm/queue/command/CreateQueue/create-queue.command';
-import { QueueRepository } from 'src/mm/queue/repository/queue.repository';
-import { QueueModel } from 'src/mm/queue/model/queue.model';
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { Logger } from "@nestjs/common";
+import { CreateQueueCommand } from "src/mm/queue/command/CreateQueue/create-queue.command";
+import { QueueRepository } from "src/mm/queue/repository/queue.repository";
+import { QueueModel } from "src/mm/queue/model/queue.model";
 
 @CommandHandler(CreateQueueCommand)
 export class CreateQueueHandler implements ICommandHandler<CreateQueueCommand> {
