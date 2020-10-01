@@ -1,4 +1,4 @@
-import { MatchmakingMode } from "src/mm/queue/model/entity/matchmaking-mode";
+import { MatchmakingMode } from "src/gateway/shared-types/matchmaking-mode";
 import { QueueEntryId } from "src/mm/queue/model/queue-entry.model";
 
 export class QueueUpdateEvent {

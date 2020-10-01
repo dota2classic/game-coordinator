@@ -3,7 +3,7 @@ import { ICommand, ofType, Saga } from "@nestjs/cqrs";
 import { Observable } from "rxjs";
 import { StartEvent } from "src/mm/start.event";
 import { map, mergeMap } from "rxjs/operators";
-import { MatchmakingModes } from "src/mm/queue/model/entity/matchmaking-mode";
+import { MatchmakingModes } from "src/gateway/shared-types/matchmaking-mode";
 import { CreateQueueCommand } from "src/mm/queue/command/CreateQueue/create-queue.command";
 import { RoomSizes } from "src/mm/room/model/entity/room-size";
 import { GameFoundEvent } from "src/mm/queue/event/game-found.event";

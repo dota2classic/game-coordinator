@@ -3,7 +3,7 @@ import { TestEnvironment } from "src/@test/cqrs";
 import { QueueProviders } from "src/mm/queue";
 import { QueueService } from "src/mm/queue/service/queue.service";
 import { QueueModel } from "src/mm/queue/model/queue.model";
-import { MatchmakingMode } from "src/mm/queue/model/entity/matchmaking-mode";
+import { MatchmakingMode } from "src/gateway/shared-types/matchmaking-mode";
 import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
 import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
 

@@ -1,6 +1,5 @@
-import { PlayerId } from "src/mm/player/model/player.model";
+import { PlayerId } from "src/gateway/shared-types/player-id";
 
 export class CreatePartyCommand {
-  constructor(public readonly playerID: PlayerId) {
-  }
+  constructor(public readonly playerID: PlayerId) {}
 }

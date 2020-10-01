@@ -1,7 +1,7 @@
-import { PartyId } from "src/mm/party/model/party.model";
 import { AggregateRoot } from "@nestjs/cqrs";
-import { MatchmakingMode } from "src/mm/queue/model/entity/matchmaking-mode";
+import { MatchmakingMode } from "src/gateway/shared-types/matchmaking-mode";
 import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
+import { PartyId } from "src/gateway/shared-types/party-id";
 
 export type QueueEntryId = string;
 
@@ -21,6 +21,7 @@ export class QueueEntryModel extends AggregateRoot {
   public get size() {
     return this.players.length;
   }
+
   public get totalMMR() {
     return this.players.reduce((a, b) => a + b.mmr, 0);
   }

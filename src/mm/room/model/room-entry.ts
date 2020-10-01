@@ -1,6 +1,5 @@
-import { PlayerId } from "src/mm/player/model/player.model";
-import { MatchmakingMode } from "src/mm/queue/model/entity/matchmaking-mode";
-import { PlayerInParty } from "src/mm/queue/event/game-found.event";
+import { MatchmakingMode } from "src/gateway/shared-types/matchmaking-mode";
+import { PlayerId } from "src/gateway/shared-types/player-id";
 
 export class PlayerInPartyInRoom {
   constructor(public readonly id: string, public readonly mmr: number) {}

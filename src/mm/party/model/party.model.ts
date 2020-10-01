@@ -1,7 +1,8 @@
-import { PlayerId } from "src/mm/player/model/player.model";
 import { AggregateRoot } from "@nestjs/cqrs";
+import { PartyId } from "src/gateway/shared-types/party-id";
+import { PlayerId } from "src/gateway/shared-types/player-id";
 
-export type PartyId = string;
+
 
 export class PartyModel extends AggregateRoot {
   constructor(

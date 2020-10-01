@@ -1,10 +1,9 @@
-import { PartyId } from "src/mm/party/model/party.model";
-import { MatchmakingMode } from "src/mm/queue/model/entity/matchmaking-mode";
+import { MatchmakingMode } from "src/gateway/shared-types/matchmaking-mode";
+import { PartyId } from "src/gateway/shared-types/party-id";
 
 export class RoomImpossibleEvent {
   constructor(
     public readonly mode: MatchmakingMode,
-    public readonly parties: PartyId[]
-  ) {
-  }
+    public readonly parties: PartyId[],
+  ) {}
 }

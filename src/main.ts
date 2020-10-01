@@ -4,10 +4,13 @@ import { QueueModel } from "./mm/queue/model/queue.model";
 import { PartyModel } from "./mm/party/model/party.model";
 import { PlayerModel } from "./mm/player/model/player.model";
 import { MicroserviceOptions, Transport } from "@nestjs/microservices";
-import { AppModule } from "./app.module";
 import { Subscriber } from "rxjs";
 import { StartEvent } from "src/mm/start.event";
 import { Logger } from "@nestjs/common";
+import { AppModule } from "src/app.module";
+import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
+import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
+import { MatchmakingMode } from "src/gateway/shared-types/matchmaking-mode";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
@@ -54,5 +57,15 @@ async function bootstrap() {
   prepareModels(publisher);
 
   ebus.publish(new StartEvent());
+
+  setTimeout(() => {
+    cbus.execute(
+      new EnterQueueCommand(
+        "party1",
+        [new PlayerInQueueEntity("pid", 1000)],
+        MatchmakingMode.UNRANKED,
+      ),
+    );
+  }, 1000);
 }
 bootstrap();
