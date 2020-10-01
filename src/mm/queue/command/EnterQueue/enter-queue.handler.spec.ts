@@ -58,7 +58,7 @@ describe("EnterQueueHandler", () => {
       ),
     );
     expect(queueEntryId).toBeUndefined();
-    expect(ebus).toEmit();
+    expect(ebus).toEmitNothing();
   });
 
   it("should enter queue", async () => {
@@ -121,7 +121,7 @@ describe("EnterQueueHandler", () => {
         mode,
       ),
     );
-    expect(ebus).toEmit();
+    expect(ebus).toEmitNothing();
   });
 
   it("should keep party in one queue only at a time", async () => {

@@ -36,6 +36,7 @@ declare global {
     // noinspection JSUnusedGlobalSymbols
     interface Matchers<R> {
       toEmit(...events: IEvent[]): CustomMatcherResult;
+      toEmitNothing(): CustomMatcherResult;
     }
   }
 }

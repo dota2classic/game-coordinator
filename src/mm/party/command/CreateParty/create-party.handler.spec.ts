@@ -39,6 +39,6 @@ describe("CreatePartyHandler", () => {
     await rep.save(party.id, party);
 
     await cbus.execute(new CreatePartyCommand("test2"));
-    expect(ebus).toEmit();
+    expect(ebus).toEmitNothing();
   });
 });

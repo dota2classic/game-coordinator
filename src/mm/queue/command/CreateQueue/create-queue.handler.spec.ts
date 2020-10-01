@@ -45,6 +45,6 @@ describe("CreateQueueHandler", () => {
     await rep.save(mode, q);
 
     await cbus.execute(new CreateQueueCommand(mode));
-    expect(ebus).toEmit();
+    expect(ebus).toEmitNothing();
   });
 });

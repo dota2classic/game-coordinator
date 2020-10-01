@@ -15,7 +15,6 @@ export class LeaveQueueHandler implements ICommandHandler<LeaveQueueCommand> {
   async execute({mode, partyId }: LeaveQueueCommand) {
     const q = await this.queueRepository.get(mode);
     q.removeEntry(partyId)
-
     q.commit()
   }
 
