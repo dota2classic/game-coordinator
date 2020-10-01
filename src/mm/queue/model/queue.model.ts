@@ -22,7 +22,7 @@ export class QueueModel extends AggregateRoot {
   public addEntry(entry: QueueEntryModel) {
     if (!this.entries.find(it => it.id === entry.id)) {
       this.entries.push(entry);
-      this.apply(new QueueUpdateEvent(this.mode, this.size));
+      this.apply(new QueueUpdateEvent(this.mode));
     }
   }
 
@@ -31,6 +31,6 @@ export class QueueModel extends AggregateRoot {
       const index = this.entries.findIndex(t => t.id === it.id);
       if (index !== -1) this.entries.splice(index, 1);
     });
-    this.apply(new QueueUpdateEvent(this.mode, this.size));
+    this.apply(new QueueUpdateEvent(this.mode));
   }
 }

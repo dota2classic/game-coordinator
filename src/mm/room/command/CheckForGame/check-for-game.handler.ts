@@ -12,14 +12,14 @@ export class CheckForGameHandler
 
   constructor(private readonly roomRepository: RoomRepository) {}
 
-  async execute({ mode, queueSize }: CheckForGameCommand) {
-    if (queueSize >= RoomSizes[mode]) {
+  async execute({ mode }: CheckForGameCommand) {
+    // if (queueSize >= RoomSizes[mode]) {
       //
       // // ok we can do room here
       // const room = new RoomModel();
       // await this.roomRepository.save(room.id, room);
       //
       // return room.id;
-    }
+    // }
   }
 }

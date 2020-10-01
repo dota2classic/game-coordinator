@@ -23,8 +23,7 @@ export class QueueSaga {
   checkRoom = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(QueueUpdateEvent),
-      filter(t => t.queueSize >= RoomSizes[t.mode]),
-      map(e => new CheckForGameCommand(e.mode, e.queueSize)),
+      map(e => new CheckForGameCommand(e.mode)),
     );
   };
 }
