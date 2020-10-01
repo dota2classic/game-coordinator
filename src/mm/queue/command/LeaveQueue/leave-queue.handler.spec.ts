@@ -7,6 +7,9 @@ import { MatchmakingMode } from "src/mm/queue/model/entity/matchmaking-mode";
 import { QueueRepository } from "src/mm/queue/repository/queue.repository";
 import { QueueModel } from "src/mm/queue/model/queue.model";
 import { QueueProviders } from "src/mm/queue";
+import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
+import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
+import { QueueUpdateEvent } from "src/mm/queue/event/queue-update.event";
 
 describe("LeaveQueueHandler", () => {
   let ebus: EventBus;
@@ -43,4 +46,21 @@ describe("LeaveQueueHandler", () => {
     expect(ebus).toEmitNothing();
   });
 
+  it("should publish event if party was in queue", async () => {
+    // setup queue
+    const a = await module
+      .get<QueueRepository>(QueueRepository)
+      .get(MatchmakingMode.SOLOMID);
+    a.entries.push(
+      new QueueEntryModel("partyID", MatchmakingMode.SOLOMID, [
+        new PlayerInQueueEntity("playerID", 100),
+      ]),
+    );
+
+    await cbus.execute(
+      new LeaveQueueCommand(MatchmakingMode.SOLOMID, "partyID"),
+    );
+
+    expect(ebus).toEmit(new QueueUpdateEvent(MatchmakingMode.SOLOMID));
+  });
 });
