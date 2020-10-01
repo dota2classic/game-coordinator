@@ -1,7 +1,9 @@
 export enum MatchmakingMode {
-  SOLOMID = "SOLOMID"
+  SOLOMID = "SOLOMID",
+  RANKED = "RANKED",
 }
 
 export const MatchmakingModes = [
-  MatchmakingMode.SOLOMID
+  MatchmakingMode.SOLOMID,
+  MatchmakingMode.RANKED,
 ]
