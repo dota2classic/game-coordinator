@@ -1,5 +1,5 @@
 import { AggregateRoot } from "@nestjs/cqrs";
-import { uuid } from "src/@shared/uuid";
+import { uuid } from "src/@shared/generateID";
 import { RoomEntry } from "src/mm/room/model/room-entry";
 
 export class RoomModel extends AggregateRoot {
