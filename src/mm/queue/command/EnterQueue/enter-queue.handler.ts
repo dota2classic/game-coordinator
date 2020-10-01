@@ -25,6 +25,15 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     const q = await this.queueRepository.get(mode);
     if (!q) return;
 
+    const allQueues = await this.queueRepository.all();
+
+    allQueues
+      .filter(t => t.mode !== mode)
+      .forEach(t => {
+        t.removeEntry(partyId);
+        t.commit();
+      });
+
     const entry = new QueueEntryModel(partyId, mode, players);
     await this.queueEntryRepository.save(entry.id, entry);
 

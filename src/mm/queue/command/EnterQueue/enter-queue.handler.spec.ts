@@ -15,7 +15,8 @@ import {
   PlayerInParty,
 } from "src/mm/queue/event/game-found.event";
 import { wait } from "src/@shared/wait";
-import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
+import Mock = jest.Mock;
+import { inspect } from "util";
 
 describe("EnterQueueHandler", () => {
   let ebus: EventBus;
@@ -39,6 +40,7 @@ describe("EnterQueueHandler", () => {
     cbus.register([EnterQueueHandler]);
 
     await createTestQ(MatchmakingMode.SOLOMID);
+    await createTestQ(MatchmakingMode.RANKED);
   });
 
   afterEach(() => {
@@ -46,6 +48,7 @@ describe("EnterQueueHandler", () => {
   });
 
   it("should not enter queue if there is no queue", async () => {
+    // remove all queues
     clearRepositories();
     const queueEntryId = await cbus.execute(
       new EnterQueueCommand(
@@ -58,7 +61,7 @@ describe("EnterQueueHandler", () => {
     expect(ebus).toEmit();
   });
 
-  it("Enter queue", async () => {
+  it("should enter queue", async () => {
     const mode = MatchmakingMode.SOLOMID;
 
     await cbus.execute(
@@ -85,10 +88,7 @@ describe("EnterQueueHandler", () => {
       ),
     );
 
-    await wait(1000);
     expect(ebus).toEmit(
-      new QueueUpdateEvent(mode),
-      new QueueUpdateEvent(mode),
       new GameFoundEvent(mode, [
         new FoundGameParty(
           "party",
@@ -98,10 +98,12 @@ describe("EnterQueueHandler", () => {
           ].map(p => new PlayerInParty(p.playerId, p.mmr)),
         ),
       ]),
+      new QueueUpdateEvent(mode),
+      new QueueUpdateEvent(mode),
     );
   });
 
-  it("duplicate enter queue", async () => {
+  it("should handle duplicate enter queue", async () => {
     const mode = MatchmakingMode.SOLOMID;
     await cbus.execute(
       new EnterQueueCommand(
@@ -120,5 +122,34 @@ describe("EnterQueueHandler", () => {
       ),
     );
     expect(ebus).toEmit();
+  });
+
+  it("should keep party in one queue only at a time", async () => {
+    // enter ranked queue
+    await cbus.execute(
+      new EnterQueueCommand(
+        "party",
+        [new PlayerInQueueEntity("1", 1000)],
+        MatchmakingMode.RANKED,
+      ),
+    );
+
+    // enter solomid queue after
+    await cbus.execute(
+      new EnterQueueCommand(
+        "party",
+        [new PlayerInQueueEntity("1", 1000)],
+        MatchmakingMode.SOLOMID,
+      ),
+    );
+
+
+    // @ts-ignore
+    // console.error(inspect(ebus.publish.mock.calls))
+    expect(ebus).toEmit(
+      new QueueUpdateEvent(MatchmakingMode.RANKED), // enter ranked queue
+      new QueueUpdateEvent(MatchmakingMode.RANKED), // leave ranked queue
+      new QueueUpdateEvent(MatchmakingMode.SOLOMID), // enter solomid
+    );
   });
 });

@@ -16,7 +16,8 @@ expect.extend({
       const expected = events[i];
 
       // for some reason they are emitted in reversed order
-      let actual = p.mock.calls[p.mock.calls.length - i - 1][0];
+      // let actual = p.mock.calls[p.mock.calls.length - i - 1][0];
+      let actual = p.mock.calls[i][0];
 
       try {
         deepStrictEqual(actual, expected);
