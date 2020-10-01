@@ -7,7 +7,7 @@ import { QueueEntryRepository } from "src/mm/queue/repository/queue-entry.reposi
 import { QueueModel } from "src/mm/queue/model/queue.model";
 import { RoomSizes } from "src/mm/room/model/entity/room-size";
 import { QueueService } from "src/mm/queue/service/queue.service";
-import { GameFoundEvent } from "src/mm/queue/event/game-found.event";
+import { FoundGameParty, GameFoundEvent, PlayerInParty } from "src/mm/queue/event/game-found.event";
 
 @CommandHandler(EnterQueueCommand)
 export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
@@ -24,7 +24,6 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
   async execute({ partyId, mode, players }: EnterQueueCommand) {
     const q = await this.queueRepository.get(mode);
     if (!q) return;
-
 
     const entry = new QueueEntryModel(partyId, mode, players);
     await this.queueEntryRepository.save(entry.id, entry);
@@ -49,7 +48,13 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     this.ebus.publish(
       new GameFoundEvent(
         q.mode,
-        game.entries.map(t => t.partyID),
+        game.entries.map(
+          t =>
+            new FoundGameParty(
+              t.partyID,
+              t.players.map(p => new PlayerInParty(p.playerId, p.mmr)),
+            ),
+        ),
       ),
     );
   }

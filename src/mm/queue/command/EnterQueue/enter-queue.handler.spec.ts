@@ -9,8 +9,13 @@ import { QueueProviders } from "src/mm/queue";
 import { QueueRepository } from "src/mm/queue/repository/queue.repository";
 import { QueueModel } from "src/mm/queue/model/queue.model";
 import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
-import { GameFoundEvent } from "src/mm/queue/event/game-found.event";
+import {
+  FoundGameParty,
+  GameFoundEvent,
+  PlayerInParty,
+} from "src/mm/queue/event/game-found.event";
 import { wait } from "src/@shared/wait";
+import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
 
 describe("EnterQueueHandler", () => {
   let ebus: EventBus;
@@ -84,7 +89,15 @@ describe("EnterQueueHandler", () => {
     expect(ebus).toEmit(
       new QueueUpdateEvent(mode),
       new QueueUpdateEvent(mode),
-      new GameFoundEvent(mode, ["party"]),
+      new GameFoundEvent(mode, [
+        new FoundGameParty(
+          "party",
+          [
+            new PlayerInQueueEntity("1", 1000),
+            new PlayerInQueueEntity("2", 1000),
+          ].map(p => new PlayerInParty(p.playerId, p.mmr)),
+        ),
+      ]),
     );
   });
 
