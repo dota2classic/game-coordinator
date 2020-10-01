@@ -1,9 +1,9 @@
 import { AggregateRoot } from "@nestjs/cqrs";
-import { MatchmakingMode } from "src/gateway/shared-types/matchmaking-mode";
+import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
 import { QueueCreatedEvent } from "src/mm/queue/event/queue-created.event";
 import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
 import { QueueUpdateEvent } from "src/mm/queue/event/queue-update.event";
-import { PartyId } from "src/gateway/shared-types/party-id";
+import { PartyId } from "src/gateway/gateway/shared-types/party-id";
 
 export class QueueModel extends AggregateRoot {
   public readonly entries: QueueEntryModel[] = [];

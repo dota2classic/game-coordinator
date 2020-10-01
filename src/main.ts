@@ -10,7 +10,7 @@ import { Logger } from "@nestjs/common";
 import { AppModule } from "src/app.module";
 import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
 import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
-import { MatchmakingMode } from "src/gateway/shared-types/matchmaking-mode";
+import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);

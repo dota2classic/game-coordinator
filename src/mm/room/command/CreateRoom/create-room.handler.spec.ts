@@ -7,7 +7,7 @@ import {
   CreateRoomCommand,
   PartyInRoom,
 } from "src/mm/room/command/CreateRoom/create-room.command";
-import { MatchmakingMode } from "src/gateway/shared-types/matchmaking-mode";
+import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
 import { RoomSizes } from "src/mm/room/model/entity/room-size";
 import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
 import { PlayerInPartyInRoom } from "src/mm/room/model/room-entry";

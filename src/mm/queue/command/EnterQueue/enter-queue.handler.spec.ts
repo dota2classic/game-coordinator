@@ -3,7 +3,7 @@ import { CommandBus, EventBus } from "@nestjs/cqrs";
 import { clearRepositories, TestEnvironment } from "src/@test/cqrs";
 import { EnterQueueHandler } from "src/mm/queue/command/EnterQueue/enter-queue.handler";
 import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
-import { MatchmakingMode } from "src/gateway/shared-types/matchmaking-mode";
+import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
 import { QueueUpdateEvent } from "src/mm/queue/event/queue-update.event";
 import { QueueProviders } from "src/mm/queue";
 import { QueueRepository } from "src/mm/queue/repository/queue.repository";

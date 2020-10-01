@@ -1,6 +1,6 @@
 import { AggregateRoot } from "@nestjs/cqrs";
 import { RankedPlayerInfoEntity } from "src/mm/player/model/entity/ranked-player-info.entity";
-import { PlayerId } from "src/gateway/shared-types/player-id";
+import { PlayerId } from "src/gateway/gateway/shared-types/player-id";
 
 export class PlayerModel extends AggregateRoot {
   constructor(

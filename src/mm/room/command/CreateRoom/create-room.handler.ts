@@ -8,7 +8,7 @@ import { RoomModel } from "src/mm/room/model/room.model";
 import { RoomEntry } from "src/mm/room/model/room-entry";
 import { RoomRepository } from "src/mm/room/repository/room.repository";
 import { RoomCreatedEvent } from "src/mm/room/event/room-created.event";
-import { MatchmakingMode } from "src/gateway/shared-types/matchmaking-mode";
+import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
 import { RoomBalance, TeamEntry } from "src/mm/room/model/entity/room-balance";
 import { RoomSizes } from "src/mm/room/model/entity/room-size";
 import { RuntimeException } from "@nestjs/core/errors/exceptions/runtime.exception";
