@@ -1,6 +1,6 @@
-import { MatchmakingMode } from "src/gateway/shared-types/matchmaking-mode";
+import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
 import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
-import { PartyId } from "src/gateway/shared-types/party-id";
+import { PartyId } from "src/gateway/gateway/shared-types/party-id";
 
 export class EnterQueueCommand {
   constructor(

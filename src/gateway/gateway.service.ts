@@ -3,7 +3,7 @@ import { Client, ClientProxy, Transport } from "@nestjs/microservices";
 import { EventBus, ofType } from "@nestjs/cqrs";
 import { QueueUpdateEvent } from "src/mm/queue/event/queue-update.event";
 import { observeOn, tap } from "rxjs/operators";
-import { GatewayQueueEntry, GatewayQueueUpdatedEvent } from "src/gateway/events/gateway-queue-updated.event";
+import { GatewayQueueEntry, GatewayQueueUpdatedEvent } from "src/gateway/gateway/events/gateway-queue-updated.event";
 import { asyncScheduler } from "rxjs";
 import { PartyRepository } from "src/mm/party/repository/party.repository";
 import { QueueRepository } from "src/mm/queue/repository/queue.repository";

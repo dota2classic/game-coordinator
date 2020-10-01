@@ -2,7 +2,7 @@ import { RuntimeRepository } from "src/@shared/runtime-repository";
 import { PartyModel } from "src/mm/party/model/party.model";
 import { EventPublisher } from "@nestjs/cqrs";
 import { Injectable } from "@nestjs/common";
-import { PlayerId } from "src/gateway/shared-types/player-id";
+import { PlayerId } from "src/gateway/gateway/shared-types/player-id";
 
 
 @Injectable()
