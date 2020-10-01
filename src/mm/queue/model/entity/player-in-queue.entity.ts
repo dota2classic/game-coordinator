@@ -1,4 +1,4 @@
-import { PlayerId } from "src/gateway/gateway/shared-types/player-id";
+import { PlayerId } from "src/gateway/shared-types/player-id";
 
 export class PlayerInQueueEntity {
   constructor(

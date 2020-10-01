@@ -3,7 +3,7 @@ import { ICommand, ofType, Saga } from '@nestjs/cqrs';
 import { StartEvent } from 'src/mm/start.event';
 import { filter, map, mergeMap } from "rxjs/operators";
 import { Observable } from 'rxjs';
-import { MatchmakingModes } from 'src/gateway/gateway/shared-types/matchmaking-mode';
+import { MatchmakingModes } from 'src/gateway/shared-types/matchmaking-mode';
 import { CreateQueueCommand } from 'src/mm/queue/command/CreateQueue/create-queue.command';
 import { QueueUpdateEvent } from "src/mm/queue/event/queue-update.event";
 

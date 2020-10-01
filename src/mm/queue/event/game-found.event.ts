@@ -1,5 +1,5 @@
-import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { PartyId } from "src/gateway/gateway/shared-types/party-id";
+import { MatchmakingMode } from "src/gateway/shared-types/matchmaking-mode";
+import { PartyId } from "src/gateway/shared-types/party-id";
 
 export class PlayerInParty {
   constructor(public readonly id: string, public readonly mmr: number) {

@@ -1,6 +1,6 @@
 import { AggregateRoot } from "@nestjs/cqrs";
-import { PartyId } from "src/gateway/gateway/shared-types/party-id";
-import { PlayerId } from "src/gateway/gateway/shared-types/player-id";
+import { PartyId } from "src/gateway/shared-types/party-id";
+import { PlayerId } from "src/gateway/shared-types/player-id";
 
 
 

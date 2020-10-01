@@ -1,0 +1,4 @@
+[submodule "src/gateway/gateway"]
+	path = src/gateway/gateway
+	url = https://github.com/dota2classic/gateway.git
+	branch = master
