@@ -8,8 +8,6 @@ import { QueueUpdateEvent } from "src/mm/queue/event/queue-update.event";
 import { QueueProviders } from "src/mm/queue";
 import { QueueRepository } from "src/mm/queue/repository/queue.repository";
 import { QueueModel } from "src/mm/queue/model/queue.model";
-import { PartyProviders } from "src/mm/party";
-import { PlayerProviders } from "src/mm/player";
 import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
 import { GameFoundEvent } from "src/mm/queue/event/game-found.event";
 import { wait } from "src/@shared/wait";
@@ -28,12 +26,7 @@ describe("EnterQueueHandler", () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      providers: [
-        ...PartyProviders,
-        ...PlayerProviders,
-        ...QueueProviders,
-        ...TestEnvironment(),
-      ],
+      providers: [...QueueProviders, ...TestEnvironment()],
     }).compile();
 
     cbus = module.get<CommandBus>(CommandBus);
