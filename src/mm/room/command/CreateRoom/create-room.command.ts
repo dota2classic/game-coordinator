@@ -1,5 +1,4 @@
 import { MatchmakingMode } from "src/mm/queue/model/entity/matchmaking-mode";
-import { FoundGameParty } from "src/mm/queue/event/game-found.event";
 import { PlayerInPartyInRoom } from "src/mm/room/model/room-entry";
 
 export class PartyInRoom {
@@ -7,6 +6,14 @@ export class PartyInRoom {
     public readonly id: string,
     public readonly players: PlayerInPartyInRoom[],
   ) {}
+
+  public get totalMMR() {
+    return this.players.reduce((a, b) => a + b.mmr, 0);
+  }
+
+  public get averageMMR() {
+    return this.totalMMR / this.players.length;
+  }
 }
 export class CreateRoomCommand {
   constructor(
