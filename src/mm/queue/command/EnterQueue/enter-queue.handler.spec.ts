@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CommandBus, EventBus } from "@nestjs/cqrs";
-import { clearRepositories } from "src/@test/clearRepository";
-import { TestEnvironment } from "src/@test/cqrsMock";
+import { TestEnvironment, clearRepositories } from "src/@test/cqrs";
 import { EnterQueueHandler } from "src/mm/queue/command/EnterQueue/enter-queue.handler";
 import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
 import { MatchmakingMode } from "src/mm/queue/model/entity/matchmaking-mode";

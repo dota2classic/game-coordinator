@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CommandBus, EventBus } from "@nestjs/cqrs";
-import { clearRepositories } from "src/@test/clearRepository";
-import { TestEnvironment } from "src/@test/cqrsMock";
+import { clearRepositories, TestEnvironment } from "src/@test/cqrs";
 import { CreatePartyHandler } from "src/mm/party/command/CreateParty/create-party.handler";
 import { PartyProviders } from "src/mm/party";
 import { CreatePartyCommand } from "src/mm/party/command/CreateParty/create-party.command";

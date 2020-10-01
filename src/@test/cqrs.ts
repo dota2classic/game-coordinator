@@ -20,3 +20,22 @@ export const TestEnvironment = () => [
   TestCommandBus(),
   EventPublisher,
 ];
+
+
+
+export function clearRepositories() {
+  // @ts-ignore
+  RuntimeRepository.clearAll();
+}
+
+
+import { IEvent } from "@nestjs/cqrs";
+import { RuntimeRepository } from "src/@shared/runtime-repository";
+declare global {
+  namespace jest {
+    // noinspection JSUnusedGlobalSymbols
+    interface Matchers<R> {
+      toEmit(...events: IEvent[]): CustomMatcherResult;
+    }
+  }
+}
