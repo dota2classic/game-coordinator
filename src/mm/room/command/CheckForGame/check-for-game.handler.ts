@@ -14,12 +14,12 @@ export class CheckForGameHandler
 
   async execute({ mode, queueSize }: CheckForGameCommand) {
     if (queueSize >= RoomSizes[mode]) {
-
-      // ok we can do room here
-      const room = new RoomModel();
-      await this.roomRepository.save(room.id, room);
-
-      return room.id;
+      //
+      // // ok we can do room here
+      // const room = new RoomModel();
+      // await this.roomRepository.save(room.id, room);
+      //
+      // return room.id;
     }
   }
 }

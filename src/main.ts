@@ -8,7 +8,7 @@ import { StartEvent } from 'src/mm/start.event';
 import { PartyModel } from "src/mm/party/model/party.model";
 import { PlayerModel } from "src/mm/player/model/player.model";
 
-function prepareModels(publisher: EventPublisher) {
+export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
   publisher.mergeClassContext(PartyModel);
   publisher.mergeClassContext(PlayerModel);
@@ -42,7 +42,7 @@ async function bootstrap() {
   );
 
 
-  await app.listen(3000);
+  await app.listen(5000);
 
 
   const publisher = app.get(EventPublisher);

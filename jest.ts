@@ -5,28 +5,26 @@ import Mock = jest.Mock;
 
 expect.extend({
   toEmit(bus: EventBus, ...events: IEvent[]): jest.CustomMatcherResult {
-
-    if(events === undefined){
+    if (events === undefined) {
       events = [];
     }
 
     const p = bus.publish as Mock;
-    let expected = p.mock.calls.length
 
-    expect(events.length || 0).toEqual(expected)
 
     for (let i = 0; i < events.length; i++) {
-      const e = events[i];
-      const p = bus.publish as Mock;
-      let expected = p.mock.calls[i][0];
+      const expected = events[i];
+
+      // for some reason they are emitted in reversed order
+      let actual = p.mock.calls[p.mock.calls.length - i - 1][0];
 
       try {
-        deepStrictEqual(e, expected);
-      } catch (e) {
+        deepStrictEqual(actual, expected);
+      } catch (_) {
         const message: () => string = () =>
           `Received event at [${i}] expected to be ${inspect(
             expected,
-          )} but was ${inspect(e)}`;
+          )} but was ${inspect(actual)}`;
 
         return {
           message,
@@ -34,6 +32,10 @@ expect.extend({
         };
       }
     }
+
+    let actual = p.mock.calls.length;
+
+    expect(actual).toEqual(events.length || 0);
 
     return {
       message: () => "",

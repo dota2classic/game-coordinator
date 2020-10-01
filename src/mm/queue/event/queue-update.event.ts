@@ -3,7 +3,6 @@ import { QueueEntryId } from "src/mm/queue/model/queue-entry.model";
 
 export class QueueUpdateEvent {
   constructor(
-    public readonly mode: MatchmakingMode,
-    public readonly queueSize: number
+    public readonly mode: MatchmakingMode
   ) {}
 }
