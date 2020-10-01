@@ -20,7 +20,7 @@ async function bootstrap() {
     AppModule,
     {
       transport: Transport.TCP,
-    options: { retryAttempts: 5, retryDelay: 3000 },
+      options: { retryAttempts: 5, retryDelay: 3000, port: 5000 },
     },
   );
 
@@ -48,9 +48,7 @@ async function bootstrap() {
     }),
   );
 
-
-
-  await app.listenAsync()
+  await app.listenAsync();
 
   const publisher = app.get(EventPublisher);
   prepareModels(publisher);
