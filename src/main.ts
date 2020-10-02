@@ -11,6 +11,7 @@ import { AppModule } from "src/app.module";
 import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
 import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
 import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
+import { CORE_GATEWAY_HOST } from "src/@shared/env";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
@@ -23,7 +24,12 @@ async function bootstrap() {
     AppModule,
     {
       transport: Transport.TCP,
-      options: { retryAttempts: 5, retryDelay: 3000, port: 5000 },
+      options: {
+        retryAttempts: 5,
+        retryDelay: 3000,
+        port: 5000,
+        host: CORE_GATEWAY_HOST(),
+      },
     },
   );
 
@@ -51,7 +57,7 @@ async function bootstrap() {
     }),
   );
 
-  await app.listenAsync();
+  app.listen(() => console.log(`Started matchmaking core`));
 
   const publisher = app.get(EventPublisher);
   prepareModels(publisher);

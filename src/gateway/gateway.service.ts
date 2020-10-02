@@ -3,16 +3,14 @@ import { Client, ClientProxy, Transport } from "@nestjs/microservices";
 import { EventBus, ofType } from "@nestjs/cqrs";
 import { QueueUpdateEvent } from "src/mm/queue/event/queue-update.event";
 import { map, observeOn } from "rxjs/operators";
-import {
-  GatewayQueueEntry,
-  GatewayQueueUpdatedEvent,
-} from "src/gateway/gateway/events/gateway-queue-updated.event";
+import { GatewayQueueEntry, GatewayQueueUpdatedEvent } from "src/gateway/gateway/events/gateway-queue-updated.event";
 import { asyncScheduler, merge, Observable } from "rxjs";
 import { PartyRepository } from "src/mm/party/repository/party.repository";
 import { QueueRepository } from "src/mm/queue/repository/queue.repository";
 import { asyncMap } from "rxjs-async-map";
 import { QueueCreatedEvent } from "src/mm/queue/event/queue-created.event";
 import { GatewayQueueCreatedEvent } from "src/gateway/gateway/events/gateway-queue-created.event";
+import { DISCORD_GATEWAY_HOST } from "src/@shared/env";
 
 @Injectable()
 export class GatewayService implements OnApplicationBootstrap {
@@ -22,7 +20,10 @@ export class GatewayService implements OnApplicationBootstrap {
     private readonly queueRepository: QueueRepository,
   ) {}
 
-  @Client({ transport: Transport.TCP, options: { port: 5001 } })
+  @Client({
+    transport: Transport.TCP,
+    options: { port: 5001, host: DISCORD_GATEWAY_HOST() },
+  })
   private readonly discordGateway: ClientProxy;
 
   protected queueUpdated(): Observable<GatewayQueueUpdatedEvent> {
@@ -60,6 +61,8 @@ export class GatewayService implements OnApplicationBootstrap {
 
     const mappers = [this.queueUpdated(), this.queueCreated()];
 
-    merge(...mappers).subscribe(t => this.discordGateway.emit(t.constructor.name, t));
+    merge(...mappers).subscribe(t =>
+      this.discordGateway.emit(t.constructor.name, t),
+    );
   }
 }
