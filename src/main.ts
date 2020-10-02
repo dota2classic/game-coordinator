@@ -11,7 +11,9 @@ import { AppModule } from "src/app.module";
 import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
 import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
 import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { CORE_GATEWAY_HOST } from "src/@shared/env";
+import { REDIS_URL } from "src/@shared/env";
+import { LeaveQueueCommand } from "src/mm/queue/command/LeaveQueue/leave-queue.command";
+import { wait } from "src/@shared/wait";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
@@ -23,12 +25,11 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
-      transport: Transport.TCP,
+      transport: Transport.REDIS,
       options: {
         retryAttempts: 5,
         retryDelay: 3000,
-        port: 5000,
-        host: CORE_GATEWAY_HOST(),
+        url: REDIS_URL(),
       },
     },
   );
@@ -57,21 +58,12 @@ async function bootstrap() {
     }),
   );
 
-  app.listen(() => console.log(`Started matchmaking core`));
+  await app.listenAsync();
+  console.log(`Started matchmaking core`);
 
   const publisher = app.get(EventPublisher);
   prepareModels(publisher);
 
   ebus.publish(new StartEvent());
-
-  setTimeout(() => {
-    cbus.execute(
-      new EnterQueueCommand(
-        "party1",
-        [new PlayerInQueueEntity("pid", 1000)],
-        MatchmakingMode.UNRANKED,
-      ),
-    );
-  }, 1000);
 }
 bootstrap();

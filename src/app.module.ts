@@ -7,7 +7,8 @@ import { GatewayModule } from "src/gateway/gateway.module";
 @Module({
   imports: [
     MmModule,
-    GatewayModule
+    GatewayModule,
+
   ],
   providers: [],
 })
