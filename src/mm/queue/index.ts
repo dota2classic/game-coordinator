@@ -5,7 +5,7 @@ import { QueueEntryRepository } from "src/mm/queue/repository/queue-entry.reposi
 import { EnterQueueHandler } from "src/mm/queue/command/EnterQueue/enter-queue.handler";
 import { QueueService } from "src/mm/queue/service/queue.service";
 import { LeaveQueueHandler } from "src/mm/queue/command/LeaveQueue/leave-queue.handler";
-import { GatewayQueueStateHandler } from "src/mm/queue/query/GatewayQueueState/queue-state.handler";
+import { QueueStateHandler } from "src/mm/queue/query/GatewayQueueState/queue-state.handler";
 
 const CommandHandlers = [
   CreateQueueHandler,
@@ -14,7 +14,7 @@ const CommandHandlers = [
 ];
 
 const QueryHandlers = [
-  GatewayQueueStateHandler
+  QueueStateHandler
 ]
 const Repositories = [QueueEntryRepository, QueueRepository];
 

@@ -1,18 +1,18 @@
 import { Controller } from "@nestjs/common";
 import { MessagePattern } from "@nestjs/microservices";
-import { GatewayQueueStateQuery } from "src/gateway/gateway/queries/GatewayQueueState/gateway-queue-state.query";
 import { QueryBus } from "@nestjs/cqrs";
 import { construct } from "src/gateway/gateway/util/construct";
-import { GatewayQueueStateQueryResult } from "src/gateway/gateway/queries/GatewayQueueState/gateway-queue-state-query.result";
+import { QueueStateQuery } from "./gateway/queries/QueueState/queue-state.query";
+import { QueueStateQueryResult } from "src/gateway/gateway/queries/QueueState/queue-state-query.result";
 
 @Controller()
 export class QueryController {
   constructor(private readonly qbus: QueryBus) {}
 
-  @MessagePattern("GatewayQueueStateQuery")
-  async GatewayQueueStateQuery(
-    query: GatewayQueueStateQuery,
-  ): Promise<GatewayQueueStateQueryResult> {
-    return this.qbus.execute(construct(GatewayQueueStateQuery, query));
+  @MessagePattern("QueueStateQuery")
+  async QueueStateQuery(
+    query: QueueStateQuery,
+  ): Promise<QueueStateQueryResult> {
+    return this.qbus.execute(construct(QueueStateQuery, query));
   }
 }
