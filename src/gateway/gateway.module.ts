@@ -4,7 +4,7 @@ import { CqrsModule } from "@nestjs/cqrs";
 import { MmModule } from "src/mm/mm.module";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 import { REDIS_URL } from "src/@shared/env";
-import { QueryController } from "src/gateway/queryController";
+import { QueryController } from "src/gateway/query.controller";
 
 @Module({
   imports: [
