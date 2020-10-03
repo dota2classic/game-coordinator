@@ -3,7 +3,7 @@ import { MessagePattern } from "@nestjs/microservices";
 import { GatewayQueueStateQuery } from "src/gateway/gateway/queries/GatewayQueueState/gateway-queue-state.query";
 import { QueryBus } from "@nestjs/cqrs";
 import { construct } from "src/gateway/gateway/util/construct";
-import { GatewayQueueStateResult } from "src/gateway/gateway/queries/GatewayQueueState/gateway-queue-state.result";
+import { GatewayQueueStateQueryResult } from "src/gateway/gateway/queries/GatewayQueueState/gateway-queue-state-query.result";
 
 @Controller()
 export class QueryController {
@@ -12,7 +12,7 @@ export class QueryController {
   @MessagePattern("GatewayQueueStateQuery")
   async GatewayQueueStateQuery(
     query: GatewayQueueStateQuery,
-  ): Promise<GatewayQueueStateResult> {
+  ): Promise<GatewayQueueStateQueryResult> {
     return this.qbus.execute(construct(GatewayQueueStateQuery, query));
   }
 }
