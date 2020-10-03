@@ -2,7 +2,7 @@ import { Inject, Injectable, OnApplicationBootstrap } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { EventBus, ofType } from "@nestjs/cqrs";
 import { QueueUpdateEvent } from "src/mm/queue/event/queue-update.event";
-import { map, observeOn, tap } from "rxjs/operators";
+import { map, observeOn } from "rxjs/operators";
 import { GatewayQueueEntry, GatewayQueueUpdatedEvent } from "src/gateway/gateway/events/gateway-queue-updated.event";
 import { asyncScheduler, merge, Observable } from "rxjs";
 import { PartyRepository } from "src/mm/party/repository/party.repository";
@@ -10,7 +10,6 @@ import { QueueRepository } from "src/mm/queue/repository/queue.repository";
 import { asyncMap } from "rxjs-async-map";
 import { QueueCreatedEvent } from "src/mm/queue/event/queue-created.event";
 import { GatewayQueueCreatedEvent } from "src/gateway/gateway/events/gateway-queue-created.event";
-import { inspect } from "util";
 
 @Injectable()
 export class GatewayService implements OnApplicationBootstrap {
@@ -56,9 +55,7 @@ export class GatewayService implements OnApplicationBootstrap {
 
     const mappers = [this.queueUpdated(), this.queueCreated()];
 
-    merge(...mappers).pipe(tap(e => {
-      console.log(inspect(e))
-    })).subscribe(t =>
+    merge(...mappers).subscribe(t =>
       this.redisEventQueue.emit(t.constructor.name, t),
     );
   }
