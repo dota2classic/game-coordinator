@@ -4,7 +4,7 @@ import { clearRepositories, TestEnvironment } from "src/@test/cqrs";
 import { EnterQueueHandler } from "src/mm/queue/command/EnterQueue/enter-queue.handler";
 import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
 import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { QueueUpdateEvent } from "src/gateway/gateway/events/queue-update.event";
+import { QueueUpdatedEvent } from "src/gateway/gateway/events/queue-updated.event";
 import { QueueProviders } from "src/mm/queue";
 import { QueueRepository } from "src/mm/queue/repository/queue.repository";
 import { QueueModel } from "src/mm/queue/model/queue.model";
@@ -71,7 +71,7 @@ describe("EnterQueueHandler", () => {
         mode,
       ),
     );
-    expect(ebus).toEmit(new QueueUpdateEvent(mode));
+    expect(ebus).toEmit(new QueueUpdatedEvent(mode));
   });
 
   it("Should find game", async () => {
@@ -98,8 +98,8 @@ describe("EnterQueueHandler", () => {
           ].map(p => new PlayerInParty(p.playerId, p.mmr)),
         ),
       ]),
-      new QueueUpdateEvent(mode),
-      new QueueUpdateEvent(mode),
+      new QueueUpdatedEvent(mode),
+      new QueueUpdatedEvent(mode),
     );
   });
 
@@ -147,9 +147,9 @@ describe("EnterQueueHandler", () => {
     // @ts-ignore
     // console.error(inspect(ebus.publish.mock.calls))
     expect(ebus).toEmit(
-      new QueueUpdateEvent(MatchmakingMode.RANKED), // enter ranked queue
-      new QueueUpdateEvent(MatchmakingMode.RANKED), // leave ranked queue
-      new QueueUpdateEvent(MatchmakingMode.SOLOMID), // enter solomid
+      new QueueUpdatedEvent(MatchmakingMode.RANKED), // enter ranked queue
+      new QueueUpdatedEvent(MatchmakingMode.RANKED), // leave ranked queue
+      new QueueUpdatedEvent(MatchmakingMode.SOLOMID), // enter solomid
     );
   });
 });

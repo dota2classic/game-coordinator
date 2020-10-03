@@ -9,7 +9,7 @@ import { QueueModel } from "src/mm/queue/model/queue.model";
 import { QueueProviders } from "src/mm/queue";
 import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
 import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
-import { QueueUpdateEvent } from "src/gateway/gateway/events/queue-update.event";
+import { QueueUpdatedEvent } from "src/gateway/gateway/events/queue-updated.event";
 
 describe("LeaveQueueHandler", () => {
   let ebus: EventBus;
@@ -61,6 +61,6 @@ describe("LeaveQueueHandler", () => {
       new LeaveQueueCommand(MatchmakingMode.SOLOMID, "partyID"),
     );
 
-    expect(ebus).toEmit(new QueueUpdateEvent(MatchmakingMode.SOLOMID));
+    expect(ebus).toEmit(new QueueUpdatedEvent(MatchmakingMode.SOLOMID));
   });
 });

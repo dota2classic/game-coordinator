@@ -1,7 +1,7 @@
 import { Inject, Injectable, OnApplicationBootstrap } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { EventBus, ofType } from "@nestjs/cqrs";
-import { QueueUpdateEvent } from "src/gateway/gateway/events/queue-update.event";
+import { QueueUpdatedEvent } from "src/gateway/gateway/events/queue-updated.event";
 import { observeOn } from "rxjs/operators";
 import { asyncScheduler, Observable } from "rxjs";
 import { PartyRepository } from "src/mm/party/repository/party.repository";
@@ -25,7 +25,7 @@ export class GatewayService implements OnApplicationBootstrap {
 
 
     this.ebus
-      .pipe(ofType(QueueCreatedEvent, QueueUpdateEvent))
+      .pipe(ofType(QueueCreatedEvent, QueueUpdatedEvent))
       .subscribe(t => this.redisEventQueue.emit(t.constructor.name, t));
   }
 }
