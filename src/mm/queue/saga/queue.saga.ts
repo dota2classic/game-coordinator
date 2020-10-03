@@ -5,7 +5,7 @@ import { filter, map, mergeMap } from "rxjs/operators";
 import { Observable } from 'rxjs';
 import { MatchmakingModes } from 'src/gateway/gateway/shared-types/matchmaking-mode';
 import { CreateQueueCommand } from 'src/mm/queue/command/CreateQueue/create-queue.command';
-import { QueueUpdateEvent } from "src/mm/queue/event/queue-update.event";
+import { QueueUpdateEvent } from "src/gateway/gateway/events/queue-update.event";
 
 @Injectable()
 export class QueueSaga {

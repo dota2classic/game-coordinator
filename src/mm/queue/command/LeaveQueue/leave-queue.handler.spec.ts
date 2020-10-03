@@ -9,7 +9,7 @@ import { QueueModel } from "src/mm/queue/model/queue.model";
 import { QueueProviders } from "src/mm/queue";
 import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
 import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
-import { QueueUpdateEvent } from "src/mm/queue/event/queue-update.event";
+import { QueueUpdateEvent } from "src/gateway/gateway/events/queue-update.event";
 
 describe("LeaveQueueHandler", () => {
   let ebus: EventBus;

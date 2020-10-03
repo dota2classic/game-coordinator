@@ -4,7 +4,7 @@ import { clearRepositories, TestEnvironment } from "src/@test/cqrs";
 import { EnterQueueHandler } from "src/mm/queue/command/EnterQueue/enter-queue.handler";
 import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
 import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { QueueUpdateEvent } from "src/mm/queue/event/queue-update.event";
+import { QueueUpdateEvent } from "src/gateway/gateway/events/queue-update.event";
 import { QueueProviders } from "src/mm/queue";
 import { QueueRepository } from "src/mm/queue/repository/queue.repository";
 import { QueueModel } from "src/mm/queue/model/queue.model";

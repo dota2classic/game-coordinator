@@ -4,7 +4,7 @@ import { CommandBus, EventBus } from "@nestjs/cqrs";
 import { QueueRepository } from "src/mm/queue/repository/queue.repository";
 import { CreateQueueCommand } from "src/mm/queue/command/CreateQueue/create-queue.command";
 import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { QueueCreatedEvent } from "src/mm/queue/event/queue-created.event";
+import { QueueCreatedEvent } from "src/gateway/gateway/events/queue-created.event";
 import { QueueModel } from "src/mm/queue/model/queue.model";
 import { TestEnvironment, clearRepositories } from "src/@test/cqrs";
 import { QueueProviders } from "src/mm/queue";
