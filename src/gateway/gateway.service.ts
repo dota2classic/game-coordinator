@@ -18,7 +18,7 @@ export class GatewayService implements OnApplicationBootstrap {
     private readonly ebus: EventBus,
     private readonly partyRepository: PartyRepository,
     private readonly queueRepository: QueueRepository,
-    @Inject("RedisQueue") private readonly discordGateway: ClientProxy,
+    @Inject("RedisQueue") private readonly redisEventQueue: ClientProxy,
   ) {}
 
   protected queueUpdated(): Observable<GatewayQueueUpdatedEvent> {
@@ -51,7 +51,7 @@ export class GatewayService implements OnApplicationBootstrap {
 
   async onApplicationBootstrap() {
     try {
-      await this.discordGateway.connect();
+      await this.redisEventQueue.connect();
     } catch (e) {}
 
     const mappers = [this.queueUpdated(), this.queueCreated()];
@@ -59,7 +59,7 @@ export class GatewayService implements OnApplicationBootstrap {
     merge(...mappers).pipe(tap(e => {
       console.log(inspect(e))
     })).subscribe(t =>
-      this.discordGateway.emit(t.constructor.name, t),
+      this.redisEventQueue.emit(t.constructor.name, t),
     );
   }
 }

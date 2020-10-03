@@ -4,6 +4,7 @@ import { CqrsModule } from "@nestjs/cqrs";
 import { MmModule } from "src/mm/mm.module";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 import { REDIS_URL } from "src/@shared/env";
+import { QueryController } from "src/gateway/queryController";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { REDIS_URL } from "src/@shared/env";
       },
     ]),
   ],
+  controllers: [QueryController],
   providers: [GatewayService],
 })
 export class GatewayModule {}
