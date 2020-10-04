@@ -6,16 +6,18 @@ import { EnterQueueHandler } from "src/mm/queue/command/EnterQueue/enter-queue.h
 import { QueueService } from "src/mm/queue/service/queue.service";
 import { LeaveQueueHandler } from "src/mm/queue/command/LeaveQueue/leave-queue.handler";
 import { QueueStateHandler } from "src/mm/queue/query/GatewayQueueState/queue-state.handler";
+import { PlayerEnterQueueHandler } from "src/mm/queue/command/PlayerEnterQueue/player-enter-queue.handler";
 
 const CommandHandlers = [
   CreateQueueHandler,
   EnterQueueHandler,
   LeaveQueueHandler,
+
+  //gateway
+  PlayerEnterQueueHandler,
 ];
 
-const QueryHandlers = [
-  QueueStateHandler
-]
+const QueryHandlers = [QueueStateHandler];
 const Repositories = [QueueEntryRepository, QueueRepository];
 
 export const QueueProviders = [
