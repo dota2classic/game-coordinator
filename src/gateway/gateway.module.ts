@@ -5,6 +5,7 @@ import { MmModule } from "src/mm/mm.module";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 import { REDIS_URL } from "src/@shared/env";
 import { QueryController } from "src/gateway/query.controller";
+import { CommandController } from "src/gateway/command.controller";
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { QueryController } from "src/gateway/query.controller";
       },
     ]),
   ],
-  controllers: [QueryController],
+  controllers: [QueryController, CommandController],
   providers: [GatewayService],
 })
 export class GatewayModule {}
