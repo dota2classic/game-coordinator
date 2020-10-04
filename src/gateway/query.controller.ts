@@ -9,7 +9,7 @@ import { QueueStateQueryResult } from "src/gateway/gateway/queries/QueueState/qu
 export class QueryController {
   constructor(private readonly qbus: QueryBus) {}
 
-  @MessagePattern("QueueStateQuery")
+  @MessagePattern(QueueStateQuery.name)
   async QueueStateQuery(
     query: QueueStateQuery,
   ): Promise<QueueStateQueryResult> {
