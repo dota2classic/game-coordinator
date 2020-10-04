@@ -1,11 +1,11 @@
 import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { Logger } from "@nestjs/common";
 import { PlayerLeaveQueueCommand } from "src/gateway/gateway/commands/player-leave-queue.command";
-import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
 import { PlayerId } from "src/gateway/gateway/shared-types/player-id";
 import { PartyModel } from "src/mm/party/model/party.model";
 import { uuid } from "src/@shared/generateID";
 import { PartyRepository } from "src/mm/party/repository/party.repository";
+import { LeaveQueueCommand } from "src/mm/queue/command/LeaveQueue/leave-queue.command";
 
 @CommandHandler(PlayerLeaveQueueCommand)
 export class PlayerLeaveQueueHandler
@@ -20,16 +20,7 @@ export class PlayerLeaveQueueHandler
   async execute(command: PlayerLeaveQueueCommand) {
     const p = await this.getPartyOf(command.playerID);
 
-    return this.cbus.execute(
-      new EnterQueueCommand(
-        p.id,
-        p.players.map(t => ({
-          playerId: t,
-          mmr: 3000, // todo
-        })),
-        command.mode,
-      ),
-    );
+    return this.cbus.execute(new LeaveQueueCommand(command.mode, p.id));
   }
 
   private async getPartyOf(id: PlayerId) {
