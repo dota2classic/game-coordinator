@@ -7,6 +7,7 @@ import { QueueService } from "src/mm/queue/service/queue.service";
 import { LeaveQueueHandler } from "src/mm/queue/command/LeaveQueue/leave-queue.handler";
 import { QueueStateHandler } from "src/mm/queue/query/GatewayQueueState/queue-state.handler";
 import { PlayerEnterQueueHandler } from "src/mm/queue/command/PlayerEnterQueue/player-enter-queue.handler";
+import { PlayerLeaveQueueHandler } from "src/mm/queue/command/PlayerLeaveQueue/player-leave-queue.handler";
 
 const CommandHandlers = [
   CreateQueueHandler,
@@ -15,6 +16,7 @@ const CommandHandlers = [
 
   //gateway
   PlayerEnterQueueHandler,
+  PlayerLeaveQueueHandler
 ];
 
 const QueryHandlers = [QueueStateHandler];
