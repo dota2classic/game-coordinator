@@ -1,11 +1,11 @@
-import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
 import { Logger } from "@nestjs/common";
 import { PlayerEnterQueueCommand } from "src/gateway/gateway/commands/player-enter-queue.command";
 import { PartyRepository } from "src/mm/party/repository/party.repository";
 import { PlayerId } from "src/gateway/gateway/shared-types/player-id";
 import { PartyModel } from "src/mm/party/model/party.model";
 import { uuid } from "src/@shared/generateID";
-import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
+import { PlayerEnterQueueResolvedEvent } from "src/mm/queue/event/player-enter-queue-resolved.event";
 
 @CommandHandler(PlayerEnterQueueCommand)
 export class PlayerEnterQueueHandler
@@ -13,15 +13,15 @@ export class PlayerEnterQueueHandler
   private readonly logger = new Logger(PlayerEnterQueueHandler.name);
 
   constructor(
-    private readonly cbus: CommandBus,
+    private readonly ebus: EventBus,
     private readonly partyRepository: PartyRepository,
   ) {}
 
   async execute(command: PlayerEnterQueueCommand) {
     const p = await this.getPartyOf(command.playerID);
 
-    return this.cbus.execute(
-      new EnterQueueCommand(
+    this.ebus.publish(
+      new PlayerEnterQueueResolvedEvent(
         p.id,
         p.players.map(t => ({
           playerId: t,
