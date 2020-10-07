@@ -13,7 +13,7 @@ import {
   FoundGameParty,
   GameFoundEvent,
   PlayerInParty,
-} from "src/mm/queue/event/game-found.event";
+} from "src/gateway/gateway/events/game-found.event";
 import { wait } from "src/@shared/wait";
 import Mock = jest.Mock;
 import { inspect } from "util";

@@ -6,7 +6,7 @@ import { map, mergeMap } from "rxjs/operators";
 import { MatchmakingModes } from "src/gateway/gateway/shared-types/matchmaking-mode";
 import { CreateQueueCommand } from "src/mm/queue/command/CreateQueue/create-queue.command";
 import { RoomSizes } from "src/mm/room/model/entity/room-size";
-import { GameFoundEvent } from "src/mm/queue/event/game-found.event";
+import { GameFoundEvent } from "src/gateway/gateway/events/game-found.event";
 import {
   CreateRoomCommand,
   PartyInRoom,

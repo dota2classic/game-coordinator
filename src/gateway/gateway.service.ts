@@ -7,6 +7,7 @@ import { asyncScheduler, Observable } from "rxjs";
 import { PartyRepository } from "src/mm/party/repository/party.repository";
 import { QueueRepository } from "src/mm/queue/repository/queue.repository";
 import { QueueCreatedEvent } from "src/gateway/gateway/events/queue-created.event";
+import { GameFoundEvent } from "src/gateway/gateway/events/game-found.event";
 
 @Injectable()
 export class GatewayService implements OnApplicationBootstrap {
@@ -25,7 +26,7 @@ export class GatewayService implements OnApplicationBootstrap {
 
 
     this.ebus
-      .pipe(ofType(QueueCreatedEvent, QueueUpdatedEvent))
+      .pipe(ofType(QueueCreatedEvent, QueueUpdatedEvent, GameFoundEvent))
       .subscribe(t => this.redisEventQueue.emit(t.constructor.name, t));
   }
 }
