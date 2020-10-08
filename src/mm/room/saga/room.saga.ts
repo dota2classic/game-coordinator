@@ -6,12 +6,13 @@ import { map, mergeMap } from "rxjs/operators";
 import { MatchmakingModes } from "src/gateway/gateway/shared-types/matchmaking-mode";
 import { CreateQueueCommand } from "src/mm/queue/command/CreateQueue/create-queue.command";
 import { RoomSizes } from "src/mm/room/model/entity/room-size";
-import { GameFoundEvent } from "src/gateway/gateway/events/game-found.event";
+import { GameFoundEvent } from "src/mm/queue/event/game-found.event";
 import {
   CreateRoomCommand,
   PartyInRoom,
 } from "src/mm/room/command/CreateRoom/create-room.command";
 import { PlayerInPartyInRoom } from "src/mm/room/model/room-entry";
+import {RoomCreatedEvent} from "src/mm/room/event/room-created.event";
 
 @Injectable()
 export class QueueSaga {
@@ -43,6 +44,14 @@ export class QueueSaga {
             ),
           ),
       ),
+    );
+  };
+
+  @Saga()
+  readyCheck = (events$: Observable<any>): Observable<ICommand> => {
+    return events$.pipe(
+      ofType(RoomCreatedEvent),
+      mergeMap(() => MatchmakingModes.map(it => new CreateQueueCommand(it))),
     );
   };
 }

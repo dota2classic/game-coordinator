@@ -7,7 +7,7 @@ import { QueueEntryRepository } from "src/mm/queue/repository/queue-entry.reposi
 import { QueueModel } from "src/mm/queue/model/queue.model";
 import { RoomSizes } from "src/mm/room/model/entity/room-size";
 import { QueueService } from "src/mm/queue/service/queue.service";
-import { FoundGameParty, GameFoundEvent, PlayerInParty } from "src/gateway/gateway/events/game-found.event";
+import { FoundGameParty, GameFoundEvent, PlayerInParty } from "src/mm/queue/event/game-found.event";
 
 @CommandHandler(EnterQueueCommand)
 export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
