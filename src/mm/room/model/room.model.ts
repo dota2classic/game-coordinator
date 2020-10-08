@@ -1,13 +1,14 @@
-import { AggregateRoot } from "@nestjs/cqrs";
-import { uuid } from "src/@shared/generateID";
-import { RoomEntry } from "src/mm/room/model/room-entry";
-import { RoomBalance } from "src/mm/room/model/entity/room-balance";
-import { PlayerId } from "src/gateway/gateway/shared-types/player-id";
-import { ReadyState } from "src/gateway/gateway/events/ready-state-received.event";
+import {AggregateRoot} from "@nestjs/cqrs";
+import {uuid} from "src/@shared/generateID";
+import {RoomEntry} from "src/mm/room/model/room-entry";
+import {RoomBalance} from "src/mm/room/model/entity/room-balance";
+import {PlayerId} from "src/gateway/gateway/shared-types/player-id";
+import {ReadyState} from "src/gateway/gateway/events/ready-state-received.event";
 import {
   ReadyCheckEntry,
   RoomReadyCheckCompleteEvent,
 } from "src/gateway/gateway/events/room-ready-check-complete.event";
+import {ReadyCheckStartedEvent} from "src/gateway/gateway/events/ready-check-started.event";
 
 export class RoomModel extends AggregateRoot {
   public readonly id: string = uuid();
@@ -34,6 +35,14 @@ export class RoomModel extends AggregateRoot {
   startReadyCheck() {
     this.players.forEach(t => this.readyCheckMap.set(t.id, ReadyState.PENDING));
     this.readyCheckComplete = false;
+    this.apply(
+      new ReadyCheckStartedEvent(
+        this.id,
+        [...this.readyCheckMap.entries()].map(
+          ([id, state]) => new ReadyCheckEntry(id, state),
+        ),
+      ),
+    );
   }
 
   readyCheckTimeout() {

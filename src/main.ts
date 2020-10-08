@@ -8,12 +8,7 @@ import { Subscriber } from "rxjs";
 import { StartEvent } from "src/mm/start.event";
 import { Logger } from "@nestjs/common";
 import { AppModule } from "src/app.module";
-import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
-import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
-import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
 import { REDIS_URL } from "src/@shared/env";
-import { LeaveQueueCommand } from "src/mm/queue/command/LeaveQueue/leave-queue.command";
-import { wait } from "src/@shared/wait";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
@@ -59,7 +54,7 @@ async function bootstrap() {
   );
 
   await app.listenAsync();
-  console.log(`Started matchmaking core`);
+  // console.log(`Started matchmaking core`);
 
   const publisher = app.get(EventPublisher);
   prepareModels(publisher);

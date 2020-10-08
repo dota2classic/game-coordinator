@@ -1,5 +1,6 @@
-import { CommandBus, EventBus, EventPublisher } from "@nestjs/cqrs";
-import { Provider } from "@nestjs/common";
+import {CommandBus, EventBus, EventPublisher, IEvent, ofType} from "@nestjs/cqrs";
+import {Provider, Type} from "@nestjs/common";
+import {RuntimeRepository} from "src/@shared/runtime-repository";
 
 const ebusProvider: Provider = {
   provide: EventBus,
@@ -21,16 +22,23 @@ export const TestEnvironment = () => [
   EventPublisher,
 ];
 
-
-
 export function clearRepositories() {
   // @ts-ignore
   RuntimeRepository.clearAll();
 }
 
+export const waitFor = (ebus: EventBus, event: Type<any>) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject(`Event ${event.name} won't come :(`)
+    }, 500)
+    const unsub = ebus.pipe(ofType(event)).subscribe(e => {
+      unsub.unsubscribe();
+      resolve(e);
+    });
+  });
+};
 
-import { IEvent } from "@nestjs/cqrs";
-import { RuntimeRepository } from "src/@shared/runtime-repository";
 declare global {
   namespace jest {
     // noinspection JSUnusedGlobalSymbols

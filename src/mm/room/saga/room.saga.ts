@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { ICommand, ofType, Saga } from "@nestjs/cqrs";
 import { Observable } from "rxjs";
 import { StartEvent } from "src/mm/start.event";
-import { map, mergeMap } from "rxjs/operators";
+import {map, mergeMap, tap} from "rxjs/operators";
 import { MatchmakingModes } from "src/gateway/gateway/shared-types/matchmaking-mode";
 import { CreateQueueCommand } from "src/mm/queue/command/CreateQueue/create-queue.command";
 import { RoomSizes } from "src/mm/room/model/entity/room-size";
@@ -16,6 +16,7 @@ import {RoomCreatedEvent} from "src/mm/room/event/room-created.event";
 
 @Injectable()
 export class QueueSaga {
+
   @Saga()
   createQueues = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
@@ -28,6 +29,7 @@ export class QueueSaga {
   checkRoom = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(GameFoundEvent),
+      tap((e) => console.log(e)),
       map(
         e =>
           new CreateRoomCommand(
