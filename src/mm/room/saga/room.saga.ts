@@ -13,9 +13,10 @@ import {
 } from "src/mm/room/command/CreateRoom/create-room.command";
 import { PlayerInPartyInRoom } from "src/mm/room/model/room-entry";
 import {RoomCreatedEvent} from "src/mm/room/event/room-created.event";
+import {RoomReadyCheckCommand} from "src/mm/room/command/RoomReadyCheck/room-ready-check.command";
 
 @Injectable()
-export class QueueSaga {
+export class RoomSaga {
 
   @Saga()
   createQueues = (events$: Observable<any>): Observable<ICommand> => {
@@ -25,11 +26,11 @@ export class QueueSaga {
     );
   };
 
+
   @Saga()
   checkRoom = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(GameFoundEvent),
-      tap((e) => console.log(e)),
       map(
         e =>
           new CreateRoomCommand(
@@ -53,7 +54,7 @@ export class QueueSaga {
   readyCheck = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(RoomCreatedEvent),
-      mergeMap(() => MatchmakingModes.map(it => new CreateQueueCommand(it))),
+      map(t => new RoomReadyCheckCommand(t.id))
     );
   };
 }

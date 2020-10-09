@@ -1,14 +1,17 @@
-import { NestFactory } from "@nestjs/core";
-import { CommandBus, EventBus, EventPublisher } from "@nestjs/cqrs";
-import { QueueModel } from "./mm/queue/model/queue.model";
-import { PartyModel } from "./mm/party/model/party.model";
-import { PlayerModel } from "./mm/player/model/player.model";
-import { MicroserviceOptions, Transport } from "@nestjs/microservices";
-import { Subscriber } from "rxjs";
-import { StartEvent } from "src/mm/start.event";
-import { Logger } from "@nestjs/common";
-import { AppModule } from "src/app.module";
-import { REDIS_URL } from "src/@shared/env";
+import {NestFactory} from "@nestjs/core";
+import {CommandBus, EventBus, EventPublisher} from "@nestjs/cqrs";
+import {QueueModel} from "./mm/queue/model/queue.model";
+import {PartyModel} from "./mm/party/model/party.model";
+import {PlayerModel} from "./mm/player/model/player.model";
+import {MicroserviceOptions, Transport} from "@nestjs/microservices";
+import {Subscriber} from "rxjs";
+import {StartEvent} from "src/mm/start.event";
+import {Logger} from "@nestjs/common";
+import {AppModule} from "src/app.module";
+import {REDIS_URL} from "src/@shared/env";
+import {wait} from "src/@shared/wait";
+import {PlayerEnterQueueCommand} from "src/gateway/gateway/commands/player-enter-queue.command";
+import {MatchmakingMode} from "src/gateway/gateway/shared-types/matchmaking-mode";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
@@ -60,5 +63,10 @@ async function bootstrap() {
   prepareModels(publisher);
 
   ebus.publish(new StartEvent());
+
+  wait(1000).then(t => {
+    cbus.execute(new PlayerEnterQueueCommand('726942936037851158', MatchmakingMode.SOLOMID))
+    cbus.execute(new PlayerEnterQueueCommand('318014316874039306', MatchmakingMode.SOLOMID))
+  })
 }
 bootstrap();
