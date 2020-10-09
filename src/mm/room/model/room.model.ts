@@ -1,12 +1,16 @@
-import {AggregateRoot} from "@nestjs/cqrs";
-import {uuid} from "src/@shared/generateID";
-import {RoomEntry} from "src/mm/room/model/room-entry";
-import {RoomBalance} from "src/mm/room/model/entity/room-balance";
-import {PlayerId} from "src/gateway/gateway/shared-types/player-id";
-import {ReadyState} from "src/gateway/gateway/events/ready-state-received.event";
-import {RoomReadyCheckCompleteEvent, RoomReadyState,} from "src/gateway/gateway/events/room-ready-check-complete.event";
-import {ReadyCheckStartedEvent} from "src/gateway/gateway/events/ready-check-started.event";
-import {ReadyStateUpdatedEvent} from "src/gateway/gateway/events/ready-state-updated.event";
+import { AggregateRoot } from "@nestjs/cqrs";
+import { uuid } from "src/@shared/generateID";
+import { RoomEntry } from "src/mm/room/model/room-entry";
+import { RoomBalance } from "src/mm/room/model/entity/room-balance";
+import { PlayerId } from "src/gateway/gateway/shared-types/player-id";
+import { ReadyState } from "src/gateway/gateway/events/ready-state-received.event";
+import {
+  RoomReadyCheckCompleteEvent,
+  RoomReadyState,
+} from "src/gateway/gateway/events/room-ready-check-complete.event";
+import { ReadyCheckStartedEvent } from "src/gateway/gateway/events/ready-check-started.event";
+import { ReadyStateUpdatedEvent } from "src/gateway/gateway/events/ready-state-updated.event";
+import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
 
 export class RoomModel extends AggregateRoot {
   public readonly id: string = uuid();
@@ -24,6 +28,7 @@ export class RoomModel extends AggregateRoot {
   }
 
   constructor(
+    public readonly mode: MatchmakingMode,
     public readonly entries: RoomEntry[],
     public readonly balance: RoomBalance,
   ) {
@@ -33,7 +38,9 @@ export class RoomModel extends AggregateRoot {
   startReadyCheck() {
     this.players.forEach(t => this.readyCheckMap.set(t.id, ReadyState.PENDING));
     this.readyCheckComplete = false;
-    this.apply(new ReadyCheckStartedEvent(this.id, this.readyCheckState));
+    this.apply(
+      new ReadyCheckStartedEvent(this.id, this.mode, this.readyCheckState),
+    );
   }
 
   readyCheckTimeout() {
@@ -48,13 +55,17 @@ export class RoomModel extends AggregateRoot {
 
   completeReadyCheck() {
     this.readyCheckComplete = true;
-    this.apply(new RoomReadyCheckCompleteEvent(this.id, this.readyCheckState));
+    this.apply(
+      new RoomReadyCheckCompleteEvent(this.id, this.mode, this.readyCheckState),
+    );
   }
 
   setReadyCheck(playerId: PlayerId, state: ReadyState) {
     if (this.players.find(t => t.id === playerId)) {
       this.readyCheckMap.set(playerId, state);
-      this.apply(new ReadyStateUpdatedEvent(this.id, this.readyCheckState));
+      this.apply(
+        new ReadyStateUpdatedEvent(this.id, this.mode, this.readyCheckState),
+      );
       if (this.acceptedCount === this.players.length) {
         this.completeReadyCheck();
       }

@@ -28,6 +28,7 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
       const balance = await this.balanceRoom(parties, mode);
 
       const room = new RoomModel(
+        mode,
         parties.map(t => new RoomEntry(t.id, t.players, mode)),
         balance,
       );
