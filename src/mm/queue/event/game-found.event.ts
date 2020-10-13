@@ -1,8 +1,9 @@
 import { MatchmakingMode } from "../../../gateway/gateway/shared-types/matchmaking-mode";
 import { PartyId } from "../../../gateway/gateway/shared-types/party-id";
+import {PlayerId} from "src/gateway/gateway/shared-types/player-id";
 
 export class PlayerInParty {
-  constructor(public readonly id: string, public readonly mmr: number) {
+  constructor(public readonly id: PlayerId, public readonly mmr: number) {
   }
 }
 

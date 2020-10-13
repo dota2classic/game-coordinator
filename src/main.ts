@@ -12,6 +12,7 @@ import {REDIS_URL} from "src/@shared/env";
 import {wait} from "src/@shared/wait";
 import {PlayerEnterQueueCommand} from "src/gateway/gateway/commands/player-enter-queue.command";
 import {MatchmakingMode} from "src/gateway/gateway/shared-types/matchmaking-mode";
+import {user1, user2} from "src/@test/values";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
@@ -56,6 +57,7 @@ async function bootstrap() {
     }),
   );
 
+
   await app.listenAsync();
   // console.log(`Started matchmaking core`);
 
@@ -65,8 +67,8 @@ async function bootstrap() {
   ebus.publish(new StartEvent());
 
   wait(1000).then(t => {
-    cbus.execute(new PlayerEnterQueueCommand('726942936037851158', MatchmakingMode.SOLOMID))
-    cbus.execute(new PlayerEnterQueueCommand('318014316874039306', MatchmakingMode.SOLOMID))
+    cbus.execute(new PlayerEnterQueueCommand(user1, MatchmakingMode.SOLOMID))
+    cbus.execute(new PlayerEnterQueueCommand(user2, MatchmakingMode.SOLOMID))
   })
 }
 bootstrap();

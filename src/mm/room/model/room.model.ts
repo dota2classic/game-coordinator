@@ -70,7 +70,7 @@ export class RoomModel extends AggregateRoot {
   }
 
   setReadyCheck(playerId: PlayerId, state: ReadyState) {
-    if (this.players.find(t => t.id === playerId)) {
+    if (this.players.find(t => t.id.value === playerId.value)) {
       this.readyCheckMap.set(playerId, state);
       this.apply(
         new ReadyStateUpdatedEvent(this.id, this.mode, this.readyCheckState),
