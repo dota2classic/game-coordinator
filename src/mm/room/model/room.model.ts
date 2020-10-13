@@ -51,6 +51,7 @@ export class RoomModel extends AggregateRoot {
     );
   }
 
+
   readyCheckTimeout() {
     if (this.readyCheckComplete) return;
     this.players.forEach(t => {

@@ -6,6 +6,8 @@ import {PartyRepository} from "src/mm/party/repository/party.repository";
 import {QueueRepository} from "src/mm/queue/repository/queue.repository";
 import {QueueCreatedEvent} from "src/gateway/gateway/events/queue-created.event";
 import {ReadyCheckStartedEvent} from "src/gateway/gateway/events/ready-check-started.event";
+import {ReadyStateUpdatedEvent} from "src/gateway/gateway/events/ready-state-updated.event";
+import {RoomReadyCheckCompleteEvent} from "src/gateway/gateway/events/room-ready-check-complete.event";
 
 @Injectable()
 export class GatewayService implements OnApplicationBootstrap {
@@ -24,7 +26,9 @@ export class GatewayService implements OnApplicationBootstrap {
     const publicEvents: any[] = [
       QueueCreatedEvent,
       QueueUpdatedEvent,
+      ReadyStateUpdatedEvent,
       ReadyCheckStartedEvent,
+      RoomReadyCheckCompleteEvent
     ];
     this.ebus
       .pipe(ofType(...publicEvents))
