@@ -18,7 +18,7 @@ export class PlayerEnterQueueHandler
   ) {}
 
   async execute(command: PlayerEnterQueueCommand) {
-    const p = await this.getPartyOf(command.playerID);
+    const p = await this.partyRepository.getPartyOf(command.playerID);
 
     this.ebus.publish(
       new PlayerEnterQueueResolvedEvent(
@@ -32,18 +32,4 @@ export class PlayerEnterQueueHandler
     );
   }
 
-  private async getPartyOf(id: PlayerId) {
-    const parties = await this.partyRepository.all();
-    const party = parties.find(it => it.players.find(z => z == id));
-
-    if (!party) {
-      const p = new PartyModel(uuid(), id, [id]);
-      await this.partyRepository.save(p.id, p);
-      p.created();
-      p.commit();
-
-      return p;
-    }
-    return party;
-  }
 }
