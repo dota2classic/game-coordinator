@@ -66,9 +66,9 @@ async function bootstrap() {
 
   ebus.publish(new StartEvent());
 
-  // wait(1000).then(t => {
-  //   cbus.execute(new PlayerEnterQueueCommand(user1, MatchmakingMode.SOLOMID))
-  //   cbus.execute(new PlayerEnterQueueCommand(user2, MatchmakingMode.SOLOMID))
-  // })
+  wait(1000).then(t => {
+    cbus.execute(new PlayerEnterQueueCommand(user1, MatchmakingMode.SOLOMID))
+    cbus.execute(new PlayerEnterQueueCommand(user2, MatchmakingMode.SOLOMID))
+  })
 }
 bootstrap();
