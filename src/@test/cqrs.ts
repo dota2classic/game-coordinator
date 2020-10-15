@@ -27,7 +27,7 @@ export function clearRepositories() {
   RuntimeRepository.clearAll();
 }
 
-export const waitFor = (ebus: EventBus, event: Type<any>) => {
+export function waitFor<T = any>(ebus: EventBus, event: Type<T>): Promise<T> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       reject(`Event ${event.name} won't come :(`)
@@ -37,7 +37,7 @@ export const waitFor = (ebus: EventBus, event: Type<any>) => {
       resolve(e);
     });
   });
-};
+}
 
 declare global {
   namespace jest {
