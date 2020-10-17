@@ -29,6 +29,7 @@
     "@nestjs/cqrs": "^7.0.1",
     "@nestjs/microservices": "7.4.4",
     "@nestjs/platform-express": "7.4.4",
+    "dotenv": "^8.2.0",
     "redis": "^3.0.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",

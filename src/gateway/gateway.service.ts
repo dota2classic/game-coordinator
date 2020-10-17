@@ -8,6 +8,7 @@ import {QueueCreatedEvent} from "src/gateway/gateway/events/queue-created.event"
 import {ReadyCheckStartedEvent} from "src/gateway/gateway/events/ready-check-started.event";
 import {ReadyStateUpdatedEvent} from "src/gateway/gateway/events/ready-state-updated.event";
 import {RoomReadyCheckCompleteEvent} from "src/gateway/gateway/events/room-ready-check-complete.event";
+import {RoomReadyEvent} from "src/gateway/gateway/events/room-ready.event";
 
 @Injectable()
 export class GatewayService implements OnApplicationBootstrap {
@@ -28,7 +29,8 @@ export class GatewayService implements OnApplicationBootstrap {
       QueueUpdatedEvent,
       ReadyStateUpdatedEvent,
       ReadyCheckStartedEvent,
-      RoomReadyCheckCompleteEvent
+      RoomReadyCheckCompleteEvent,
+      RoomReadyEvent,
     ];
     this.ebus
       .pipe(ofType(...publicEvents))
