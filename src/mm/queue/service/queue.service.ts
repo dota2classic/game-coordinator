@@ -1,8 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { QueueModel } from "src/mm/queue/model/queue.model";
-import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
+import {MatchmakingMode, RoomSizes} from "src/gateway/gateway/shared-types/matchmaking-mode";
 import { QueueGameEntity } from "src/mm/queue/model/entity/queue-game.entity";
-import { RoomSizes } from "src/mm/room/model/entity/room-size";
 import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
 
 @Injectable()

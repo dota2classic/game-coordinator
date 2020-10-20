@@ -5,9 +5,9 @@ import { QueueRepository } from "src/mm/queue/repository/queue.repository";
 import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
 import { QueueEntryRepository } from "src/mm/queue/repository/queue-entry.repository";
 import { QueueModel } from "src/mm/queue/model/queue.model";
-import { RoomSizes } from "src/mm/room/model/entity/room-size";
 import { QueueService } from "src/mm/queue/service/queue.service";
 import { FoundGameParty, GameFoundEvent, PlayerInParty } from "src/mm/queue/event/game-found.event";
+import {RoomSizes} from "src/gateway/gateway/shared-types/matchmaking-mode";
 
 @CommandHandler(EnterQueueCommand)
 export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
