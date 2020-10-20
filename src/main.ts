@@ -69,6 +69,7 @@ async function bootstrap() {
 
   ebus.publish(new StartEvent());
 
+
   wait(1000).then(async t => {
     // find a game and accept it
     const room = waitFor(ebus, RoomCreatedEvent);
