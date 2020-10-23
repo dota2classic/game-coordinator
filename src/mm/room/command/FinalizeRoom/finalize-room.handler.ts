@@ -1,8 +1,8 @@
-import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
-import { Logger } from "@nestjs/common";
-import { FinalizeRoomCommand } from "src/mm/room/command/FinalizeRoom/finalize-room.command";
-import { RoomReadyEvent } from "src/gateway/gateway/events/room-ready.event";
-import { RoomRepository } from "src/mm/room/repository/room.repository";
+import {CommandHandler, EventBus, ICommandHandler} from "@nestjs/cqrs";
+import {Logger} from "@nestjs/common";
+import {FinalizeRoomCommand} from "src/mm/room/command/FinalizeRoom/finalize-room.command";
+import {RoomReadyEvent} from "src/gateway/gateway/events/room-ready.event";
+import {RoomRepository} from "src/mm/room/repository/room.repository";
 import {RoomNotReadyEvent} from "src/gateway/gateway/events/room-not-ready.event";
 
 @CommandHandler(FinalizeRoomCommand)
@@ -20,27 +20,29 @@ export class FinalizeRoomHandler
     if (!room) throw "No room";
     // ok here we basically publish event of room-ready
 
-    if(command.state.accepted === command.state.total){
-      const radiant = room.balance.teams[0].parties.flatMap(t => t.players.map(t => t.id))
-      const dire = room.balance.teams[1].parties.flatMap(t => t.players.map(t => t.id))
+    if (command.state.accepted === command.state.total) {
+      const radiant = room.balance.teams[0].parties.flatMap(t =>
+        t.players.map(t => t.id),
+      );
+      const dire = room.balance.teams[1].parties.flatMap(t =>
+        t.players.map(t => t.id),
+      );
       this.ebus.publish(
         new RoomReadyEvent(
           command.roomId,
           command.mode,
           radiant,
           dire,
-          room.balance.averageMMR
+          room.balance.averageMMR,
         ),
       );
-    }else{
-
+    } else {
       this.ebus.publish(
         new RoomNotReadyEvent(
-          room.id
+          room.id,
+          room.players.map(t => t.id),
         ),
       );
     }
-
-
   }
 }
