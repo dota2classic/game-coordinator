@@ -22,15 +22,6 @@ import {FinalizeRoomCommand} from "src/mm/room/command/FinalizeRoom/finalize-roo
 export class RoomSaga {
 
   @Saga()
-  createQueues = (events$: Observable<any>): Observable<ICommand> => {
-    return events$.pipe(
-      ofType(StartEvent),
-      mergeMap(() => MatchmakingModes.map(it => new CreateQueueCommand(it))),
-    );
-  };
-
-
-  @Saga()
   checkRoom = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(GameFoundEvent),
