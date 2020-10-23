@@ -16,7 +16,7 @@ import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mo
 export class RoomModel extends AggregateRoot {
   public readonly id: string = uuid();
 
-  private readonly readyCheckMap = new Map<PlayerId, ReadyState>();
+  private readonly readyCheckMap = new Map<string, ReadyState>();
   private readyCheckComplete = false;
 
   public get players() {
@@ -37,14 +37,16 @@ export class RoomModel extends AggregateRoot {
   }
 
   startReadyCheck() {
-    this.players.forEach(t => this.readyCheckMap.set(t.id, ReadyState.PENDING));
+    this.players.forEach(t =>
+      this.readyCheckMap.set(t.id.value, ReadyState.PENDING),
+    );
     this.readyCheckComplete = false;
     this.apply(
       new ReadyCheckStartedEvent(
         this.id,
         this.mode,
         [...this.readyCheckMap.entries()].map(
-          ([id, state]) => new ReadyCheckEntry(id, state),
+          ([id, state]) => new ReadyCheckEntry(new PlayerId(id), state),
         ),
         this.readyCheckState,
       ),
@@ -54,8 +56,8 @@ export class RoomModel extends AggregateRoot {
   readyCheckTimeout() {
     if (this.readyCheckComplete) return;
     this.players.forEach(t => {
-      if (this.readyCheckMap.get(t.id) === ReadyState.PENDING) {
-        this.readyCheckMap.set(t.id, ReadyState.TIMEOUT);
+      if (this.readyCheckMap.get(t.id.value) === ReadyState.PENDING) {
+        this.readyCheckMap.set(t.id.value, ReadyState.TIMEOUT);
       }
     });
     this.completeReadyCheck();
@@ -73,7 +75,7 @@ export class RoomModel extends AggregateRoot {
     if (this.readyCheckComplete) return;
 
     if (this.players.find(t => t.id.value === playerId.value)) {
-      this.readyCheckMap.set(playerId, state);
+      this.readyCheckMap.set(playerId.value, state);
       this.apply(
         new ReadyStateUpdatedEvent(this.id, this.mode, this.readyCheckState),
       );
@@ -83,10 +85,14 @@ export class RoomModel extends AggregateRoot {
     }
   }
 
-  private get readyCheckState(): RoomReadyState {
+  public get readyCheckState(): RoomReadyState {
     return {
       accepted: this.acceptedCount,
       total: this.players.length,
     };
+  }
+
+  public didAccept(pid: PlayerId): boolean {
+    return this.readyCheckMap.get(pid.value) === ReadyState.READY;
   }
 }

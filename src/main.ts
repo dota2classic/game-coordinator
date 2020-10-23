@@ -70,21 +70,21 @@ async function bootstrap() {
   ebus.publish(new StartEvent());
 
 
-  wait(1000).then(async t => {
-    // find a game and accept it
-    const room = waitFor(ebus, RoomCreatedEvent);
-    await cbus.execute(
-      new PlayerEnterQueueCommand(user1, MatchmakingMode.SOLOMID),
-    );
-    await cbus.execute(
-      new PlayerEnterQueueCommand(user2, MatchmakingMode.SOLOMID),
-    );
-
-    const e = await room;
-
-    await cbus.execute(new SetReadyCheckCommand(user1, e.id, ReadyState.READY));
-    await cbus.execute(new SetReadyCheckCommand(user2, e.id, ReadyState.READY));
-  });
+  // wait(1000).then(async t => {
+  //   // find a game and accept it
+  //   const room = waitFor(ebus, RoomCreatedEvent);
+  //   await cbus.execute(
+  //     new PlayerEnterQueueCommand(user1, MatchmakingMode.SOLOMID),
+  //   );
+  //   await cbus.execute(
+  //     new PlayerEnterQueueCommand(user2, MatchmakingMode.SOLOMID),
+  //   );
+  //
+  //   const e = await room;
+  //
+  //   await cbus.execute(new SetReadyCheckCommand(user1, e.id, ReadyState.READY));
+  //   await cbus.execute(new SetReadyCheckCommand(user2, e.id, ReadyState.READY));
+  // });
 }
 bootstrap();
 
