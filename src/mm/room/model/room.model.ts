@@ -1,17 +1,17 @@
-import { AggregateRoot } from "@nestjs/cqrs";
-import { uuid } from "src/@shared/generateID";
-import { RoomEntry } from "src/mm/room/model/room-entry";
-import { RoomBalance } from "src/mm/room/model/entity/room-balance";
-import { PlayerId } from "src/gateway/gateway/shared-types/player-id";
-import { ReadyState } from "src/gateway/gateway/events/ready-state-received.event";
+import {AggregateRoot} from "@nestjs/cqrs";
+import {uuid} from "src/@shared/generateID";
+import {RoomEntry} from "src/mm/room/model/room-entry";
+import {RoomBalance} from "src/mm/room/model/entity/room-balance";
+import {PlayerId} from "src/gateway/gateway/shared-types/player-id";
+import {ReadyState} from "src/gateway/gateway/events/ready-state-received.event";
 import {
   ReadyCheckEntry,
   RoomReadyCheckCompleteEvent,
   RoomReadyState,
 } from "src/gateway/gateway/events/room-ready-check-complete.event";
-import { ReadyCheckStartedEvent } from "src/gateway/gateway/events/ready-check-started.event";
-import { ReadyStateUpdatedEvent } from "src/gateway/gateway/events/ready-state-updated.event";
-import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
+import {ReadyCheckStartedEvent} from "src/gateway/gateway/events/ready-check-started.event";
+import {ReadyStateUpdatedEvent} from "src/gateway/gateway/events/ready-state-updated.event";
+import {MatchmakingMode} from "src/gateway/gateway/shared-types/matchmaking-mode";
 
 export class RoomModel extends AggregateRoot {
   public readonly id: string = uuid();
@@ -94,5 +94,15 @@ export class RoomModel extends AggregateRoot {
 
   public didAccept(pid: PlayerId): boolean {
     return this.readyCheckMap.get(pid.value) === ReadyState.READY;
+  }
+
+  getAcceptedParties() {
+    return this.entries.filter(t => {
+      // if all from this party accepted, we re count them as good
+      return t.players.reduce(
+        (a, b) => a && this.readyCheckMap[b.id.value] === ReadyState.READY,
+        true,
+      );
+    });
   }
 }
