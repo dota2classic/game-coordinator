@@ -12,8 +12,6 @@ export class RoomRepository extends RuntimeRepository<RoomModel, "id"> {
   }
 
   async findWithPlayer(playerId: PlayerId): Promise<RoomModel | undefined> {
-    return [...this.cache.values()].find(t => {
-      t.players.find(z => z.id.value === playerId.value)
-    })
+    return [...this.cache.values()].find(t => t.players.find(z => z.id.value === playerId.value))
   }
 }

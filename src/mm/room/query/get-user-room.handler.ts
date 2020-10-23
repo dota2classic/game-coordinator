@@ -16,6 +16,8 @@ export class GetUserRoomHandler
 
   async execute(command: GetUserRoomQuery): Promise<GetUserRoomQueryResult> {
     const room = await this.roomRep.findWithPlayer(command.playerId);
+
+
     if (!room) return new GetUserRoomQueryResult(undefined);
 
     return new GetUserRoomQueryResult(
