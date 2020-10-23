@@ -9,6 +9,8 @@ import { QueueStateHandler } from "src/mm/queue/query/GatewayQueueState/queue-st
 import { PlayerEnterQueueHandler } from "src/mm/queue/command/PlayerEnterQueue/player-enter-queue.handler";
 import { PlayerLeaveQueueHandler } from "src/mm/queue/command/PlayerLeaveQueue/player-leave-queue.handler";
 import { PartyRepository } from "src/mm/party/repository/party.repository";
+import {GetUserQueueQuery} from "src/gateway/gateway/queries/GetUserQueue/get-user-queue.query";
+import {GetUserQueueHandler} from "src/mm/queue/query/get-user-queue.handler";
 
 const CommandHandlers = [
   CreateQueueHandler,
@@ -20,7 +22,7 @@ const CommandHandlers = [
   PlayerLeaveQueueHandler,
 ];
 
-const QueryHandlers = [QueueStateHandler];
+const QueryHandlers = [QueueStateHandler, GetUserQueueHandler];
 const Repositories = [QueueEntryRepository, QueueRepository, PartyRepository];
 
 export const QueueProviders = [

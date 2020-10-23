@@ -17,6 +17,7 @@ import { SetReadyCheckCommand } from "src/mm/room/command/SetReadyCheck/set-read
 import { waitFor } from "src/@test/cqrs";
 import { RoomCreatedEvent } from "src/mm/room/event/room-created.event";
 import { ReadyState } from "src/gateway/gateway/events/ready-state-received.event";
+import {inspect} from "util";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
@@ -46,8 +47,8 @@ async function bootstrap() {
   ebus._subscribe(
     new Subscriber<any>(e => {
       elogger.log(
-        // `${inspect(e)}`,
-        e.__proto__.constructor.name,
+        `${inspect(e)}`,
+        // e.__proto__.constructor.name,
       );
     }),
   );
@@ -55,8 +56,8 @@ async function bootstrap() {
   cbus._subscribe(
     new Subscriber<any>(e => {
       clogger.log(
-        // `${inspect(e)}`,
-        e.__proto__.constructor.name,
+        `${inspect(e)}`,
+        // e.__proto__.constructor.name,
       );
     }),
   );

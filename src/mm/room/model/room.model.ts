@@ -12,6 +12,7 @@ import {
 import {ReadyCheckStartedEvent} from "src/gateway/gateway/events/ready-check-started.event";
 import {ReadyStateUpdatedEvent} from "src/gateway/gateway/events/ready-state-updated.event";
 import {MatchmakingMode} from "src/gateway/gateway/shared-types/matchmaking-mode";
+import {inspect} from "util";
 
 export class RoomModel extends AggregateRoot {
   public readonly id: string = uuid();
@@ -100,7 +101,9 @@ export class RoomModel extends AggregateRoot {
     return this.entries.filter(t => {
       // if all from this party accepted, we re count them as good
       return t.players.reduce(
-        (a, b) => a && this.readyCheckMap[b.id.value] === ReadyState.READY,
+        (total, b) => {
+          return total && this.readyCheckMap.get(b.id.value) === ReadyState.READY
+        },
         true,
       );
     });
