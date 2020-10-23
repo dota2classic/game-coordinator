@@ -82,7 +82,6 @@ export class RoomModel extends AggregateRoot {
       if (this.acceptedCount === this.players.length) {
         this.completeReadyCheck();
       } else if (state === ReadyState.DECLINE) {
-        console.log(`Explicit decline`);
         // if it's explicit decline, we do so:
         // everybody except explicit decline we set as ready
         // and finish ready check.
