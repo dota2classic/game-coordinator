@@ -12,7 +12,6 @@ import {
 import {ReadyCheckStartedEvent} from "src/gateway/gateway/events/ready-check-started.event";
 import {ReadyStateUpdatedEvent} from "src/gateway/gateway/events/ready-state-updated.event";
 import {MatchmakingMode} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import {inspect} from "util";
 
 export class RoomModel extends AggregateRoot {
   public readonly id: string = uuid();
@@ -82,6 +81,17 @@ export class RoomModel extends AggregateRoot {
       );
       if (this.acceptedCount === this.players.length) {
         this.completeReadyCheck();
+      } else if (state === ReadyState.DECLINE) {
+        console.log(`Explicit decline`);
+        // if it's explicit decline, we do so:
+        // everybody except explicit decline we set as ready
+        // and finish ready check.
+        [...this.readyCheckMap.keys()].forEach(t => {
+          if (t !== playerId.value) {
+            this.readyCheckMap.set(t, ReadyState.READY);
+          }
+        });
+        this.completeReadyCheck();
       }
     }
   }
@@ -100,12 +110,9 @@ export class RoomModel extends AggregateRoot {
   getAcceptedParties() {
     return this.entries.filter(t => {
       // if all from this party accepted, we re count them as good
-      return t.players.reduce(
-        (total, b) => {
-          return total && this.readyCheckMap.get(b.id.value) === ReadyState.READY
-        },
-        true,
-      );
+      return t.players.reduce((total, b) => {
+        return total && this.readyCheckMap.get(b.id.value) === ReadyState.READY;
+      }, true);
     });
   }
 }
