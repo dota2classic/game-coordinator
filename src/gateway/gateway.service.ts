@@ -1,6 +1,6 @@
 import {Inject, Injectable, OnApplicationBootstrap} from "@nestjs/common";
 import {ClientProxy} from "@nestjs/microservices";
-import {EventBus, ofType} from "@nestjs/cqrs";
+import {EventBus, ofType, QueryBus} from "@nestjs/cqrs";
 import {QueueUpdatedEvent} from "src/gateway/gateway/events/queue-updated.event";
 import {PartyRepository} from "src/mm/party/repository/party.repository";
 import {QueueRepository} from "src/mm/queue/repository/queue.repository";
@@ -15,6 +15,7 @@ import {RoomNotReadyEvent} from "src/gateway/gateway/events/room-not-ready.event
 export class GatewayService implements OnApplicationBootstrap {
   constructor(
     private readonly ebus: EventBus,
+    private readonly qbus: QueryBus,
     private readonly partyRepository: PartyRepository,
     private readonly queueRepository: QueueRepository,
     @Inject("RedisQueue") private readonly redisEventQueue: ClientProxy,
@@ -32,10 +33,18 @@ export class GatewayService implements OnApplicationBootstrap {
       ReadyCheckStartedEvent,
       RoomReadyCheckCompleteEvent,
       RoomReadyEvent,
-      RoomNotReadyEvent
+      RoomNotReadyEvent,
     ];
     this.ebus
       .pipe(ofType(...publicEvents))
       .subscribe(t => this.redisEventQueue.emit(t.constructor.name, t));
+
+    this.queryTransmission();
+  }
+
+  private queryTransmission() {
+    // @ts-ignore
+    // this.qbus.register([transmitter(this.redisEventQueue, GetPlayerInfoQuery)]);
   }
 }
+

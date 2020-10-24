@@ -1,12 +1,12 @@
-import { Controller } from "@nestjs/common";
-import { MessagePattern } from "@nestjs/microservices";
-import { QueryBus } from "@nestjs/cqrs";
-import { construct } from "src/gateway/gateway/util/construct";
-import { QueueStateQuery } from "./gateway/queries/QueueState/queue-state.query";
-import { QueueStateQueryResult } from "src/gateway/gateway/queries/QueueState/queue-state-query.result";
-import { GetUserRoomQuery } from "./gateway/queries/GetUserRoom/get-user-room.query";
+import {Controller} from "@nestjs/common";
+import {MessagePattern} from "@nestjs/microservices";
+import {QueryBus} from "@nestjs/cqrs";
+import {construct} from "src/gateway/gateway/util/construct";
+import {QueueStateQuery} from "./gateway/queries/QueueState/queue-state.query";
+import {QueueStateQueryResult} from "src/gateway/gateway/queries/QueueState/queue-state-query.result";
+import {GetUserRoomQuery} from "./gateway/queries/GetUserRoom/get-user-room.query";
 import {GetUserQueueQueryResult} from "src/gateway/gateway/queries/GetUserQueue/get-user-queue-query.result";
-import { GetUserQueueQuery } from "./gateway/queries/GetUserQueue/get-user-queue.query";
+import {GetUserQueueQuery} from "./gateway/queries/GetUserQueue/get-user-queue.query";
 
 @Controller()
 export class QueryController {
