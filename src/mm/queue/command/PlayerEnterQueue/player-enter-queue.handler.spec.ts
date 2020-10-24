@@ -8,6 +8,7 @@ import { PlayerEnterQueueResolvedEvent } from "src/mm/queue/event/player-enter-q
 import { QueueProviders } from "src/mm/queue";
 import { PartyRepository } from "src/mm/party/repository/party.repository";
 import { PartyCreatedEvent } from "src/mm/party/event/party-created.event";
+import {PlayerId} from "src/gateway/gateway/shared-types/player-id";
 
 describe("PlayerEnterQueueHandler", () => {
   let ebus: EventBus;
@@ -33,11 +34,11 @@ describe("PlayerEnterQueueHandler", () => {
 
   it("should emit enter-queue", async () => {
     await cbus.execute(
-      new PlayerEnterQueueCommand("playerID", MatchmakingMode.SOLOMID),
+      new PlayerEnterQueueCommand(new PlayerId("playerID"), MatchmakingMode.SOLOMID),
     );
     const party = (await rep.all())[0];
     expect(ebus).toEmit(
-      new PartyCreatedEvent(party.id, "playerID"),
+      new PartyCreatedEvent(party.id, new PlayerId("playerID")),
       new PlayerEnterQueueResolvedEvent(
         party.id,
         party.players.map(t => ({
