@@ -31,7 +31,7 @@ async function bootstrap() {
     {
       transport: Transport.REDIS,
       options: {
-        retryAttempts: 5,
+        retryAttempts: Infinity,
         retryDelay: 3000,
         url: REDIS_URL(),
       },
