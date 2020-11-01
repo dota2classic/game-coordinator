@@ -18,7 +18,7 @@ export class RoomReadyCheckHandler
     setTimeout(() => {
       room.readyCheckTimeout();
       room.commit()
-    }, 10_000);
+    }, 30_000);
 
 
     room.startReadyCheck();

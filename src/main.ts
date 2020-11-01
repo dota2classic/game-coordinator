@@ -8,7 +8,7 @@ import { Subscriber } from "rxjs";
 import { StartEvent } from "src/mm/start.event";
 import { Logger } from "@nestjs/common";
 import { AppModule } from "src/app.module";
-import { REDIS_URL } from "src/@shared/env";
+import {REDIS_PASSWORD, REDIS_URL} from "src/@shared/env";
 import { wait } from "src/@shared/wait";
 import { PlayerEnterQueueCommand } from "src/gateway/gateway/commands/player-enter-queue.command";
 import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
@@ -33,6 +33,7 @@ async function bootstrap() {
       options: {
         retryAttempts: Infinity,
         retryDelay: 3000,
+        password: REDIS_PASSWORD(),
         url: REDIS_URL(),
       },
     },
