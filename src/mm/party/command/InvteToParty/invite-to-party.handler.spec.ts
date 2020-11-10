@@ -3,7 +3,7 @@ import { CommandBus, EventBus } from "@nestjs/cqrs";
 import { clearRepositories, TestEnvironment } from "src/@test/cqrs";
 import { InviteToPartyHandler } from "src/mm/party/command/InvteToParty/invite-to-party.handler";
 import { PartyProviders } from "src/mm/party";
-import { InviteToPartyCommand } from "src/gateway/gateway/commands/invite-to-party.command";
+import { InviteToPartyCommand } from "src/mm/party/command/InvteToParty/invite-to-party.command";
 import {printCalls, randomUser} from "src/@test/values";
 import { PartyInviteCreatedEvent } from "src/gateway/gateway/events/party-invite-created.event";
 import { PartyRepository } from "src/mm/party/repository/party.repository";

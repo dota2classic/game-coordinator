@@ -1,6 +1,6 @@
 import {CommandBus, CommandHandler, EventBus, ICommandHandler,} from "@nestjs/cqrs";
 import {Logger} from "@nestjs/common";
-import {LeavePartyCommand} from "src/gateway/gateway/commands/leave-party.command";
+import {LeavePartyCommand} from "src/mm/party/command/LeaveParty/leave-party.command";
 import {PartyRepository} from "src/mm/party/repository/party.repository";
 
 @CommandHandler(LeavePartyCommand)

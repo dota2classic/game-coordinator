@@ -1,6 +1,6 @@
 import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
 import {Logger} from "@nestjs/common";
-import {InviteToPartyCommand} from "src/gateway/gateway/commands/invite-to-party.command";
+import {InviteToPartyCommand} from "src/mm/party/command/InvteToParty/invite-to-party.command";
 import {PartyInvitationRepository} from "src/mm/party/repository/party-invitation.repository";
 import {PartyRepository} from "src/mm/party/repository/party.repository";
 import {PartyInvitationModel} from "src/mm/party/model/party-invitation.model";
