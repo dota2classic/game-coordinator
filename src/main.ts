@@ -18,10 +18,12 @@ import { waitFor } from "src/@test/cqrs";
 import { RoomCreatedEvent } from "src/mm/room/event/room-created.event";
 import { ReadyState } from "src/gateway/gateway/events/ready-state-received.event";
 import {inspect} from "util";
+import {PartyInvitationModel} from "src/mm/party/model/party-invitation.model";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
   publisher.mergeClassContext(PartyModel);
+  publisher.mergeClassContext(PartyInvitationModel);
   publisher.mergeClassContext(PlayerModel);
 }
 

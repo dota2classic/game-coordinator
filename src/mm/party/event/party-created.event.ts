@@ -5,5 +5,6 @@ export class PartyCreatedEvent {
   constructor(
     public readonly partyId: PartyId,
     public readonly leaderId: PlayerId,
+    public readonly players: PlayerId[]
   ) {}
 }

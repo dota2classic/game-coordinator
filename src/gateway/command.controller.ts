@@ -5,6 +5,7 @@ import { CommandBus, EventBus } from "@nestjs/cqrs";
 import { PlayerEnterQueueCommand } from "./gateway/commands/player-enter-queue.command";
 import { PlayerLeaveQueueCommand } from "./gateway/commands/player-leave-queue.command";
 import { ReadyStateReceivedEvent } from "./gateway/events/ready-state-received.event";
+import {LeavePartyCommand} from "src/gateway/gateway/commands/leave-party.command";
 
 @Controller()
 export class CommandController {
@@ -26,5 +27,10 @@ export class CommandController {
   @EventPattern(ReadyStateReceivedEvent.name)
   async ReadyStateReceivedEvent(cmd: ReadyStateReceivedEvent) {
     await this.ebus.publish(construct(ReadyStateReceivedEvent, cmd));
+  }
+
+  @EventPattern(LeavePartyCommand.name)
+  async LeavePartyCommand(cmd: LeavePartyCommand) {
+    await this.ebus.publish(construct(LeavePartyCommand, cmd));
   }
 }
