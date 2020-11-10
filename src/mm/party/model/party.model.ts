@@ -23,8 +23,14 @@ export class PartyModel extends AggregateRoot {
 
   public remove(player: PlayerId) {
     if (this.leader.value === player.value) {
+
+      // if it's already leader-only party do nothing.
+      if(this.players.length === 1 && this.players[0].value === this.leader.value) return;
+
       // if we are leader, we remove everyone except for leader.
-      this.players = this.players.filter(t => t.value !== player.value);
+      this.players = this.players.filter(t => t.value === player.value);
+      this.updated();
+      return;
     }
 
     const index = this.players.findIndex(t => t.value === player.value);

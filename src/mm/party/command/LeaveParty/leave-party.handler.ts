@@ -23,5 +23,6 @@ export class LeavePartyHandler implements ICommandHandler<LeavePartyCommand> {
     }
 
     existing.remove(command.playerId);
+    existing.commit()
   }
 }
