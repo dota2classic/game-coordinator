@@ -7,12 +7,12 @@ import {
   CreateRoomCommand,
   PartyInRoom,
 } from "src/mm/room/command/CreateRoom/create-room.command";
-import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { RoomSizes } from "src/mm/room/model/entity/room-size";
+import {MatchmakingMode, RoomSizes} from "src/gateway/gateway/shared-types/matchmaking-mode";
 import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
 import { PlayerInPartyInRoom } from "src/mm/room/model/room-entry";
 import { RoomImpossibleEvent } from "src/mm/room/event/room-impossible.event";
 import { RoomCreatedEvent } from "src/mm/room/event/room-created.event";
+import {randomUser} from "src/@test/values";
 
 describe("CreateRoomHandler", () => {
   let ebus: EventBus;
@@ -42,8 +42,8 @@ describe("CreateRoomHandler", () => {
           new PartyInRoom(
             "partyID",
             [
-              new PlayerInQueueEntity("1", 1000),
-              new PlayerInQueueEntity("2", 1000),
+              new PlayerInQueueEntity(randomUser(), 1000),
+              new PlayerInQueueEntity(randomUser(), 1000),
             ].map(p => new PlayerInPartyInRoom(p.playerId, p.mmr)),
           ),
         ],
@@ -63,8 +63,8 @@ describe("CreateRoomHandler", () => {
         MatchmakingMode.SOLOMID,
         RoomSizes[MatchmakingMode.SOLOMID],
         [
-          new PartyInRoom("partyID1", [new PlayerInPartyInRoom("p1", 1000)]),
-          new PartyInRoom("partyID2", [new PlayerInPartyInRoom("p2", 1000)]),
+          new PartyInRoom("partyID1", [new PlayerInPartyInRoom(randomUser(), 1000)]),
+          new PartyInRoom("partyID2", [new PlayerInPartyInRoom(randomUser(), 1000)]),
         ],
       ),
     );

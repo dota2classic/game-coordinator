@@ -10,6 +10,7 @@ import { QueueProviders } from "src/mm/queue";
 import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
 import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
 import { QueueUpdatedEvent } from "src/gateway/gateway/events/queue-updated.event";
+import {randomUser} from "src/@test/values";
 
 describe("LeaveQueueHandler", () => {
   let ebus: EventBus;
@@ -53,7 +54,7 @@ describe("LeaveQueueHandler", () => {
       .get(MatchmakingMode.SOLOMID);
     a.entries.push(
       new QueueEntryModel("partyID", MatchmakingMode.SOLOMID, [
-        new PlayerInQueueEntity("playerID", 100),
+        new PlayerInQueueEntity(randomUser(), 100),
       ]),
     );
 

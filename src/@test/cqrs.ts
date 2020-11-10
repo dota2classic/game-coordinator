@@ -1,6 +1,16 @@
-import {CommandBus, EventBus, EventPublisher, IEvent, ofType} from "@nestjs/cqrs";
-import {Provider, Type} from "@nestjs/common";
-import {RuntimeRepository} from "src/@shared/runtime-repository";
+import {
+  CommandBus,
+  EventBus,
+  EventPublisher,
+  IEvent,
+  IQueryHandler,
+  ofType,
+  QueryBus,
+  QueryHandler,
+} from "@nestjs/cqrs";
+import { Provider, Type } from "@nestjs/common";
+import { RuntimeRepository } from "src/@shared/runtime-repository";
+import { ClientProxy } from "@nestjs/microservices";
 
 const ebusProvider: Provider = {
   provide: EventBus,
@@ -9,7 +19,18 @@ const ebusProvider: Provider = {
   }),
 };
 
+const qbusProvider: Provider = {
+  provide: QueryBus,
+  useFactory: () => ({
+    execute: jest.fn(),
+  }),
+};
+
 const TestEventBus = () => ebusProvider;
+const TestQueryBus = () => ({
+  provide: QueryBus,
+  useClass: QueryBus,
+});
 
 const TestCommandBus = () => ({
   provide: CommandBus,
@@ -19,6 +40,7 @@ const TestCommandBus = () => ({
 export const TestEnvironment = () => [
   TestEventBus(),
   TestCommandBus(),
+  TestQueryBus(),
   EventPublisher,
 ];
 
@@ -27,11 +49,33 @@ export function clearRepositories() {
   RuntimeRepository.clearAll();
 }
 
+export function mockQuery<T, B>(type: Type<T>, callback: (t: T) => B) {
+  const ClassName = `${type.name}Handler`;
+  const context = {
+    [ClassName]: class implements IQueryHandler<T, B> {
+      constructor() {}
+
+      async execute(query: T): Promise<B> {
+        return callback(query);
+      }
+    },
+  };
+
+  QueryHandler(type)(context[ClassName]);
+
+
+  return context[ClassName]
+  // return {
+  //   provide: `${type.name}Handler`,
+  //   useClass: context[ClassName],
+  // };
+}
+
 export function waitFor<T = any>(ebus: EventBus, event: Type<T>): Promise<T> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      reject(`Event ${event.name} won't come :(`)
-    }, 500)
+      reject(`Event ${event.name} won't come :(`);
+    }, 500);
     const unsub = ebus.pipe(ofType(event)).subscribe(e => {
       unsub.unsubscribe();
       resolve(e);

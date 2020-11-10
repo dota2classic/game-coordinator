@@ -10,6 +10,7 @@ import { PlayerEnterQueueResolvedEvent } from "src/mm/queue/event/player-enter-q
 import { PartyRepository } from "src/mm/party/repository/party.repository";
 import { PlayerLeaveQueueResolvedEvent } from "src/mm/queue/event/player-leave-queue-resolved.event";
 import { PlayerLeaveQueueCommand } from "src/gateway/gateway/commands/player-leave-queue.command";
+import {randomUser} from "src/@test/values";
 
 
 describe('PlayerLeaveQueueHandler', () => {
@@ -28,22 +29,26 @@ describe('PlayerLeaveQueueHandler', () => {
 
     cbus = module.get<CommandBus>(CommandBus);
     ebus = module.get<EventBus>(EventBus);
+    const qbus = module.get<EventBus>(EventBus);
     rep = module.get<PartyRepository>(PartyRepository);
 
     cbus.register([PlayerLeaveQueueHandler]);
+
   });
 
   afterEach(() => {
     clearRepositories();
   });
 
+
   it('should emit leave queue', async () => {
+    const u = randomUser()
     await cbus.execute(
-      new PlayerLeaveQueueCommand("playerID", MatchmakingMode.SOLOMID),
+      new PlayerLeaveQueueCommand(u, MatchmakingMode.SOLOMID),
     );
     const party = (await rep.all())[0];
     expect(ebus).toEmit(
-      new PartyCreatedEvent(party.id, "playerID"),
+      new PartyCreatedEvent(party.id, u, [u]),
       new PlayerLeaveQueueResolvedEvent(
         party.id,
         MatchmakingMode.SOLOMID,

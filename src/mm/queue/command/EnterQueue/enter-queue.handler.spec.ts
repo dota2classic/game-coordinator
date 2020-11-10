@@ -14,10 +14,11 @@ import {
   GameFoundEvent,
   PlayerInParty,
 } from "src/mm/queue/event/game-found.event";
-import { wait } from "src/@shared/wait";
-import Mock = jest.Mock;
-import { inspect } from "util";
+import {randomUser} from "src/@test/values";
 
+
+const u1 = randomUser()
+const u2 = randomUser()
 describe("EnterQueueHandler", () => {
   let ebus: EventBus;
   let cbus: CommandBus;
@@ -53,7 +54,7 @@ describe("EnterQueueHandler", () => {
     const queueEntryId = await cbus.execute(
       new EnterQueueCommand(
         "party",
-        [new PlayerInQueueEntity("1", 1000)],
+        [new PlayerInQueueEntity(u1, 1000)],
         MatchmakingMode.SOLOMID,
       ),
     );
@@ -67,7 +68,7 @@ describe("EnterQueueHandler", () => {
     await cbus.execute(
       new EnterQueueCommand(
         "party",
-        [new PlayerInQueueEntity("1", 1000)],
+        [new PlayerInQueueEntity(u1, 1000)],
         mode,
       ),
     );
@@ -81,20 +82,21 @@ describe("EnterQueueHandler", () => {
       new EnterQueueCommand(
         "party",
         [
-          new PlayerInQueueEntity("1", 1000),
-          new PlayerInQueueEntity("2", 1000),
+          new PlayerInQueueEntity(u1, 1000),
+          new PlayerInQueueEntity(u2, 1000),
         ],
         mode,
       ),
     );
+
 
     expect(ebus).toEmit(
       new GameFoundEvent(mode, [
         new FoundGameParty(
           "party",
           [
-            new PlayerInQueueEntity("1", 1000),
-            new PlayerInQueueEntity("2", 1000),
+            new PlayerInQueueEntity(u1, 1000),
+            new PlayerInQueueEntity(u2, 1000),
           ].map(p => new PlayerInParty(p.playerId, p.mmr)),
         ),
       ]),
@@ -108,7 +110,7 @@ describe("EnterQueueHandler", () => {
     await cbus.execute(
       new EnterQueueCommand(
         "party",
-        [new PlayerInQueueEntity("1", 1000)],
+        [new PlayerInQueueEntity(u1, 1000)],
         mode,
       ),
     );
@@ -117,7 +119,7 @@ describe("EnterQueueHandler", () => {
     await cbus.execute(
       new EnterQueueCommand(
         "party",
-        [new PlayerInQueueEntity("1", 1000)],
+        [new PlayerInQueueEntity(u1, 1000)],
         mode,
       ),
     );
@@ -129,7 +131,7 @@ describe("EnterQueueHandler", () => {
     await cbus.execute(
       new EnterQueueCommand(
         "party",
-        [new PlayerInQueueEntity("1", 1000)],
+        [new PlayerInQueueEntity(u1, 1000)],
         MatchmakingMode.RANKED,
       ),
     );
@@ -138,7 +140,7 @@ describe("EnterQueueHandler", () => {
     await cbus.execute(
       new EnterQueueCommand(
         "party",
-        [new PlayerInQueueEntity("1", 1000)],
+        [new PlayerInQueueEntity(u1, 1000)],
         MatchmakingMode.SOLOMID,
       ),
     );

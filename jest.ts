@@ -13,6 +13,7 @@ const toEmit = (
 
   const p = bus.publish as Mock;
 
+  // console.log(p.mock.calls)
   for (let i = 0; i < events.length; i++) {
     const expected = events[i];
 

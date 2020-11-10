@@ -1,9 +1,9 @@
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { Logger } from "@nestjs/common";
-import { InviteToPartyCommand } from "src/gateway/gateway/commands/invite-to-party.command";
-import { PartyInvitationRepository } from "src/mm/party/repository/party-invitation.repository";
-import { PartyRepository } from "src/mm/party/repository/party.repository";
-import { PartyInvitationModel } from "src/mm/party/model/party-invitation.model";
+import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
+import {Logger} from "@nestjs/common";
+import {InviteToPartyCommand} from "src/gateway/gateway/commands/invite-to-party.command";
+import {PartyInvitationRepository} from "src/mm/party/repository/party-invitation.repository";
+import {PartyRepository} from "src/mm/party/repository/party.repository";
+import {PartyInvitationModel} from "src/mm/party/model/party-invitation.model";
 
 @CommandHandler(InviteToPartyCommand)
 export class InviteToPartyHandler
@@ -22,5 +22,8 @@ export class InviteToPartyHandler
     invitation.created();
 
     await this.piRep.save(invitation.id, invitation);
+
+    invitation.commit();
+    return invitation.id;
   }
 }

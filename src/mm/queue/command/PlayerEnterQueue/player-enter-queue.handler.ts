@@ -1,16 +1,11 @@
-import {
-  CommandHandler,
-  EventBus,
-  ICommandHandler,
-  QueryBus,
-} from "@nestjs/cqrs";
-import { Logger } from "@nestjs/common";
-import { PlayerEnterQueueCommand } from "src/gateway/gateway/commands/player-enter-queue.command";
-import { PartyRepository } from "src/mm/party/repository/party.repository";
-import { PlayerEnterQueueResolvedEvent } from "src/mm/queue/event/player-enter-queue-resolved.event";
-import { GetPlayerInfoQuery } from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info.query";
-import { Dota2Version } from "src/gateway/gateway/shared-types/dota2version";
-import { GetPlayerInfoQueryResult } from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
+import {CommandHandler, EventBus, ICommandHandler, QueryBus,} from "@nestjs/cqrs";
+import {Logger} from "@nestjs/common";
+import {PlayerEnterQueueCommand} from "src/gateway/gateway/commands/player-enter-queue.command";
+import {PartyRepository} from "src/mm/party/repository/party.repository";
+import {PlayerEnterQueueResolvedEvent} from "src/mm/queue/event/player-enter-queue-resolved.event";
+import {GetPlayerInfoQuery} from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info.query";
+import {Dota2Version} from "src/gateway/gateway/shared-types/dota2version";
+import {GetPlayerInfoQueryResult} from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
 
 @CommandHandler(PlayerEnterQueueCommand)
 export class PlayerEnterQueueHandler
@@ -30,6 +25,7 @@ export class PlayerEnterQueueHandler
       GetPlayerInfoQuery,
       GetPlayerInfoQueryResult
     >(new GetPlayerInfoQuery(command.playerID, Dota2Version.Dota_681));
+
     this.ebus.publish(
       new PlayerEnterQueueResolvedEvent(
         p.id,
