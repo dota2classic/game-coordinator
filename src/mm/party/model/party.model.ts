@@ -14,11 +14,11 @@ export class PartyModel extends AggregateRoot {
   }
 
   public created() {
-    this.apply(new PartyCreatedEvent(this.id, this.leader, this.players));
+    this.apply(new PartyCreatedEvent(this.id, this.leader, [...this.players]));
   }
 
   public updated() {
-    this.apply(new PartyUpdatedEvent(this.id, this.leader, this.players));
+    this.apply(new PartyUpdatedEvent(this.id, this.leader, [...this.players]));
   }
 
   public remove(player: PlayerId) {

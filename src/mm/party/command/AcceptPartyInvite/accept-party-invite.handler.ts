@@ -1,8 +1,9 @@
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
 import { Logger } from "@nestjs/common";
 import { AcceptPartyInviteCommand } from "src/mm/party/command/AcceptPartyInvite/accept-party-invite.command";
 import { PartyInvitationRepository } from "src/mm/party/repository/party-invitation.repository";
 import { PartyRepository } from "src/mm/party/repository/party.repository";
+import { PartyInviteAcceptedEvent } from "src/gateway/gateway/events/party-invite-accepted.event";
 
 @CommandHandler(AcceptPartyInviteCommand)
 export class AcceptPartyInviteHandler
@@ -12,6 +13,7 @@ export class AcceptPartyInviteHandler
   constructor(
     private readonly iRep: PartyInvitationRepository,
     private readonly pRep: PartyRepository,
+    private readonly ebus: EventBus,
   ) {}
 
   async execute(command: AcceptPartyInviteCommand) {
@@ -28,6 +30,18 @@ export class AcceptPartyInviteHandler
       currentParty.remove(invite.invited);
     }
 
-    party.add(invite.invited);
+    if (command.accept) {
+      party.add(invite.invited);
+      party.commit();
+      this.ebus.publish(
+        new PartyInviteAcceptedEvent(invite.id, invite.invited, true),
+      );
+    } else {
+      this.ebus.publish(
+        new PartyInviteAcceptedEvent(invite.id, invite.invited, false),
+      );
+    }
+
+    await this.iRep.delete(invite.id);
   }
 }

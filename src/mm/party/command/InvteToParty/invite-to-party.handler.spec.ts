@@ -4,7 +4,7 @@ import { clearRepositories, TestEnvironment } from "src/@test/cqrs";
 import { InviteToPartyHandler } from "src/mm/party/command/InvteToParty/invite-to-party.handler";
 import { PartyProviders } from "src/mm/party";
 import { InviteToPartyCommand } from "src/gateway/gateway/commands/invite-to-party.command";
-import { randomUser } from "src/@test/values";
+import {printCalls, randomUser} from "src/@test/values";
 import { PartyInviteCreatedEvent } from "src/gateway/gateway/events/party-invite-created.event";
 import { PartyRepository } from "src/mm/party/repository/party.repository";
 import { PartyCreatedEvent } from "src/mm/party/event/party-created.event";
@@ -37,9 +37,12 @@ describe("InviteToPartyHandler", () => {
     const id = await cbus.execute(new InviteToPartyCommand(u, u2));
     const party = await module.get(PartyRepository).findExistingParty(u);
 
+
+
     expect(ebus).toEmit(
       new PartyCreatedEvent(party.id, u, [u]),
       new PartyInviteCreatedEvent(id, party.id, u2),
     );
   });
+
 });

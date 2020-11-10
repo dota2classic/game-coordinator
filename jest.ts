@@ -19,6 +19,17 @@ const toEmit = (
 
     // for some reason they are emitted in reversed order
     // let actual = p.mock.calls[p.mock.calls.length - i - 1][0];
+    if(p.mock.calls[i] === undefined){
+      const message: () => string = () =>
+        `No event received at [${i}], expected to be ${inspect(
+          expected,
+        )} but was undefined`;
+
+      return {
+        message,
+        pass: false
+      }
+    }
     let actual = p.mock.calls[i][0];
 
     try {
