@@ -9,6 +9,7 @@ import { PlayerEnterQueueResolvedEvent } from "src/mm/queue/event/player-enter-q
 import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
 import { LeaveQueueCommand } from "src/mm/queue/command/LeaveQueue/leave-queue.command";
 import { PlayerLeaveQueueResolvedEvent } from "src/mm/queue/event/player-leave-queue-resolved.event";
+import { PartyUpdatedEvent } from "src/gateway/gateway/events/party-updated.event";
 
 @Injectable()
 export class QueueSaga {
@@ -33,6 +34,20 @@ export class QueueSaga {
     return events$.pipe(
       ofType(PlayerLeaveQueueResolvedEvent),
       map(e => new LeaveQueueCommand(e.mode, e.partyId)),
+    );
+  };
+
+  /**
+   * If party is updated, remove it from queue. Simple as that
+   * @param events$
+   */
+  @Saga()
+  partyUpdated = (events$: Observable<any>): Observable<ICommand> => {
+    return events$.pipe(
+      ofType(PartyUpdatedEvent),
+      mergeMap(e =>
+        MatchmakingModes.map(t => new LeaveQueueCommand(t, e.partyId)),
+      ),
     );
   };
 }
