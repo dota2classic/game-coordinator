@@ -40,7 +40,7 @@ describe("TimeoutPartyInviteHandler", () => {
 
     await cbus.execute(new TimeoutPartyInviteCommand(inv.id));
 
-    expect(ebus).toEmit(new PartyInviteExpiredEvent(inv.id));
+    expect(ebus).toEmit(new PartyInviteExpiredEvent(inv.id, u, inv.partyId));
   });
 
   it("should not emit event if there is no invitation", async () => {

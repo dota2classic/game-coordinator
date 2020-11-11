@@ -20,6 +20,6 @@ export class PartyInvitationModel extends AggregateRoot {
   }
 
   expired() {
-    this.apply(new PartyInviteExpiredEvent(this.id))
+    this.apply(new PartyInviteExpiredEvent(this.id, this.invited, this.partyId))
   }
 }
