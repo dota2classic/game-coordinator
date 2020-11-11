@@ -41,7 +41,7 @@ describe("InviteToPartyHandler", () => {
 
     expect(ebus).toEmit(
       new PartyCreatedEvent(party.id, u, [u]),
-      new PartyInviteCreatedEvent(id, party.id, u2),
+      new PartyInviteCreatedEvent(id, party.id, party.leader, u2),
     );
   });
 

@@ -19,7 +19,7 @@ export class InviteToPartyHandler
     const party = await this.pRep.getPartyOf(command.playerId);
 
     const invitation = new PartyInvitationModel(party.id, command.toInvite);
-    invitation.created();
+    invitation.created(party.leader);
 
     await this.piRep.save(invitation.id, invitation);
 
