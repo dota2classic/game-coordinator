@@ -4,6 +4,7 @@ import { QueueProviders } from "src/mm/queue";
 import { PlayerProviders } from "src/mm/player";
 import { PartyProviders } from "src/mm/party";
 import { RoomProviders } from "src/mm/room";
+import {PartyController} from "src/mm/party/party.controller";
 
 @Module({
   imports: [CqrsModule],
@@ -19,5 +20,9 @@ import { RoomProviders } from "src/mm/room";
     ...PartyProviders,
     ...RoomProviders,
   ],
+
+  controllers: [
+    PartyController
+  ]
 })
 export class MmModule {}

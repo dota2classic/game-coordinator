@@ -21,6 +21,5 @@ export const PartyProviders = [
   ...CommandHandlers,
   ...Repositories,
   PartySaga,
-  PartyController,
   GetPartyHandler
 ];
