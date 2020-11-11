@@ -7,6 +7,8 @@ import {QueueStateQueryResult} from "src/gateway/gateway/queries/QueueState/queu
 import {GetUserRoomQuery} from "./gateway/queries/GetUserRoom/get-user-room.query";
 import {GetUserQueueQueryResult} from "src/gateway/gateway/queries/GetUserQueue/get-user-queue-query.result";
 import {GetUserQueueQuery} from "./gateway/queries/GetUserQueue/get-user-queue.query";
+import {GetPartyQueryResult} from "src/gateway/gateway/queries/GetParty/get-party-query.result";
+import { GetPartyQuery } from "./gateway/queries/GetParty/get-party.query";
 
 @Controller()
 export class QueryController {
@@ -31,5 +33,12 @@ export class QueryController {
     query: GetUserQueueQuery,
   ): Promise<GetUserQueueQueryResult> {
     return this.qbus.execute(construct(GetUserQueueQuery, query));
+  }
+
+  @MessagePattern(GetPartyQuery.name)
+  async GetPartyQuery(
+    query: GetPartyQuery,
+  ): Promise<GetPartyQueryResult> {
+    return this.qbus.execute(construct(GetPartyQuery, query));
   }
 }
