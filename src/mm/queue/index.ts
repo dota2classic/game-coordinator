@@ -21,6 +21,7 @@ const CommandHandlers = [
   PlayerLeaveQueueHandler,
 ];
 
+
 const QueryHandlers = [QueueStateHandler, GetUserQueueHandler];
 const Repositories = [QueueEntryRepository, QueueRepository, PartyRepository];
 

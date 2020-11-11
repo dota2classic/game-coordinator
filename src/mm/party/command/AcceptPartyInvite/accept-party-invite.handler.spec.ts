@@ -8,9 +8,9 @@ import { PartyInvitationModel } from "src/mm/party/model/party-invitation.model"
 import { printCalls, randomUser } from "src/@test/values";
 import { PartyRepository } from "src/mm/party/repository/party.repository";
 import { AcceptPartyInviteCommand } from "src/mm/party/command/AcceptPartyInvite/accept-party-invite.command";
-import { PartyInviteAcceptedEvent } from "src/gateway/gateway/events/party-invite-accepted.event";
+import { PartyInviteAcceptedEvent } from "src/gateway/gateway/events/party/party-invite-accepted.event";
 import { PartyCreatedEvent } from "src/mm/party/event/party-created.event";
-import { PartyUpdatedEvent } from "src/gateway/gateway/events/party-updated.event";
+import { PartyUpdatedEvent } from "src/gateway/gateway/events/party/party-updated.event";
 
 describe("AcceptPartyInviteHandler", () => {
   let ebus: EventBus;

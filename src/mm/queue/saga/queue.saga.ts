@@ -9,7 +9,7 @@ import { PlayerEnterQueueResolvedEvent } from "src/mm/queue/event/player-enter-q
 import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
 import { LeaveQueueCommand } from "src/mm/queue/command/LeaveQueue/leave-queue.command";
 import { PlayerLeaveQueueResolvedEvent } from "src/mm/queue/event/player-leave-queue-resolved.event";
-import { PartyUpdatedEvent } from "src/gateway/gateway/events/party-updated.event";
+import { PartyUpdatedEvent } from "src/gateway/gateway/events/party/party-updated.event";
 
 @Injectable()
 export class QueueSaga {

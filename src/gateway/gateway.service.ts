@@ -10,6 +10,10 @@ import {ReadyStateUpdatedEvent} from "src/gateway/gateway/events/ready-state-upd
 import {RoomReadyCheckCompleteEvent} from "src/gateway/gateway/events/room-ready-check-complete.event";
 import {RoomReadyEvent} from "src/gateway/gateway/events/room-ready.event";
 import {RoomNotReadyEvent} from "src/gateway/gateway/events/room-not-ready.event";
+import {PartyInviteExpiredEvent} from "src/gateway/gateway/events/party/party-invite-expired.event";
+import {PartyInviteCreatedEvent} from "src/gateway/gateway/events/party/party-invite-created.event";
+import {PartyUpdatedEvent} from "src/gateway/gateway/events/party/party-updated.event";
+import {PartyInviteAcceptedEvent} from "src/gateway/gateway/events/party/party-invite-accepted.event";
 
 @Injectable()
 export class GatewayService implements OnApplicationBootstrap {
@@ -26,6 +30,8 @@ export class GatewayService implements OnApplicationBootstrap {
       await this.redisEventQueue.connect();
     } catch (e) {}
 
+
+    // events to publish to global
     const publicEvents: any[] = [
       QueueCreatedEvent,
       QueueUpdatedEvent,
@@ -34,6 +40,11 @@ export class GatewayService implements OnApplicationBootstrap {
       RoomReadyCheckCompleteEvent,
       RoomReadyEvent,
       RoomNotReadyEvent,
+
+      PartyInviteExpiredEvent,
+      PartyInviteCreatedEvent,
+      PartyUpdatedEvent,
+      PartyInviteAcceptedEvent
     ];
     this.ebus
       .pipe(ofType(...publicEvents))

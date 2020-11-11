@@ -7,7 +7,7 @@ import {PartyInvitationRepository} from "src/mm/party/repository/party-invitatio
 import {PartyInvitationModel} from "src/mm/party/model/party-invitation.model";
 import {uuid} from "src/@shared/generateID";
 import {randomUser} from "src/@test/values";
-import {PartyInviteExpiredEvent} from "src/gateway/gateway/events/party-invite-expired.event";
+import {PartyInviteExpiredEvent} from "src/gateway/gateway/events/party/party-invite-expired.event";
 import {TimeoutPartyInviteCommand} from "src/mm/party/command/TimeoutPartyInvite/timeout-party-invite.command";
 
 describe("TimeoutPartyInviteHandler", () => {

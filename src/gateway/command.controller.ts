@@ -29,8 +29,4 @@ export class CommandController {
     await this.ebus.publish(construct(ReadyStateReceivedEvent, cmd));
   }
 
-  @EventPattern(LeavePartyCommand.name)
-  async LeavePartyCommand(cmd: LeavePartyCommand) {
-    await this.ebus.publish(construct(LeavePartyCommand, cmd));
-  }
 }

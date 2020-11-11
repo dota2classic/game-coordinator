@@ -5,14 +5,20 @@ import {PartyInvitationRepository} from "src/mm/party/repository/party-invitatio
 import {PartySaga} from "src/mm/party/saga/party.saga";
 import {AcceptPartyInviteHandler} from "src/mm/party/command/AcceptPartyInvite/accept-party-invite.handler";
 import {TimeoutPartyInviteHandler} from "src/mm/party/command/TimeoutPartyInvite/timeout-party-invite.handler";
+import {PartyController} from "src/mm/party/party.controller";
 
 const CommandHandlers = [
   LeavePartyHandler,
   InviteToPartyHandler,
   AcceptPartyInviteHandler,
-  TimeoutPartyInviteHandler
+  TimeoutPartyInviteHandler,
 ];
 
 const Repositories = [PartyInvitationRepository, PartyRepository];
 
-export const PartyProviders = [...CommandHandlers, ...Repositories, PartySaga];
+export const PartyProviders = [
+  ...CommandHandlers,
+  ...Repositories,
+  PartySaga,
+  PartyController,
+];

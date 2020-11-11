@@ -7,7 +7,7 @@ import {LeavePartyCommand} from "src/mm/party/command/LeaveParty/leave-party.com
 import {randomUser} from "src/@test/values";
 import {PartyRepository} from "src/mm/party/repository/party.repository";
 import {PartyCreatedEvent} from "src/mm/party/event/party-created.event";
-import {PartyUpdatedEvent} from "src/gateway/gateway/events/party-updated.event";
+import {PartyUpdatedEvent} from "src/gateway/gateway/events/party/party-updated.event";
 
 describe("LeavePartyHandler", () => {
   let ebus: EventBus;

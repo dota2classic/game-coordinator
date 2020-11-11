@@ -2,7 +2,7 @@ import {AggregateRoot} from "@nestjs/cqrs";
 import {PartyId} from "src/gateway/gateway/shared-types/party-id";
 import {PlayerId} from "src/gateway/gateway/shared-types/player-id";
 import {PartyCreatedEvent} from "src/mm/party/event/party-created.event";
-import {PartyUpdatedEvent} from "src/gateway/gateway/events/party-updated.event";
+import {PartyUpdatedEvent} from "src/gateway/gateway/events/party/party-updated.event";
 
 export class PartyModel extends AggregateRoot {
   constructor(

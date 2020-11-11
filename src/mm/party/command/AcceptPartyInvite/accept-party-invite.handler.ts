@@ -3,7 +3,7 @@ import { Logger } from "@nestjs/common";
 import { AcceptPartyInviteCommand } from "src/mm/party/command/AcceptPartyInvite/accept-party-invite.command";
 import { PartyInvitationRepository } from "src/mm/party/repository/party-invitation.repository";
 import { PartyRepository } from "src/mm/party/repository/party.repository";
-import { PartyInviteAcceptedEvent } from "src/gateway/gateway/events/party-invite-accepted.event";
+import { PartyInviteAcceptedEvent } from "src/gateway/gateway/events/party/party-invite-accepted.event";
 
 @CommandHandler(AcceptPartyInviteCommand)
 export class AcceptPartyInviteHandler
