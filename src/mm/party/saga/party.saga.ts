@@ -9,6 +9,8 @@ import { PARTY_INVITE_LIFETIME } from "src/gateway/gateway/shared-types/timings"
 import { TimeoutPartyInviteCommand } from "src/mm/party/command/TimeoutPartyInvite/timeout-party-invite.command";
 import { PartyInviteRequestedEvent } from "src/gateway/gateway/events/party/party-invite-requested.event";
 import { InviteToPartyCommand } from "src/mm/party/command/InvteToParty/invite-to-party.command";
+import {PartyLeaveRequestedEvent} from "src/gateway/gateway/events/party/party-leave-requested.event";
+import {LeavePartyCommand} from "src/mm/party/command/LeaveParty/leave-party.command";
 
 @Injectable()
 export class PartySaga {
@@ -34,6 +36,15 @@ export class PartySaga {
     return events$.pipe(
       ofType(PartyInviteRequestedEvent),
       map(e => new InviteToPartyCommand(e.requestedBy, e.receiver)),
+    );
+  };
+
+
+  @Saga()
+  leaveParty = (events$: Observable<any>): Observable<ICommand> => {
+    return events$.pipe(
+      ofType(PartyLeaveRequestedEvent),
+      map(e => new LeavePartyCommand(e.playerId)),
     );
   };
 

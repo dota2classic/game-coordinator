@@ -33,13 +33,6 @@ export class AcceptPartyInviteHandler
     if (command.accept) {
       party.add(invite.invited);
       party.commit();
-      this.ebus.publish(
-        new PartyInviteAcceptedEvent(invite.id, invite.invited, true),
-      );
-    } else {
-      this.ebus.publish(
-        new PartyInviteAcceptedEvent(invite.id, invite.invited, false),
-      );
     }
 
     await this.iRep.delete(invite.id);
