@@ -43,8 +43,7 @@ export class GatewayService implements OnApplicationBootstrap {
 
       PartyInviteExpiredEvent,
       PartyInviteCreatedEvent,
-      PartyUpdatedEvent,
-      PartyInviteAcceptedEvent
+      PartyUpdatedEvent
     ];
     this.ebus
       .pipe(ofType(...publicEvents))

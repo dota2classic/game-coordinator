@@ -12,7 +12,7 @@ export class PartyRepository extends RuntimeRepository<PartyModel, "id"> {
   }
 
   async findExistingParty(pid: PlayerId) {
-    return [...this.cache.values()].find(it => it.players.find(z => z === pid));
+    return [...this.cache.values()].find(it => it.players.find(z => z.value === pid.value));
   }
 
   async getPartyOf(id: PlayerId) {
