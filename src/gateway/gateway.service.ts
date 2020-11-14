@@ -1,4 +1,4 @@
-import {Inject, Injectable, OnApplicationBootstrap} from "@nestjs/common";
+import {Inject, Injectable, OnApplicationBootstrap, Type} from "@nestjs/common";
 import {ClientProxy} from "@nestjs/microservices";
 import {EventBus, ofType, QueryBus} from "@nestjs/cqrs";
 import {QueueUpdatedEvent} from "src/gateway/gateway/events/queue-updated.event";
@@ -33,7 +33,7 @@ export class GatewayService implements OnApplicationBootstrap {
 
 
     // events to publish to global
-    const publicEvents: any[] = [
+    const publicEvents: Type<any>[] = [
       QueueCreatedEvent,
       QueueUpdatedEvent,
       ReadyStateUpdatedEvent,
