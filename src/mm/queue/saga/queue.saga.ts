@@ -10,6 +10,7 @@ import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.c
 import { LeaveQueueCommand } from "src/mm/queue/command/LeaveQueue/leave-queue.command";
 import { PlayerLeaveQueueResolvedEvent } from "src/mm/queue/event/player-leave-queue-resolved.event";
 import { PartyUpdatedEvent } from "src/gateway/gateway/events/party/party-updated.event";
+import {PartyDeletedEvent} from "src/gateway/gateway/events/party/party-deleted.event";
 
 @Injectable()
 export class QueueSaga {
@@ -47,6 +48,20 @@ export class QueueSaga {
       ofType(PartyUpdatedEvent),
       mergeMap(e =>
         MatchmakingModes.map(t => new LeaveQueueCommand(t, e.partyId)),
+      ),
+    );
+  };
+
+  /**
+   * If party is deleted, remove it from queue. Simple as that
+   * @param events$
+   */
+  @Saga()
+  partyDeleted = (events$: Observable<any>): Observable<ICommand> => {
+    return events$.pipe(
+      ofType(PartyDeletedEvent),
+      mergeMap(e =>
+        MatchmakingModes.map(t => new LeaveQueueCommand(t, e.id)),
       ),
     );
   };
