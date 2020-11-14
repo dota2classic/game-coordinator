@@ -1,9 +1,9 @@
-import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
-import { Logger } from "@nestjs/common";
-import { AcceptPartyInviteCommand } from "src/mm/party/command/AcceptPartyInvite/accept-party-invite.command";
-import { PartyInvitationRepository } from "src/mm/party/repository/party-invitation.repository";
-import { PartyRepository } from "src/mm/party/repository/party.repository";
-import { PartyInviteAcceptedEvent } from "src/gateway/gateway/events/party/party-invite-accepted.event";
+import {CommandHandler, EventBus, ICommandHandler} from "@nestjs/cqrs";
+import {Logger} from "@nestjs/common";
+import {AcceptPartyInviteCommand} from "src/mm/party/command/AcceptPartyInvite/accept-party-invite.command";
+import {PartyInvitationRepository} from "src/mm/party/repository/party-invitation.repository";
+import {PartyRepository} from "src/mm/party/repository/party.repository";
+import {PartyInviteResultEvent} from "src/gateway/gateway/events/party/party-invite-result.event";
 
 @CommandHandler(AcceptPartyInviteCommand)
 export class AcceptPartyInviteHandler
@@ -28,12 +28,22 @@ export class AcceptPartyInviteHandler
 
     if (currentParty) {
       currentParty.remove(invite.invited);
+
+      if (currentParty.leader.value === invite.invited.value) {
+        // if its single party
+        // we can silently remove it
+        await this.pRep.delete(currentParty.id);
+      }
     }
 
     if (command.accept) {
       party.add(invite.invited);
       party.commit();
     }
+
+    this.ebus.publish(
+      new PartyInviteResultEvent(invite.id, invite.invited, command.accept),
+    );
 
     await this.iRep.delete(invite.id);
   }

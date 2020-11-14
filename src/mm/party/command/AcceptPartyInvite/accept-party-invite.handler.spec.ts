@@ -11,6 +11,7 @@ import { AcceptPartyInviteCommand } from "src/mm/party/command/AcceptPartyInvite
 import { PartyInviteAcceptedEvent } from "src/gateway/gateway/events/party/party-invite-accepted.event";
 import { PartyCreatedEvent } from "src/mm/party/event/party-created.event";
 import { PartyUpdatedEvent } from "src/gateway/gateway/events/party/party-updated.event";
+import {PartyInviteResultEvent} from "src/gateway/gateway/events/party/party-invite-result.event";
 
 describe("AcceptPartyInviteHandler", () => {
   let ebus: EventBus;
@@ -48,7 +49,7 @@ describe("AcceptPartyInviteHandler", () => {
     expect(ebus).toEmit(
       new PartyCreatedEvent(party.id, u, [u]),
       new PartyUpdatedEvent(party.id, u, [u, u2]),
-      new PartyInviteAcceptedEvent(inv.id, u2, true),
+      new PartyInviteResultEvent(inv.id, u2, true),
     );
   });
 
@@ -65,7 +66,7 @@ describe("AcceptPartyInviteHandler", () => {
 
     expect(ebus).toEmit(
       new PartyCreatedEvent(party.id, u, [u]),
-      new PartyInviteAcceptedEvent(inv.id, u2, false),
+      new PartyInviteResultEvent(inv.id, u2, false),
     );
   });
 });

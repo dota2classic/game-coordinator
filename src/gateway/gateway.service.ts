@@ -14,6 +14,7 @@ import {PartyInviteExpiredEvent} from "src/gateway/gateway/events/party/party-in
 import {PartyInviteCreatedEvent} from "src/gateway/gateway/events/party/party-invite-created.event";
 import {PartyUpdatedEvent} from "src/gateway/gateway/events/party/party-updated.event";
 import {PartyInviteAcceptedEvent} from "src/gateway/gateway/events/party/party-invite-accepted.event";
+import {PartyInviteResultEvent} from "src/gateway/gateway/events/party/party-invite-result.event";
 
 @Injectable()
 export class GatewayService implements OnApplicationBootstrap {
@@ -23,7 +24,7 @@ export class GatewayService implements OnApplicationBootstrap {
     private readonly partyRepository: PartyRepository,
     private readonly queueRepository: QueueRepository,
     @Inject("RedisQueue") private readonly redisEventQueue: ClientProxy,
-  ) {}
+  ) {}я
 
   async onApplicationBootstrap() {
     try {
@@ -43,7 +44,8 @@ export class GatewayService implements OnApplicationBootstrap {
 
       PartyInviteExpiredEvent,
       PartyInviteCreatedEvent,
-      PartyUpdatedEvent
+      PartyUpdatedEvent,
+      PartyInviteResultEvent
     ];
     this.ebus
       .pipe(ofType(...publicEvents))

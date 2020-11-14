@@ -5,7 +5,6 @@ import { CommandBus, EventBus } from "@nestjs/cqrs";
 import { PlayerEnterQueueCommand } from "./gateway/commands/player-enter-queue.command";
 import { PlayerLeaveQueueCommand } from "./gateway/commands/player-leave-queue.command";
 import { ReadyStateReceivedEvent } from "./gateway/events/ready-state-received.event";
-import {LeavePartyCommand} from "src/mm/party/command/LeaveParty/leave-party.command";
 import {PartyInviteAcceptedEvent} from "src/gateway/gateway/events/party/party-invite-accepted.event";
 import { PartyLeaveRequestedEvent } from "./gateway/events/party/party-leave-requested.event";
 
