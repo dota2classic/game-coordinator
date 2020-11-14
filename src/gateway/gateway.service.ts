@@ -51,12 +51,7 @@ export class GatewayService implements OnApplicationBootstrap {
       .pipe(ofType(...publicEvents))
       .subscribe(t => this.redisEventQueue.emit(t.constructor.name, t));
 
-    this.queryTransmission();
   }
 
-  private queryTransmission() {
-    // @ts-ignore
-    // this.qbus.register([transmitter(this.redisEventQueue, GetPlayerInfoQuery)]);
-  }
 }
 

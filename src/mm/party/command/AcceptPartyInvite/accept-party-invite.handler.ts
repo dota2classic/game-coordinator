@@ -33,7 +33,10 @@ export class AcceptPartyInviteHandler
         // if its single party
         // we can silently remove it
         await this.pRep.delete(currentParty.id);
+        currentParty.deleted()
+        currentParty.commit()
       }
+      currentParty.commit()
     }
 
     if (command.accept) {

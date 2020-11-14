@@ -1,8 +1,9 @@
-import {AggregateRoot} from "@nestjs/cqrs";
-import {PartyId} from "src/gateway/gateway/shared-types/party-id";
-import {PlayerId} from "src/gateway/gateway/shared-types/player-id";
-import {PartyCreatedEvent} from "src/mm/party/event/party-created.event";
-import {PartyUpdatedEvent} from "src/gateway/gateway/events/party/party-updated.event";
+import { AggregateRoot } from "@nestjs/cqrs";
+import { PartyId } from "src/gateway/gateway/shared-types/party-id";
+import { PlayerId } from "src/gateway/gateway/shared-types/player-id";
+import { PartyCreatedEvent } from "src/mm/party/event/party-created.event";
+import { PartyUpdatedEvent } from "src/gateway/gateway/events/party/party-updated.event";
+import { PartyDeletedEvent } from "src/gateway/gateway/events/party/party-deleted.event";
 
 export class PartyModel extends AggregateRoot {
   constructor(
@@ -23,9 +24,12 @@ export class PartyModel extends AggregateRoot {
 
   public remove(player: PlayerId) {
     if (this.leader.value === player.value) {
-
       // if it's already leader-only party do nothing.
-      if(this.players.length === 1 && this.players[0].value === this.leader.value) return;
+      if (
+        this.players.length === 1 &&
+        this.players[0].value === this.leader.value
+      )
+        return;
 
       // if we are leader, we remove everyone except for leader.
       this.players = this.players.filter(t => t.value === player.value);
@@ -47,5 +51,9 @@ export class PartyModel extends AggregateRoot {
 
     this.players.push(player);
     this.updated();
+  }
+
+  public deleted() {
+    this.apply(new PartyDeletedEvent(this.id));
   }
 }

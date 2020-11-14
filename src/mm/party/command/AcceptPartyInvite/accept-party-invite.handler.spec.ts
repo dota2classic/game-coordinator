@@ -12,6 +12,7 @@ import { PartyInviteAcceptedEvent } from "src/gateway/gateway/events/party/party
 import { PartyCreatedEvent } from "src/mm/party/event/party-created.event";
 import { PartyUpdatedEvent } from "src/gateway/gateway/events/party/party-updated.event";
 import {PartyInviteResultEvent} from "src/gateway/gateway/events/party/party-invite-result.event";
+import {PartyDeletedEvent} from "src/gateway/gateway/events/party/party-deleted.event";
 
 describe("AcceptPartyInviteHandler", () => {
   let ebus: EventBus;
@@ -68,5 +69,58 @@ describe("AcceptPartyInviteHandler", () => {
       new PartyCreatedEvent(party.id, u, [u]),
       new PartyInviteResultEvent(inv.id, u2, false),
     );
+  });
+
+
+  it("should make 1 party of two", async () => {
+    const rep = module.get(PartyInvitationRepository);
+    const pRep = module.get(PartyRepository);
+    const u = randomUser();
+    const u2 = randomUser();
+    const party = await pRep.getPartyOf(u);
+    const party2 = await pRep.getPartyOf(u2);
+
+    const inv = new PartyInvitationModel(party.id, u2);
+    await rep.save(inv.id, inv);
+
+    await cbus.execute(new AcceptPartyInviteCommand(inv.id, false));
+
+    expect(ebus).toEmit(
+      new PartyCreatedEvent(party.id, u, [u]),
+      new PartyCreatedEvent(party2.id, u2, [u2]),
+      new PartyDeletedEvent(party2.id),
+      new PartyInviteResultEvent(inv.id, u2, false),
+    );
+
+    await expect(pRep.all()).resolves.toHaveLength(1)
+  });
+
+
+  it("case when party invite to a user in full party", async () => {
+    const rep = module.get(PartyInvitationRepository);
+    const pRep = module.get(PartyRepository);
+    const u = randomUser();
+    const u2 = randomUser();
+    const u3 = randomUser();
+    const party = await pRep.getPartyOf(u);
+    const party2 = await pRep.getPartyOf(u2);
+
+    party2.add(u3);
+
+    const inv = new PartyInvitationModel(party.id, u2);
+    await rep.save(inv.id, inv);
+
+    await cbus.execute(new AcceptPartyInviteCommand(inv.id, false));
+
+    expect(ebus).toEmit(
+      new PartyCreatedEvent(party.id, u, [u]),
+      new PartyCreatedEvent(party2.id, u2, [u2]),
+      new PartyUpdatedEvent(party2.id, u2, [u2, u3]),
+      new PartyUpdatedEvent(party2.id, u2, [u2]),
+      new PartyDeletedEvent(party2.id),
+      new PartyInviteResultEvent(inv.id, u2, false),
+    );
+
+    await expect(pRep.all()).resolves.toHaveLength(1)
   });
 });
