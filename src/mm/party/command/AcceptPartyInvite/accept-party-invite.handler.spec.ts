@@ -106,6 +106,7 @@ describe("AcceptPartyInviteHandler", () => {
     const party2 = await pRep.getPartyOf(u2);
 
     party2.add(u3);
+    party2.uncommit();
 
     const inv = new PartyInvitationModel(party.id, u2);
     await rep.save(inv.id, inv);
@@ -115,8 +116,6 @@ describe("AcceptPartyInviteHandler", () => {
     expect(ebus).toEmit(
       new PartyCreatedEvent(party.id, u, [u]),
       new PartyCreatedEvent(party2.id, u2, [u2]),
-      new PartyUpdatedEvent(party2.id, u2, [u2, u3]),
-      new PartyUpdatedEvent(party2.id, u2, [u2]),
       new PartyDeletedEvent(party2.id),
       new PartyInviteResultEvent(inv.id, u2, false),
     );
