@@ -6,8 +6,12 @@ import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
 import { QueueEntryRepository } from "src/mm/queue/repository/queue-entry.repository";
 import { QueueModel } from "src/mm/queue/model/queue.model";
 import { QueueService } from "src/mm/queue/service/queue.service";
-import { FoundGameParty, GameFoundEvent, PlayerInParty } from "src/mm/queue/event/game-found.event";
-import {RoomSizes} from "src/gateway/gateway/shared-types/matchmaking-mode";
+import {
+  FoundGameParty,
+  GameFoundEvent,
+  PlayerInParty,
+} from "src/mm/queue/event/game-found.event";
+import { RoomSizes } from "src/gateway/gateway/shared-types/matchmaking-mode";
 
 @CommandHandler(EnterQueueCommand)
 export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
@@ -27,20 +31,21 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
 
     const allQueues = await this.queueRepository.all();
 
+    // remove from other queues
     allQueues
-      .filter(t => t.mode !== mode)
-      .forEach(t => {
-        t.removeEntry(partyId);
-        t.commit();
+      .filter(q => q.mode !== mode)
+      .forEach(q => {
+        q.removeEntry(partyId);
+        q.commit();
       });
 
     const entry = new QueueEntryModel(partyId, mode, players);
     await this.queueEntryRepository.save(entry.id, entry);
 
     q.addEntry(entry);
-    await this.checkForGame(q);
-
     q.commit();
+
+    await this.checkForGame(q);
     return entry.id;
   }
 
@@ -53,6 +58,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     if (!game) return;
 
     q.removeAll(game.entries);
+    q.commit()
 
     this.ebus.publish(
       new GameFoundEvent(

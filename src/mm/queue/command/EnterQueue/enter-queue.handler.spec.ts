@@ -14,11 +14,11 @@ import {
   GameFoundEvent,
   PlayerInParty,
 } from "src/mm/queue/event/game-found.event";
-import {randomUser} from "src/@test/values";
+import { randomUser } from "src/@test/values";
+import { PlayerId } from "src/gateway/gateway/shared-types/player-id";
 
-
-const u1 = randomUser()
-const u2 = randomUser()
+const u1 = randomUser();
+const u2 = randomUser();
 describe("EnterQueueHandler", () => {
   let ebus: EventBus;
   let cbus: CommandBus;
@@ -66,11 +66,7 @@ describe("EnterQueueHandler", () => {
     const mode = MatchmakingMode.SOLOMID;
 
     await cbus.execute(
-      new EnterQueueCommand(
-        "party",
-        [new PlayerInQueueEntity(u1, 1000)],
-        mode,
-      ),
+      new EnterQueueCommand("party", [new PlayerInQueueEntity(u1, 1000)], mode),
     );
     expect(ebus).toEmit(new QueueUpdatedEvent(mode));
   });
@@ -81,16 +77,14 @@ describe("EnterQueueHandler", () => {
     await cbus.execute(
       new EnterQueueCommand(
         "party",
-        [
-          new PlayerInQueueEntity(u1, 1000),
-          new PlayerInQueueEntity(u2, 1000),
-        ],
+        [new PlayerInQueueEntity(u1, 1000), new PlayerInQueueEntity(u2, 1000)],
         mode,
       ),
     );
 
-
     expect(ebus).toEmit(
+      new QueueUpdatedEvent(mode), // add first
+      new QueueUpdatedEvent(mode), // clear
       new GameFoundEvent(mode, [
         new FoundGameParty(
           "party",
@@ -100,28 +94,129 @@ describe("EnterQueueHandler", () => {
           ].map(p => new PlayerInParty(p.playerId, p.mmr)),
         ),
       ]),
-      new QueueUpdatedEvent(mode),
-      new QueueUpdatedEvent(mode),
+    );
+  });
+
+  it("Should find 5x5 game", async () => {
+    const mode = MatchmakingMode.RANKED;
+
+    const players: PlayerId[] = [];
+    for (let i = 0; i < 10; i++) {
+      const u = randomUser();
+      players.push(u);
+    }
+
+    let i = 0;
+    for (const player of players) {
+      await cbus.execute(
+        new EnterQueueCommand(
+          `party${i++}`,
+          [new PlayerInQueueEntity(player, 3000)],
+          mode,
+        ),
+      );
+    }
+
+    const updateEvents = players.map(p => new QueueUpdatedEvent(mode));
+
+    expect(ebus).toEmit(
+      ...updateEvents,
+      new QueueUpdatedEvent(mode), // clear queue
+      new GameFoundEvent(
+        mode,
+        players.map(
+          (p, idx) =>
+            new FoundGameParty(`party${idx}`, [new PlayerInParty(p, 3000)]),
+        ),
+      ),
+    );
+  });
+
+  it("Should find 5x5 game with parties", async () => {
+    const mode = MatchmakingMode.RANKED;
+
+    const parties = [
+      // solo
+      new EnterQueueCommand(
+        `party1_1`,
+        [new PlayerInQueueEntity(randomUser(), 3000)],
+        mode,
+      ),
+      // solo
+      new EnterQueueCommand(
+        `party2_1`,
+        [new PlayerInQueueEntity(randomUser(), 3000)],
+        mode,
+      ),
+      // solo
+      new EnterQueueCommand(
+        `party4_1`,
+        [new PlayerInQueueEntity(randomUser(), 3000)],
+        mode,
+      ),
+      // 2x
+      new EnterQueueCommand(
+        `party5_2`,
+        [
+          new PlayerInQueueEntity(randomUser(), 3000),
+          new PlayerInQueueEntity(randomUser(), 3000),
+        ],
+        mode,
+      ),
+      // 3x
+      new EnterQueueCommand(
+        `party6_3`,
+        [
+          new PlayerInQueueEntity(randomUser(), 3000),
+          new PlayerInQueueEntity(randomUser(), 3000),
+          new PlayerInQueueEntity(randomUser(), 3000),
+        ],
+        mode,
+      ),
+      // 2x
+      new EnterQueueCommand(
+        `party7_2`,
+        [
+          new PlayerInQueueEntity(randomUser(), 3000),
+          new PlayerInQueueEntity(randomUser(), 3000),
+        ],
+        mode,
+      ),
+    ];
+
+
+    // expect()
+    const updateEvents = parties.map(p => new QueueUpdatedEvent(mode));
+
+    for (const party of parties) {
+      await cbus.execute(party)
+    }
+
+    expect(ebus).toEmit(
+      ...updateEvents,
+      new QueueUpdatedEvent(mode), // clear queue
+      new GameFoundEvent(
+        mode,
+        parties.sort((a,b) => b.players.length - a.players.length).map(
+          t =>
+            new FoundGameParty(
+              t.partyId,
+              t.players.map(z => new PlayerInParty(z.playerId, z.mmr)),
+            ),
+        ),
+      ),
     );
   });
 
   it("should handle duplicate enter queue", async () => {
     const mode = MatchmakingMode.SOLOMID;
     await cbus.execute(
-      new EnterQueueCommand(
-        "party",
-        [new PlayerInQueueEntity(u1, 1000)],
-        mode,
-      ),
+      new EnterQueueCommand("party", [new PlayerInQueueEntity(u1, 1000)], mode),
     );
     // reset publishes
     ebus.publish = jest.fn();
     await cbus.execute(
-      new EnterQueueCommand(
-        "party",
-        [new PlayerInQueueEntity(u1, 1000)],
-        mode,
-      ),
+      new EnterQueueCommand("party", [new PlayerInQueueEntity(u1, 1000)], mode),
     );
     expect(ebus).toEmitNothing();
   });
@@ -144,7 +239,6 @@ describe("EnterQueueHandler", () => {
         MatchmakingMode.SOLOMID,
       ),
     );
-
 
     // @ts-ignore
     // console.error(inspect(ebus.publish.mock.calls))

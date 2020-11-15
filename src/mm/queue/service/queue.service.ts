@@ -15,8 +15,10 @@ export class QueueService {
   }
 
   private findRankedGame(q: QueueModel): QueueGameEntity | undefined {
+    if (q.size < RoomSizes[q.mode]) return undefined;
+
     // todo
-    return undefined;
+    return QueueService.balancedGameSearch(q);
   }
 
   private findUnrankedGame(q: QueueModel): QueueGameEntity | undefined {
