@@ -2,6 +2,7 @@ import {CommandHandler, EventBus, ICommandHandler} from "@nestjs/cqrs";
 import {Logger} from "@nestjs/common";
 import {RoomReadyCheckCommand} from "src/mm/room/command/RoomReadyCheck/room-ready-check.command";
 import {RoomRepository} from "src/mm/room/repository/room.repository";
+import {ACCEPT_GAME_TIMEOUT} from "src/gateway/gateway/shared-types/timings";
 
 @CommandHandler(RoomReadyCheckCommand)
 export class RoomReadyCheckHandler
@@ -18,7 +19,7 @@ export class RoomReadyCheckHandler
     setTimeout(() => {
       room.readyCheckTimeout();
       room.commit()
-    }, 30_000);
+    }, ACCEPT_GAME_TIMEOUT);
 
 
     room.startReadyCheck();
