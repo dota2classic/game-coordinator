@@ -18,6 +18,11 @@ export class InviteToPartyHandler
   async execute(command: InviteToPartyCommand) {
     const party = await this.pRep.getPartyOf(command.playerId);
 
+    // HARDCODED YES I KNOW
+    // we don't want to exceed party limit ;)
+    if (party.players.length >= 5) {
+      return;
+    }
     const invitation = new PartyInvitationModel(party.id, command.toInvite);
     invitation.created(party.leader);
 
