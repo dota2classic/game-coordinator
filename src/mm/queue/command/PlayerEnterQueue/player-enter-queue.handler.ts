@@ -21,18 +21,23 @@ export class PlayerEnterQueueHandler
   async execute(command: PlayerEnterQueueCommand) {
     const p = await this.partyRepository.getPartyOf(command.playerID);
 
-    const mmr = await this.qbus.execute<
-      GetPlayerInfoQuery,
-      GetPlayerInfoQueryResult
-    >(new GetPlayerInfoQuery(command.playerID, Dota2Version.Dota_681));
 
+
+
+    const formattedEntries = await Promise.all(p.players.map(async t => {
+      const mmr = await this.qbus.execute<
+        GetPlayerInfoQuery,
+        GetPlayerInfoQueryResult
+        >(new GetPlayerInfoQuery(t, Dota2Version.Dota_681));
+      return ({
+        playerId: t,
+        mmr: mmr.mmr,
+      })
+    }))
     this.ebus.publish(
       new PlayerEnterQueueResolvedEvent(
         p.id,
-        p.players.map(t => ({
-          playerId: t,
-          mmr: mmr.mmr,
-        })),
+        formattedEntries,
         command.mode,
       ),
     );
