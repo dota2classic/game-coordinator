@@ -9,6 +9,7 @@ import {uuid} from "src/@shared/generateID";
 import {randomUser} from "src/@test/values";
 import {PartyInviteExpiredEvent} from "src/gateway/gateway/events/party/party-invite-expired.event";
 import {TimeoutPartyInviteCommand} from "src/mm/party/command/TimeoutPartyInvite/timeout-party-invite.command";
+import {PartyInviteResultEvent} from "src/gateway/gateway/events/party/party-invite-result.event";
 
 describe("TimeoutPartyInviteHandler", () => {
   let ebus: EventBus;
@@ -34,13 +35,17 @@ describe("TimeoutPartyInviteHandler", () => {
 
   it("should emit event if there is invitation", async () => {
     const u = randomUser();
+    const u2 = randomUser();
     const r = module.get(PartyInvitationRepository);
-    const inv = new PartyInvitationModel(uuid(), u);
+    const inv = new PartyInvitationModel(uuid(), u, u2);
     await r.save(inv.id, inv);
 
     await cbus.execute(new TimeoutPartyInviteCommand(inv.id));
 
-    expect(ebus).toEmit(new PartyInviteExpiredEvent(inv.id, u, inv.partyId));
+    expect(ebus).toEmit(
+      new PartyInviteResultEvent(inv.id, u, false, u2),
+      new PartyInviteExpiredEvent(inv.id, u, inv.partyId, u2)
+    );
   });
 
   it("should not emit event if there is no invitation", async () => {

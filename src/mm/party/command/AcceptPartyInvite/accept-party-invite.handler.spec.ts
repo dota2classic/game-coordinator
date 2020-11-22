@@ -42,7 +42,7 @@ describe("AcceptPartyInviteHandler", () => {
     const u = randomUser();
     const u2 = randomUser();
     const party = await pRep.getPartyOf(u);
-    const inv = new PartyInvitationModel(party.id, u2);
+    const inv = new PartyInvitationModel(party.id, u2, u);
     await rep.save(inv.id, inv);
 
     await cbus.execute(new AcceptPartyInviteCommand(inv.id, true));
@@ -50,7 +50,7 @@ describe("AcceptPartyInviteHandler", () => {
     expect(ebus).toEmit(
       new PartyCreatedEvent(party.id, u, [u]),
       new PartyUpdatedEvent(party.id, u, [u, u2]),
-      new PartyInviteResultEvent(inv.id, u2, true),
+      new PartyInviteResultEvent(inv.id, u2, true, u),
     );
   });
 
@@ -60,14 +60,14 @@ describe("AcceptPartyInviteHandler", () => {
     const u = randomUser();
     const u2 = randomUser();
     const party = await pRep.getPartyOf(u);
-    const inv = new PartyInvitationModel(party.id, u2);
+    const inv = new PartyInvitationModel(party.id, u2, u);
     await rep.save(inv.id, inv);
 
     await cbus.execute(new AcceptPartyInviteCommand(inv.id, false));
 
     expect(ebus).toEmit(
       new PartyCreatedEvent(party.id, u, [u]),
-      new PartyInviteResultEvent(inv.id, u2, false),
+      new PartyInviteResultEvent(inv.id, u2, false, u),
     );
   });
 
@@ -80,7 +80,7 @@ describe("AcceptPartyInviteHandler", () => {
     const party = await pRep.getPartyOf(u);
     const party2 = await pRep.getPartyOf(u2);
 
-    const inv = new PartyInvitationModel(party.id, u2);
+    const inv = new PartyInvitationModel(party.id, u2, u);
     await rep.save(inv.id, inv);
 
     await cbus.execute(new AcceptPartyInviteCommand(inv.id, false));
@@ -89,7 +89,7 @@ describe("AcceptPartyInviteHandler", () => {
       new PartyCreatedEvent(party.id, u, [u]),
       new PartyCreatedEvent(party2.id, u2, [u2]),
       new PartyDeletedEvent(party2.id),
-      new PartyInviteResultEvent(inv.id, u2, false),
+      new PartyInviteResultEvent(inv.id, u2, false, u),
     );
 
     await expect(pRep.all()).resolves.toHaveLength(1)
@@ -108,7 +108,7 @@ describe("AcceptPartyInviteHandler", () => {
     party2.add(u3);
     party2.uncommit();
 
-    const inv = new PartyInvitationModel(party.id, u2);
+    const inv = new PartyInvitationModel(party.id, u2, u);
     await rep.save(inv.id, inv);
 
     await cbus.execute(new AcceptPartyInviteCommand(inv.id, false));
@@ -117,7 +117,7 @@ describe("AcceptPartyInviteHandler", () => {
       new PartyCreatedEvent(party.id, u, [u]),
       new PartyCreatedEvent(party2.id, u2, [u2]),
       new PartyDeletedEvent(party2.id),
-      new PartyInviteResultEvent(inv.id, u2, false),
+      new PartyInviteResultEvent(inv.id, u2, false, u),
     );
 
     await expect(pRep.all()).resolves.toHaveLength(1)
