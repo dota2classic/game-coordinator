@@ -46,7 +46,7 @@ export class AcceptPartyInviteHandler
     }
 
     this.ebus.publish(
-      new PartyInviteResultEvent(invite.id, invite.invited, command.accept),
+      new PartyInviteResultEvent(invite.id, invite.invited, command.accept, invite.inviter),
     );
 
     await this.iRep.delete(invite.id);

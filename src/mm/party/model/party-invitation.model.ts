@@ -9,17 +9,18 @@ export class PartyInvitationModel extends AggregateRoot {
   public readonly id: string;
   constructor(
     public readonly partyId: PartyId,
-    public readonly invited: PlayerId
+    public readonly invited: PlayerId,
+    public readonly inviter: PlayerId
   ) {
     super();
     this.id = uuid();
   }
 
-  public created(leader: PlayerId) {
-    this.apply(new PartyInviteCreatedEvent(this.id, this.partyId, leader, this.invited));
+  public created() {
+    this.apply(new PartyInviteCreatedEvent(this.id, this.partyId, this.inviter, this.invited));
   }
 
   expired() {
-    this.apply(new PartyInviteExpiredEvent(this.id, this.invited, this.partyId))
+    this.apply(new PartyInviteExpiredEvent(this.id, this.invited, this.partyId, this.inviter))
   }
 }

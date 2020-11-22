@@ -23,8 +23,8 @@ export class InviteToPartyHandler
     if (party.players.length >= 5) {
       return;
     }
-    const invitation = new PartyInvitationModel(party.id, command.toInvite);
-    invitation.created(party.leader);
+    const invitation = new PartyInvitationModel(party.id, command.toInvite, command.playerId);
+    invitation.created();
 
     await this.piRep.save(invitation.id, invitation);
 
