@@ -67,7 +67,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
           t =>
             new FoundGameParty(
               t.partyID,
-              t.players.map(p => new PlayerInParty(p.playerId, p.mmr)),
+              t.players.map(p => new PlayerInParty(p.playerId, p.mmr, p.recentWinrate, p.gamesPlayed)),
             ),
         ),
       ),
