@@ -10,6 +10,7 @@ import { PlayerEnterQueueHandler } from "src/mm/queue/command/PlayerEnterQueue/p
 import { PlayerLeaveQueueHandler } from "src/mm/queue/command/PlayerLeaveQueue/player-leave-queue.handler";
 import { PartyRepository } from "src/mm/party/repository/party.repository";
 import {GetUserQueueHandler} from "src/mm/queue/query/get-user-queue.handler";
+import {BalanceService} from "src/mm/queue/service/balance.service";
 
 const CommandHandlers = [
   CreateQueueHandler,
@@ -31,5 +32,6 @@ export const QueueProviders = [
   ...QueryHandlers,
   ...Repositories,
   QueueSaga,
+  BalanceService,
   QueueService,
 ];

@@ -6,6 +6,7 @@ import {PlayerEnterQueueResolvedEvent} from "src/mm/queue/event/player-enter-que
 import {GetPlayerInfoQuery} from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info.query";
 import {Dota2Version} from "src/gateway/gateway/shared-types/dota2version";
 import {GetPlayerInfoQueryResult} from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
+import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
 
 @CommandHandler(PlayerEnterQueueCommand)
 export class PlayerEnterQueueHandler
@@ -24,7 +25,7 @@ export class PlayerEnterQueueHandler
 
 
 
-    const formattedEntries = await Promise.all(p.players.map(async t => {
+    const formattedEntries: PlayerInQueueEntity[] = await Promise.all(p.players.map(async t => {
       const mmr = await this.qbus.execute<
         GetPlayerInfoQuery,
         GetPlayerInfoQueryResult
@@ -32,6 +33,8 @@ export class PlayerEnterQueueHandler
       return ({
         playerId: t,
         mmr: mmr.mmr,
+        recentWinrate: mmr.recentWinrate,
+        gamesPlayed: mmr.summary.rankedGamesPlayed
       })
     }))
     this.ebus.publish(

@@ -20,26 +20,27 @@ describe("PlayerEnterQueueHandler", () => {
 
   const q = mockQuery<GetPlayerInfoQuery, GetPlayerInfoQueryResult>(
     GetPlayerInfoQuery,
-    t => new GetPlayerInfoQueryResult(t.playerId, t.version, 3000, 0.5),
-    )
+    t =>
+      new GetPlayerInfoQueryResult(t.playerId, t.version, 3000, 0.5, {
+        rankedGamesPlayed: 100,
+        totalWinrate: 0.5,
+        bestHeroes: [],
+        rank: 5,
+      }),
+  );
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      providers: [
-        ...QueueProviders,
-        PartyRepository,
-        ...TestEnvironment(),
-        q
-      ],
+      providers: [...QueueProviders, PartyRepository, ...TestEnvironment(), q],
     }).compile();
 
     cbus = module.get<CommandBus>(CommandBus);
     ebus = module.get<EventBus>(EventBus);
-    const qbus  = module.get<QueryBus>(QueryBus);
+    const qbus = module.get<QueryBus>(QueryBus);
     rep = module.get<PartyRepository>(PartyRepository);
 
     cbus.register([PlayerEnterQueueHandler]);
-    qbus.register([q])
+    qbus.register([q]);
   });
 
   afterEach(() => {
@@ -57,6 +58,8 @@ describe("PlayerEnterQueueHandler", () => {
         party.players.map(t => ({
           playerId: t,
           mmr: 3000,
+          recentWinrate: 0.5,
+          gamesPlayed: 100,
         })),
         MatchmakingMode.SOLOMID,
       ),
