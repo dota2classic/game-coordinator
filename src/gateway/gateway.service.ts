@@ -15,6 +15,7 @@ import {PartyInviteCreatedEvent} from "src/gateway/gateway/events/party/party-in
 import {PartyUpdatedEvent} from "src/gateway/gateway/events/party/party-updated.event";
 import {PartyInviteAcceptedEvent} from "src/gateway/gateway/events/party/party-invite-accepted.event";
 import {PartyInviteResultEvent} from "src/gateway/gateway/events/party/party-invite-result.event";
+import {MatchmakingBannedEvent} from "src/gateway/gateway/events/matchmaking-banned.event";
 
 @Injectable()
 export class GatewayService implements OnApplicationBootstrap {
@@ -45,7 +46,10 @@ export class GatewayService implements OnApplicationBootstrap {
       PartyInviteExpiredEvent,
       PartyInviteCreatedEvent,
       PartyUpdatedEvent,
-      PartyInviteResultEvent
+      PartyInviteResultEvent,
+
+
+      MatchmakingBannedEvent
     ];
     this.ebus
       .pipe(ofType(...publicEvents))
