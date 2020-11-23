@@ -89,7 +89,7 @@ export class RoomSaga {
                     i.id,
                     i.mmr,
                     i.recentWinrate,
-                    i.gamesPlayed,
+                    i.gamesPlayed
                   ),
               ),
               t.mode,
