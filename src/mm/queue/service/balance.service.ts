@@ -1,7 +1,6 @@
 import {Injectable} from "@nestjs/common";
 import {PartyInRoom} from "src/mm/room/command/CreateRoom/create-room.command";
 import {RoomBalance, TeamEntry} from "src/mm/room/model/entity/room-balance";
-import {RuntimeException} from "@nestjs/core/errors/exceptions/runtime.exception";
 import {BalanceException} from "src/mm/queue/exception/BalanceException";
 
 export interface BalanceUnit {
@@ -25,10 +24,12 @@ export interface QueueUnit {
 export class BalanceService {
   private readonly RECENT_WINRATE_CAP: number;
   private readonly WINRATE_FACTOR: number;
+  private readonly MAX_AVERAGE_SCORE_FOR_GAME: number;
 
   constructor() {
     this.RECENT_WINRATE_CAP = 20;
     this.WINRATE_FACTOR = 2000;
+    this.MAX_AVERAGE_SCORE_FOR_GAME = 500;
   }
 
   private static getPartyFactor(count: number): number {
@@ -55,7 +56,8 @@ export class BalanceService {
   public getPartyScore(v: PartyBalanceUnit): QueueUnit {
     const scoreSum = v.players.reduce((a, b) => a + this.getScore(b), 0);
 
-    const totalPartyScore = scoreSum * BalanceService.getPartyFactor(v.players.length);
+    const totalPartyScore =
+      scoreSum * BalanceService.getPartyFactor(v.players.length);
 
     return {
       partyId: v.partyId,
@@ -64,10 +66,7 @@ export class BalanceService {
     };
   }
 
-  public rankedBalance(
-    teamSize: number,
-    parties: PartyInRoom[],
-  ): RoomBalance {
+  public rankedBalance(teamSize: number, parties: PartyInRoom[]): RoomBalance {
     let radiantMMR = 0;
     let direMMR = 0;
 
@@ -77,7 +76,15 @@ export class BalanceService {
     let radiantPlayerCount = 0;
     let direPlayerCount = 0;
 
-    parties.forEach(it => {
+    const preparedParties = parties
+      .map(z => ({
+        original: z,
+        score: this.getPartyScore(BalanceService.convertPartyDTO(z)),
+      }))
+      .sort((a, b) => b.score.totalScore - a.score.totalScore);
+
+    preparedParties.forEach(({ original: it, score }) => {
+
       if (
         // if radiant less mmr and
         (radiantMMR <= direMMR && radiantPlayerCount < teamSize) ||
@@ -85,32 +92,59 @@ export class BalanceService {
       ) {
         radiantParties.push(it);
         radiantPlayerCount += it.players.length;
-        radiantMMR += it.totalMMR;
+        radiantMMR += score.totalScore;
       } else if (
         (direMMR <= radiantMMR && direPlayerCount < teamSize) ||
         radiantPlayerCount === teamSize
       ) {
         direParties.push(it);
         direPlayerCount += it.players.length;
-        direMMR += it.totalMMR;
+        direMMR += score.totalScore;
       } else if (radiantPlayerCount < teamSize) {
         radiantParties.push(it);
         radiantPlayerCount += it.players.length;
-        radiantMMR += it.totalMMR;
+        radiantMMR += score.totalScore;
       } else if (direPlayerCount < teamSize) {
         direParties.push(it);
         direPlayerCount += it.players.length;
-        direMMR += it.totalMMR;
+        direMMR += score.totalScore;
       }
     });
 
     if (radiantPlayerCount !== teamSize || direPlayerCount !== teamSize) {
-      throw new BalanceException()
+      throw new BalanceException();
     }
 
+    const rAvrg = radiantMMR / teamSize;
+    const dAvrg = direMMR / teamSize;
+
+    console.log(
+      radiantParties.map(
+        m => this.getPartyScore(BalanceService.convertPartyDTO(m)).totalScore,
+      ),
+    );
+    console.log(
+      direParties.map(
+        m => this.getPartyScore(BalanceService.convertPartyDTO(m)).totalScore,
+      ),
+    );
+
+    if (Math.abs(rAvrg - dAvrg) >= this.MAX_AVERAGE_SCORE_FOR_GAME) {
+      throw new BalanceException();
+    }
     return new RoomBalance(
       [radiantParties, direParties].map(list => new TeamEntry(list)),
     );
   }
 
+  private static convertPartyDTO(it: PartyInRoom): PartyBalanceUnit {
+    return {
+      players: it.players.map(player => ({
+        mmr: player.mmr,
+        wrLast20Games: player.recentWinrate,
+        gamesPlayed: player.gamesPlayed,
+      })),
+      partyId: it.id,
+    };
+  }
 }

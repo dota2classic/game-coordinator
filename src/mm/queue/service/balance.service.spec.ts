@@ -5,8 +5,9 @@ import {PartyInRoom} from "src/mm/room/command/CreateRoom/create-room.command";
 import {PlayerInPartyInRoom} from "src/mm/room/model/room-entry";
 import {randomUser} from "src/@test/values";
 import {BalanceException} from "src/mm/queue/exception/BalanceException";
+import {inspect} from "util";
 
-describe("", () => {
+describe("BalanceService", () => {
   let module: TestingModule;
   let service: BalanceService;
 
@@ -87,6 +88,33 @@ describe("", () => {
         new PlayerInPartyInRoom(randomUser(), 1000, 0.5, 1000),
       ]);
     });
-    expect(() => service.rankedBalance(5, p)).not.toThrow(BalanceException)
+    expect(() => {
+      const res = service.rankedBalance(5, p);
+    }).not.toThrow(BalanceException);
   });
+
+  it("should not be able to balance bad game(high score difference)", () => {
+    const p: PartyInRoom[] = [
+      new PartyInRoom("big mmr party", [
+        new PlayerInPartyInRoom(randomUser(), 4500, 0.7, 100),
+        new PlayerInPartyInRoom(randomUser(), 3900, 0.6, 100),
+      ]),
+      ...new Array(8)
+        .fill(null)
+        .map(
+          (t, index) =>
+            new PartyInRoom("id" + index, [
+              new PlayerInPartyInRoom(
+                randomUser(),
+                2000 + Math.round(Math.random() * 1000 - 500),
+                0.5,
+                1000,
+              ),
+            ]),
+        )
+    ];
+
+    expect(() => service.rankedBalance(5, p)).toThrow(BalanceException);
+  });
+
 });

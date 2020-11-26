@@ -16,6 +16,7 @@ import {PartyUpdatedEvent} from "src/gateway/gateway/events/party/party-updated.
 import {PartyInviteAcceptedEvent} from "src/gateway/gateway/events/party/party-invite-accepted.event";
 import {PartyInviteResultEvent} from "src/gateway/gateway/events/party/party-invite-result.event";
 import {MatchmakingBannedEvent} from "src/gateway/gateway/events/matchmaking-banned.event";
+import {RoomImpossibleEvent} from "src/gateway/gateway/events/mm/room-impossible.event";
 
 @Injectable()
 export class GatewayService implements OnApplicationBootstrap {
@@ -49,6 +50,7 @@ export class GatewayService implements OnApplicationBootstrap {
       PartyInviteResultEvent,
 
 
+      RoomImpossibleEvent,
       MatchmakingBannedEvent
     ];
     this.ebus

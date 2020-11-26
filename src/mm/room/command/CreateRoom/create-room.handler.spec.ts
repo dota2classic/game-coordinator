@@ -10,7 +10,7 @@ import {
 import {MatchmakingMode, RoomSizes} from "src/gateway/gateway/shared-types/matchmaking-mode";
 import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
 import { PlayerInPartyInRoom } from "src/mm/room/model/room-entry";
-import { RoomImpossibleEvent } from "src/mm/room/event/room-impossible.event";
+import { RoomImpossibleEvent } from "src/gateway/gateway/events/mm/room-impossible.event";
 import { RoomCreatedEvent } from "src/mm/room/event/room-created.event";
 import {randomUser} from "src/@test/values";
 
