@@ -7,6 +7,7 @@ import { FinalizeRoomHandler } from "src/mm/room/command/FinalizeRoom/finalize-r
 import { GetUserRoomHandler } from "src/mm/room/query/get-user-room.handler";
 import { RoomReadyHandler } from "src/mm/room/event-handler/room-ready.handler";
 import { RoomNotReadyHandler } from "src/mm/room/event-handler/room-not-ready.handler";
+import {BalanceService} from "src/mm/queue/service/balance.service";
 
 const CommandHandlers = [
   CreateRoomHandler,
@@ -24,5 +25,6 @@ export const RoomProviders = [
   ...Repositories,
   ...EventHandlers,
   RoomSaga,
+  BalanceService,
   GetUserRoomHandler,
 ];

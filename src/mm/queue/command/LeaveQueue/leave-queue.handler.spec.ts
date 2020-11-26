@@ -54,7 +54,7 @@ describe("LeaveQueueHandler", () => {
       .get(MatchmakingMode.SOLOMID);
     a.entries.push(
       new QueueEntryModel("partyID", MatchmakingMode.SOLOMID, [
-        new PlayerInQueueEntity(randomUser(), 100),
+        new PlayerInQueueEntity(randomUser(), 100, 0.5, 1000),
       ]),
     );
 

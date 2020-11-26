@@ -3,6 +3,7 @@ import { CommandBus, EventBus, EventPublisher } from "@nestjs/cqrs";
 import { TestEnvironment, clearRepositories } from "src/@test/cqrs";
 import {SetReadyCheckHandler} from "./set-ready-check.handler";
 import {RoomProviders} from "../../index";
+import {BalanceService} from "src/mm/queue/service/balance.service";
 
 
 describe('SetReadyCheckHandler', () => {
@@ -14,6 +15,7 @@ describe('SetReadyCheckHandler', () => {
     module = await Test.createTestingModule({
       providers: [
         ...RoomProviders,
+        BalanceService,
         ...TestEnvironment()
       ],
     }).compile();

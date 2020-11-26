@@ -1,4 +1,8 @@
 import {Injectable} from "@nestjs/common";
+import {PartyInRoom} from "src/mm/room/command/CreateRoom/create-room.command";
+import {RoomBalance, TeamEntry} from "src/mm/room/model/entity/room-balance";
+import {RuntimeException} from "@nestjs/core/errors/exceptions/runtime.exception";
+import {BalanceException} from "src/mm/queue/exception/BalanceException";
 
 export interface BalanceUnit {
   mmr: number;
@@ -59,4 +63,54 @@ export class BalanceService {
       totalScore: totalPartyScore,
     };
   }
+
+  public rankedBalance(
+    teamSize: number,
+    parties: PartyInRoom[],
+  ): RoomBalance {
+    let radiantMMR = 0;
+    let direMMR = 0;
+
+    const radiantParties: PartyInRoom[] = [];
+    const direParties: PartyInRoom[] = [];
+
+    let radiantPlayerCount = 0;
+    let direPlayerCount = 0;
+
+    parties.forEach(it => {
+      if (
+        // if radiant less mmr and
+        (radiantMMR <= direMMR && radiantPlayerCount < teamSize) ||
+        direPlayerCount === teamSize
+      ) {
+        radiantParties.push(it);
+        radiantPlayerCount += it.players.length;
+        radiantMMR += it.totalMMR;
+      } else if (
+        (direMMR <= radiantMMR && direPlayerCount < teamSize) ||
+        radiantPlayerCount === teamSize
+      ) {
+        direParties.push(it);
+        direPlayerCount += it.players.length;
+        direMMR += it.totalMMR;
+      } else if (radiantPlayerCount < teamSize) {
+        radiantParties.push(it);
+        radiantPlayerCount += it.players.length;
+        radiantMMR += it.totalMMR;
+      } else if (direPlayerCount < teamSize) {
+        direParties.push(it);
+        direPlayerCount += it.players.length;
+        direMMR += it.totalMMR;
+      }
+    });
+
+    if (radiantPlayerCount !== teamSize || direPlayerCount !== teamSize) {
+      throw new BalanceException()
+    }
+
+    return new RoomBalance(
+      [radiantParties, direParties].map(list => new TeamEntry(list)),
+    );
+  }
+
 }

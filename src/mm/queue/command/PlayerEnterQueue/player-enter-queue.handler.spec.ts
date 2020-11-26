@@ -10,7 +10,11 @@ import {PartyRepository} from "src/mm/party/repository/party.repository";
 import {PartyCreatedEvent} from "src/mm/party/event/party-created.event";
 import {randomUser} from "src/@test/values";
 import {GetPlayerInfoQuery} from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info.query";
-import {GetPlayerInfoQueryResult} from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
+import {
+  BanStatus,
+  GetPlayerInfoQueryResult
+} from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
+import {BanReason} from "src/gateway/gateway/shared-types/ban";
 
 describe("PlayerEnterQueueHandler", () => {
   let ebus: EventBus;
@@ -21,12 +25,19 @@ describe("PlayerEnterQueueHandler", () => {
   const q = mockQuery<GetPlayerInfoQuery, GetPlayerInfoQueryResult>(
     GetPlayerInfoQuery,
     t =>
-      new GetPlayerInfoQueryResult(t.playerId, t.version, 3000, 0.5, {
-        rankedGamesPlayed: 100,
-        totalWinrate: 0.5,
-        bestHeroes: [],
-        rank: 5,
-      }),
+      new GetPlayerInfoQueryResult(
+        t.playerId,
+        t.version,
+        3000,
+        0.5,
+        {
+          rankedGamesPlayed: 100,
+          totalWinrate: 0.5,
+          bestHeroes: [],
+          rank: 5
+        },
+        new BanStatus(false, 0, BanReason.GAME_DECLINE),
+      ),
   );
 
   beforeEach(async () => {

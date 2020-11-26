@@ -1,12 +1,9 @@
-import { Injectable } from "@nestjs/common";
-import { QueueModel } from "src/mm/queue/model/queue.model";
-import {
-  MatchmakingMode,
-  RoomSizes,
-} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { QueueGameEntity } from "src/mm/queue/model/entity/queue-game.entity";
-import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
-import { BalanceService } from "src/mm/queue/service/balance.service";
+import {Injectable} from "@nestjs/common";
+import {QueueModel} from "src/mm/queue/model/queue.model";
+import {MatchmakingMode, RoomSizes,} from "src/gateway/gateway/shared-types/matchmaking-mode";
+import {QueueGameEntity} from "src/mm/queue/model/entity/queue-game.entity";
+import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
+import {BalanceService} from "src/mm/queue/service/balance.service";
 
 @Injectable()
 export class QueueService {

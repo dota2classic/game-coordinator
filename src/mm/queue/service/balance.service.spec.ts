@@ -1,6 +1,10 @@
 import {Test, TestingModule} from "@nestjs/testing";
 import {TestEnvironment} from "src/@test/cqrs";
 import {BalanceService} from "src/mm/queue/service/balance.service";
+import {PartyInRoom} from "src/mm/room/command/CreateRoom/create-room.command";
+import {PlayerInPartyInRoom} from "src/mm/room/model/room-entry";
+import {randomUser} from "src/@test/values";
+import {BalanceException} from "src/mm/queue/exception/BalanceException";
 
 describe("", () => {
   let module: TestingModule;
@@ -75,5 +79,14 @@ describe("", () => {
       partyId: "tmp",
     });
     expect(score.totalScore).toBeGreaterThanOrEqual(6000);
+  });
+
+  it("should able to balance an OK game", () => {
+    const p = new Array(10).fill(null).map((t, index) => {
+      return new PartyInRoom("id" + index, [
+        new PlayerInPartyInRoom(randomUser(), 1000, 0.5, 1000),
+      ]);
+    });
+    expect(() => service.rankedBalance(5, p)).not.toThrow(BalanceException)
   });
 });

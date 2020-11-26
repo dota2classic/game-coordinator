@@ -42,9 +42,9 @@ describe("CreateRoomHandler", () => {
           new PartyInRoom(
             "partyID",
             [
-              new PlayerInQueueEntity(randomUser(), 1000),
-              new PlayerInQueueEntity(randomUser(), 1000),
-            ].map(p => new PlayerInPartyInRoom(p.playerId, p.mmr)),
+              new PlayerInQueueEntity(randomUser(), 1000, 0.5, 1000),
+              new PlayerInQueueEntity(randomUser(), 1000, 0.5, 1000),
+            ].map(p => new PlayerInPartyInRoom(p.playerId, p.mmr, p.recentWinrate, p.gamesPlayed)),
           ),
         ],
       ),
@@ -63,8 +63,8 @@ describe("CreateRoomHandler", () => {
         MatchmakingMode.SOLOMID,
         RoomSizes[MatchmakingMode.SOLOMID],
         [
-          new PartyInRoom("partyID1", [new PlayerInPartyInRoom(randomUser(), 1000)]),
-          new PartyInRoom("partyID2", [new PlayerInPartyInRoom(randomUser(), 1000)]),
+          new PartyInRoom("partyID1", [new PlayerInPartyInRoom(randomUser(), 1000, 0.5, 1000)]),
+          new PartyInRoom("partyID2", [new PlayerInPartyInRoom(randomUser(), 1000, 0.5, 1000)]),
         ],
       ),
     );

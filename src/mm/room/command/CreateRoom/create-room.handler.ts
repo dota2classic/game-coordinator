@@ -12,6 +12,7 @@ import {MatchmakingMode, RoomSizes} from "src/gateway/gateway/shared-types/match
 import { RoomBalance, TeamEntry } from "src/mm/room/model/entity/room-balance";
 import { RuntimeException } from "@nestjs/core/errors/exceptions/runtime.exception";
 import { RoomImpossibleEvent } from "src/mm/room/event/room-impossible.event";
+import {BalanceService} from "src/mm/queue/service/balance.service";
 
 @CommandHandler(CreateRoomCommand)
 export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
@@ -20,6 +21,7 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
   constructor(
     private readonly roomRepository: RoomRepository,
     private readonly ebus: EventBus,
+    private readonly balanceService: BalanceService
   ) {}
 
   async execute({ parties, mode }: CreateRoomCommand) {
@@ -54,7 +56,7 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
   ): Promise<RoomBalance> {
     const teamSize = Math.round(RoomSizes[mode] / 2);
     if (mode === MatchmakingMode.RANKED)
-      return this.rankedBalance(teamSize, parties);
+      return this.balanceService.rankedBalance(teamSize, parties);
     else return this.unrankedBalance(teamSize, parties);
   }
 
@@ -63,57 +65,6 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
     parties: PartyInRoom[],
   ): Promise<RoomBalance> {
     // todo: another balance.
-    return this.rankedBalance(teamSize, parties);
-  }
-
-  private async rankedBalance(
-    teamSize: number,
-    parties: PartyInRoom[],
-  ): Promise<RoomBalance> {
-    let radiantMMR = 0;
-    let direMMR = 0;
-
-    const radiantParties: PartyInRoom[] = [];
-    const direParties: PartyInRoom[] = [];
-
-    let radiantPlayerCount = 0;
-    let direPlayerCount = 0;
-
-    parties.forEach(it => {
-      if (
-        // if radiant less mmr and
-        (radiantMMR <= direMMR && radiantPlayerCount < teamSize) ||
-        direPlayerCount === teamSize
-      ) {
-        radiantParties.push(it);
-        radiantPlayerCount += it.players.length;
-        radiantMMR += it.totalMMR;
-      } else if (
-        (direMMR <= radiantMMR && direPlayerCount < teamSize) ||
-        radiantPlayerCount === teamSize
-      ) {
-        direParties.push(it);
-        direPlayerCount += it.players.length;
-        direMMR += it.totalMMR;
-      } else if (radiantPlayerCount < teamSize) {
-        radiantParties.push(it);
-        radiantPlayerCount += it.players.length;
-        radiantMMR += it.totalMMR;
-      } else if (direPlayerCount < teamSize) {
-        direParties.push(it);
-        direPlayerCount += it.players.length;
-        direMMR += it.totalMMR;
-      }
-    });
-
-    if (radiantPlayerCount !== teamSize || direPlayerCount !== teamSize) {
-      throw new RuntimeException(
-        "Can't balance this game. It needs to be cancelled",
-      );
-    }
-
-    return new RoomBalance(
-      [radiantParties, direParties].map(list => new TeamEntry(list)),
-    );
+    return this.balanceService.rankedBalance(teamSize, parties);
   }
 }
