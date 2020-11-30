@@ -13,6 +13,10 @@ export class QueueService {
       return this.findRankedGame(q);
     }
 
+    if (q.mode === MatchmakingMode.SOLOMID) {
+      return this.findSoloMidGame(q);
+    }
+
     return this.findUnrankedGame(q);
   }
 
@@ -23,6 +27,12 @@ export class QueueService {
   }
 
   private findUnrankedGame(q: QueueModel): QueueGameEntity | undefined {
+    if (q.size < RoomSizes[q.mode]) return undefined;
+
+    return QueueService.balancedGameSearch(q);
+  }
+
+  private findSoloMidGame(q: QueueModel): QueueGameEntity | undefined {
     if (q.size < RoomSizes[q.mode]) return undefined;
 
     return QueueService.balancedGameSearch(q);

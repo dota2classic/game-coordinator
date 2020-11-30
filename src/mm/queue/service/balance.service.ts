@@ -137,6 +137,14 @@ export class BalanceService {
     );
   }
 
+  public soloMidBalance(teamSize: number, parties: PartyInRoom[]){
+    if(parties.length !== 2) throw new BalanceException();
+
+    return new RoomBalance(
+      [[parties[0]], [parties[1]]].map(list => new TeamEntry(list)),
+    )
+  }
+
   private static convertPartyDTO(it: PartyInRoom): PartyBalanceUnit {
     return {
       players: it.players.map(player => ({
