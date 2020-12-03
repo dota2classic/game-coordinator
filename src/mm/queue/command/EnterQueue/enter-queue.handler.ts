@@ -1,17 +1,13 @@
-import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
-import { Logger } from "@nestjs/common";
-import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
-import { QueueRepository } from "src/mm/queue/repository/queue.repository";
-import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
-import { QueueEntryRepository } from "src/mm/queue/repository/queue-entry.repository";
-import { QueueModel } from "src/mm/queue/model/queue.model";
-import { QueueService } from "src/mm/queue/service/queue.service";
-import {
-  FoundGameParty,
-  GameFoundEvent,
-  PlayerInParty,
-} from "src/mm/queue/event/game-found.event";
-import { RoomSizes } from "src/gateway/gateway/shared-types/matchmaking-mode";
+import {CommandHandler, EventBus, ICommandHandler} from "@nestjs/cqrs";
+import {Logger} from "@nestjs/common";
+import {EnterQueueCommand} from "src/mm/queue/command/EnterQueue/enter-queue.command";
+import {QueueRepository} from "src/mm/queue/repository/queue.repository";
+import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
+import {QueueModel} from "src/mm/queue/model/queue.model";
+import {QueueService} from "src/mm/queue/service/queue.service";
+import {FoundGameParty, GameFoundEvent, PlayerInParty,} from "src/mm/queue/event/game-found.event";
+import {RoomSizes} from "src/gateway/gateway/shared-types/matchmaking-mode";
+import {EnterQueueDeclinedEvent} from "src/gateway/gateway/events/mm/enter-queue-declined.event";
 
 @CommandHandler(EnterQueueCommand)
 export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
@@ -26,6 +22,23 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
   async execute({ partyId, mode, players }: EnterQueueCommand) {
     const q = await this.queueRepository.get(mode);
     if (!q) return;
+
+    // here we check for ban status
+
+    const bannedPlayers = players.filter(player => player.banStatus?.isBanned);
+    if (bannedPlayers.length > 0) {
+      // if there are banned players in party, we can't let them in
+      this.ebus.publish(
+        new EnterQueueDeclinedEvent(
+          partyId,
+          players.map(t => t.playerId),
+          bannedPlayers.map(t => t.playerId),
+          mode,
+        ),
+      );
+
+      return;
+    }
 
     const allQueues = await this.queueRepository.all();
 
