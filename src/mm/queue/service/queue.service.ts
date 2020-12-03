@@ -30,7 +30,7 @@ export class QueueService {
   private findRankedGame(q: QueueModel): QueueGameEntity | undefined {
     if (q.size < RoomSizes[q.mode]) return undefined;
 
-    return this.rankedGameBalance2(q);
+    return this.rankedGameBalance(q);
   }
 
   private findUnrankedGame(q: QueueModel): QueueGameEntity | undefined {
@@ -109,6 +109,7 @@ export class QueueService {
 
     if (!set) return undefined;
 
+    console.log(JSON.stringify(set))
     return new QueueGameEntity(
       q.mode,
       set.map(
@@ -128,7 +129,6 @@ export class QueueService {
           ),
       ),
     );
-    // TODO: implement queue model from here mb
   }
 
   private rankedGameBalance(q: QueueModel) {

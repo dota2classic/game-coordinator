@@ -19,8 +19,6 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
 
   constructor(
     private readonly queueRepository: QueueRepository,
-    private readonly queueEntryRepository: QueueEntryRepository,
-
     private readonly ebus: EventBus,
     private readonly queueService: QueueService,
   ) {}
@@ -40,8 +38,6 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
       });
 
     const entry = new QueueEntryModel(partyId, mode, players);
-    await this.queueEntryRepository.save(entry.id, entry);
-
     q.addEntry(entry);
     q.commit();
 
@@ -58,7 +54,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     if (!game) return;
 
     q.removeAll(game.entries);
-    q.commit()
+    q.commit();
 
     this.ebus.publish(
       new GameFoundEvent(
@@ -67,7 +63,15 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
           t =>
             new FoundGameParty(
               t.partyID,
-              t.players.map(p => new PlayerInParty(p.playerId, p.mmr, p.recentWinrate, p.gamesPlayed)),
+              t.players.map(
+                p =>
+                  new PlayerInParty(
+                    p.playerId,
+                    p.mmr,
+                    p.recentWinrate,
+                    p.gamesPlayed,
+                  ),
+              ),
             ),
         ),
       ),
