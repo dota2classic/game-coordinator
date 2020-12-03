@@ -111,7 +111,9 @@ export class BalanceService {
     });
 
     if (radiantPlayerCount !== teamSize || direPlayerCount !== teamSize) {
-      throw new BalanceException(`Final size dont fit ${radiantPlayerCount} ${direPlayerCount}`);
+      throw new BalanceException(
+        `Final size dont fit ${radiantPlayerCount} ${direPlayerCount}`,
+      );
     }
 
     const rAvrg = radiantMMR / teamSize;
@@ -146,5 +148,32 @@ export class BalanceService {
       })),
       partyId: it.id,
     };
+  }
+
+  botsBalance(teamSize: number, parties: PartyInRoom[]): RoomBalance {
+    const r: PartyInRoom[] = [];
+    const d: PartyInRoom[] = [];
+
+    let rSize = 0,
+      dSize = 0;
+
+    const sorted = [...parties].sort(
+      (a, b) => b.players.length - a.players.length,
+    );
+
+    for (let i = 0; i < sorted.length; i++) {
+      const e = sorted[i];
+      if (rSize < dSize && rSize + e.players.length <= teamSize) {
+        r.push(e);
+        rSize += e.players.length
+      } else {
+        d.push(e);
+        dSize += e.players.length
+      }
+    }
+
+    if(rSize > teamSize || dSize > teamSize) throw new BalanceException("Can't even balance bot game hah")
+
+    return new RoomBalance([new TeamEntry(r), new TeamEntry(d)]);
   }
 }

@@ -4,10 +4,11 @@ import { QueueProviders } from "src/mm/queue";
 import { PlayerProviders } from "src/mm/player";
 import { PartyProviders } from "src/mm/party";
 import { RoomProviders } from "src/mm/room";
-import {PartyController} from "src/mm/party/party.controller";
+import { PartyController } from "src/mm/party/party.controller";
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
-  imports: [CqrsModule],
+  imports: [CqrsModule, ScheduleModule.forRoot()],
   providers: [
     ...QueueProviders,
     ...PlayerProviders,
@@ -21,8 +22,6 @@ import {PartyController} from "src/mm/party/party.controller";
     ...RoomProviders,
   ],
 
-  controllers: [
-    PartyController
-  ]
+  controllers: [PartyController],
 })
 export class MmModule {}

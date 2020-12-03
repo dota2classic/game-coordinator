@@ -30,6 +30,7 @@
     "@nestjs/cqrs": "^7.0.1",
     "@nestjs/microservices": "7.4.4",
     "@nestjs/platform-express": "7.4.4",
+    "@nestjs/schedule": "^0.4.1",
     "@ntegral/nestjs-sentry": "^1.0.4",
     "dotenv": "^8.2.0",
     "redis": "^3.0.2",

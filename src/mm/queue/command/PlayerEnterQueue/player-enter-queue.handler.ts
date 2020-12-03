@@ -39,21 +39,21 @@ export class PlayerEnterQueueHandler
       }),
     );
 
-    let any1Banned = false;
+    // let any1Banned = false;
+    //
+    // const banStuff = formattedEntries.map(async t => {
+    //   if (t.banStatus.isBanned) {
+    //     any1Banned = true;
+    //     await this.ebus.publish(
+    //       new MatchmakingBannedEvent(t.playerId, t.banStatus),
+    //     );
+    //   }
+    // });
+    //
+    // await Promise.all(banStuff);
 
-    const banStuff = formattedEntries.map(async t => {
-      if (t.banStatus.isBanned) {
-        any1Banned = true;
-        await this.ebus.publish(
-          new MatchmakingBannedEvent(t.playerId, t.banStatus),
-        );
-      }
-    });
 
-    await Promise.all(banStuff);
-
-
-    if (!any1Banned)
+    // if (!any1Banned)
       this.ebus.publish(
         new PlayerEnterQueueResolvedEvent(p.id, formattedEntries, command.mode),
       );

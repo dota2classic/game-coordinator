@@ -6,7 +6,7 @@ import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
 import {QueueModel} from "src/mm/queue/model/queue.model";
 import {QueueService} from "src/mm/queue/service/queue.service";
 import {FoundGameParty, GameFoundEvent, PlayerInParty,} from "src/mm/queue/event/game-found.event";
-import {RoomSizes} from "src/gateway/gateway/shared-types/matchmaking-mode";
+import {MatchmakingMode, RoomSizes,} from "src/gateway/gateway/shared-types/matchmaking-mode";
 import {EnterQueueDeclinedEvent} from "src/gateway/gateway/events/mm/enter-queue-declined.event";
 
 @CommandHandler(EnterQueueCommand)
@@ -26,7 +26,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     // here we check for ban status
 
     const bannedPlayers = players.filter(player => player.banStatus?.isBanned);
-    if (bannedPlayers.length > 0) {
+    if (bannedPlayers.length > 0 && mode !== MatchmakingMode.BOTS) {
       // if there are banned players in party, we can't let them in
       this.ebus.publish(
         new EnterQueueDeclinedEvent(
@@ -59,8 +59,14 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
   }
 
   private async checkForGame(q: QueueModel) {
+
+    // This mode is exclusive and uses interval-based game findings
+
+    // todo uncomment
+    if(q.mode === MatchmakingMode.BOTS) return;
     // if not enough players, return immediately
     if (q.size < RoomSizes[q.mode]) return;
+    // if (q.mode !== MatchmakingMode.BOTS && q.size < RoomSizes[q.mode]) return;
 
     const game = this.queueService.findGame(q);
 

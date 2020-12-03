@@ -1,16 +1,13 @@
-import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
-import { Logger } from "@nestjs/common";
-import {
-  CreateRoomCommand,
-  PartyInRoom,
-} from "src/mm/room/command/CreateRoom/create-room.command";
-import { RoomModel } from "src/mm/room/model/room.model";
-import { RoomEntry } from "src/mm/room/model/room-entry";
-import { RoomRepository } from "src/mm/room/repository/room.repository";
-import { RoomCreatedEvent } from "src/mm/room/event/room-created.event";
+import {CommandHandler, EventBus, ICommandHandler} from "@nestjs/cqrs";
+import {Logger} from "@nestjs/common";
+import {CreateRoomCommand, PartyInRoom,} from "src/mm/room/command/CreateRoom/create-room.command";
+import {RoomModel} from "src/mm/room/model/room.model";
+import {RoomEntry} from "src/mm/room/model/room-entry";
+import {RoomRepository} from "src/mm/room/repository/room.repository";
+import {RoomCreatedEvent} from "src/mm/room/event/room-created.event";
 import {MatchmakingMode, RoomSizes} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { RoomBalance, TeamEntry } from "src/mm/room/model/entity/room-balance";
-import { RoomImpossibleEvent } from "src/gateway/gateway/events/mm/room-impossible.event";
+import {RoomBalance} from "src/mm/room/model/entity/room-balance";
+import {RoomImpossibleEvent} from "src/gateway/gateway/events/mm/room-impossible.event";
 import {BalanceService} from "src/mm/queue/service/balance.service";
 
 @CommandHandler(CreateRoomCommand)
@@ -56,6 +53,10 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
     const teamSize = Math.round(RoomSizes[mode] / 2);
     if (mode === MatchmakingMode.RANKED)
       return this.balanceService.rankedBalance(teamSize, parties);
+
+
+    if(mode === MatchmakingMode.BOTS)
+      return this.balanceService.botsBalance(teamSize, parties)
 
     // todo
     else return this.soloMidBalance(teamSize, parties);

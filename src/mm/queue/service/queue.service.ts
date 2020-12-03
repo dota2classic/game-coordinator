@@ -1,20 +1,30 @@
-import { Injectable } from "@nestjs/common";
-import { QueueModel } from "src/mm/queue/model/queue.model";
-import {
-  MatchmakingMode,
-  RoomSizes,
-} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { QueueGameEntity } from "src/mm/queue/model/entity/queue-game.entity";
-import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
-import { BalanceService } from "src/mm/queue/service/balance.service";
-import { PartyInRoom } from "src/mm/room/command/CreateRoom/create-room.command";
-import { PlayerInPartyInRoom } from "src/mm/room/model/room-entry";
-import { findFirstCombination } from "src/util/combinations";
-import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
+import {Injectable} from "@nestjs/common";
+import {QueueModel} from "src/mm/queue/model/queue.model";
+import {MatchmakingMode, RoomSizes,} from "src/gateway/gateway/shared-types/matchmaking-mode";
+import {QueueGameEntity} from "src/mm/queue/model/entity/queue-game.entity";
+import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
+import {BalanceService} from "src/mm/queue/service/balance.service";
+import {PartyInRoom} from "src/mm/room/command/CreateRoom/create-room.command";
+import {PlayerInPartyInRoom} from "src/mm/room/model/room-entry";
+import {findFirstCombination} from "src/util/combinations";
+import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
+import {Cron} from "@nestjs/schedule";
+import {EventBus} from "@nestjs/cqrs";
+import {GameCheckCycleEvent} from "src/mm/queue/event/game-check-cycle.event";
 
 @Injectable()
 export class QueueService {
-  constructor(private readonly balanceService: BalanceService) {}
+  constructor(
+    private readonly balanceService: BalanceService,
+    private readonly ebus: EventBus,
+  ) {}
+
+  @Cron("0 */10 * * * *")
+  // @Cron("*/10 * * * * *")
+  async checkBotGame() {
+    this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.BOTS));
+  }
+
   public findGame(q: QueueModel): QueueGameEntity | undefined {
     if (q.mode === MatchmakingMode.RANKED) {
       return this.findRankedGame(q);
@@ -22,6 +32,10 @@ export class QueueService {
 
     if (q.mode === MatchmakingMode.SOLOMID) {
       return this.findSoloMidGame(q);
+    }
+
+    if (q.mode === MatchmakingMode.BOTS) {
+      return this.findBotsGame(q);
     }
 
     return this.findUnrankedGame(q);
@@ -109,7 +123,7 @@ export class QueueService {
 
     if (!set) return undefined;
 
-    console.log(JSON.stringify(set))
+    console.log(JSON.stringify(set));
     return new QueueGameEntity(
       q.mode,
       set.map(
@@ -187,5 +201,23 @@ export class QueueService {
       console.error(e);
       return undefined;
     }
+  }
+
+  private findBotsGame(q: QueueModel): QueueGameEntity | undefined {
+    if (q.size < 2) return undefined;
+
+    // ok, how do we balance bot games?
+    const sorted = [...q.entries].sort((a, b) => b.size - a.size);
+
+    let slice: QueueEntryModel[] = [];
+    let pc = 0;
+    for (let i = 0; i < sorted.length; i++) {
+      slice.push(sorted[i]);
+      pc += sorted[i].size;
+
+      if (pc >= 10) break;
+    }
+
+    return new QueueGameEntity(q.mode, slice);
   }
 }
