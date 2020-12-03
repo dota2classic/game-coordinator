@@ -84,7 +84,6 @@ export class BalanceService {
       .sort((a, b) => b.score.totalScore - a.score.totalScore);
 
     preparedParties.forEach(({ original: it, score }) => {
-
       if (
         // if radiant less mmr and
         (radiantMMR <= direMMR && radiantPlayerCount < teamSize) ||
@@ -112,37 +111,30 @@ export class BalanceService {
     });
 
     if (radiantPlayerCount !== teamSize || direPlayerCount !== teamSize) {
-      throw new BalanceException();
+      throw new BalanceException(`Final size dont fit ${radiantPlayerCount} ${direPlayerCount}`);
     }
 
     const rAvrg = radiantMMR / teamSize;
     const dAvrg = direMMR / teamSize;
 
-    console.log(
-      radiantParties.map(
-        m => this.getPartyScore(BalanceService.convertPartyDTO(m)).totalScore,
-      ),
-    );
-    console.log(
-      direParties.map(
-        m => this.getPartyScore(BalanceService.convertPartyDTO(m)).totalScore,
-      ),
-    );
-
     if (Math.abs(rAvrg - dAvrg) >= this.MAX_AVERAGE_SCORE_FOR_GAME) {
-      throw new BalanceException();
+      throw new BalanceException(
+        `Radiant ${rAvrg} Dire ${dAvrg}. Diff: ${Math.abs(
+          rAvrg - dAvrg,
+        )}, limit: ${this.MAX_AVERAGE_SCORE_FOR_GAME}`,
+      );
     }
     return new RoomBalance(
       [radiantParties, direParties].map(list => new TeamEntry(list)),
     );
   }
 
-  public soloMidBalance(teamSize: number, parties: PartyInRoom[]){
-    if(parties.length !== 2) throw new BalanceException();
+  public soloMidBalance(teamSize: number, parties: PartyInRoom[]) {
+    if (parties.length !== 2) throw new BalanceException();
 
     return new RoomBalance(
       [[parties[0]], [parties[1]]].map(list => new TeamEntry(list)),
-    )
+    );
   }
 
   private static convertPartyDTO(it: PartyInRoom): PartyBalanceUnit {

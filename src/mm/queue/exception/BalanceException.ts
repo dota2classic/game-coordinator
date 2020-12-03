@@ -1,5 +1,5 @@
-export class BalanceException extends Error{
-  constructor() {
-    super("Can't balance")
+export class BalanceException extends Error {
+  constructor(e: string = "Can't balance") {
+    super(e);
   }
 }

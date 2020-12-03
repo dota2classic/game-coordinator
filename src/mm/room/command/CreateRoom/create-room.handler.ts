@@ -10,7 +10,6 @@ import { RoomRepository } from "src/mm/room/repository/room.repository";
 import { RoomCreatedEvent } from "src/mm/room/event/room-created.event";
 import {MatchmakingMode, RoomSizes} from "src/gateway/gateway/shared-types/matchmaking-mode";
 import { RoomBalance, TeamEntry } from "src/mm/room/model/entity/room-balance";
-import { RuntimeException } from "@nestjs/core/errors/exceptions/runtime.exception";
 import { RoomImpossibleEvent } from "src/gateway/gateway/events/mm/room-impossible.event";
 import {BalanceService} from "src/mm/queue/service/balance.service";
 
