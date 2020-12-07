@@ -76,11 +76,18 @@ export class RoomModel extends AggregateRoot {
 
     if (this.players.find(t => t.id.value === playerId.value)) {
       // one vote for one guy
-      if(this.readyCheckMap.get(playerId.value) !== ReadyState.PENDING) return;
+      if (this.readyCheckMap.get(playerId.value) !== ReadyState.PENDING) return;
 
       this.readyCheckMap.set(playerId.value, state);
       this.apply(
-        new ReadyStateUpdatedEvent(this.id, this.mode, this.readyCheckState),
+        new ReadyStateUpdatedEvent(
+          this.id,
+          this.mode,
+          [...this.readyCheckMap.entries()].map(
+            ([id, state]) => new ReadyCheckEntry(new PlayerId(id), state),
+          ),
+          this.readyCheckState,
+        ),
       );
       if (this.acceptedCount === this.players.length) {
         this.completeReadyCheck();
