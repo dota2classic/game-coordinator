@@ -131,6 +131,8 @@ export class BalanceService {
     );
   }
 
+
+
   public soloMidBalance(teamSize: number, parties: PartyInRoom[]) {
     if (parties.length !== 2) throw new BalanceException();
 

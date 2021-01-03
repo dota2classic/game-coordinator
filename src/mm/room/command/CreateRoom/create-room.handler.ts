@@ -17,7 +17,7 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
   constructor(
     private readonly roomRepository: RoomRepository,
     private readonly ebus: EventBus,
-    private readonly balanceService: BalanceService
+    private readonly balanceService: BalanceService,
   ) {}
 
   async execute({ parties, mode }: CreateRoomCommand) {
@@ -54,19 +54,16 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
     if (mode === MatchmakingMode.RANKED)
       return this.balanceService.rankedBalance(teamSize, parties);
 
-
-    if(mode === MatchmakingMode.BOTS)
-      return this.balanceService.botsBalance(teamSize, parties)
-
-    // todo
-    else return this.soloMidBalance(teamSize, parties);
+    if (mode === MatchmakingMode.BOTS)
+      return this.balanceService.botsBalance(teamSize, parties);
+    // todo: more specific balance algorithms. ranked should work for now though
+    else return this.balanceService.rankedBalance(teamSize, parties);
   }
 
   private async soloMidBalance(
     teamSize: number,
     parties: PartyInRoom[],
   ): Promise<RoomBalance> {
-    // todo: another balance.
     return this.balanceService.soloMidBalance(teamSize, parties);
   }
 }
