@@ -17,6 +17,7 @@ import {
 import { EnterQueueDeclinedEvent } from "src/gateway/gateway/events/mm/enter-queue-declined.event";
 import { PartyId } from "src/gateway/gateway/shared-types/party-id";
 import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
+import {EnterRankedQueueDeclinedEvent} from "src/gateway/gateway/events/mm/enter-ranked-queue-declined.event";
 
 @CommandHandler(EnterQueueCommand)
 export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
@@ -58,6 +59,20 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     mode: MatchmakingMode,
     players: PlayerInQueueEntity[],
   ) {
+    const newPlayers = players.filter(player => player.unrankedGamesLeft > 0);
+    if (newPlayers.length > 0) {
+      // if there are banned players in party, we can't let them in
+      this.ebus.publish(
+        new EnterRankedQueueDeclinedEvent(
+          partyId,
+          players.map(t => t.playerId),
+          newPlayers.map(t => t.playerId),
+          mode,
+        ),
+      );
+
+      return true;
+    }
 
 
 
