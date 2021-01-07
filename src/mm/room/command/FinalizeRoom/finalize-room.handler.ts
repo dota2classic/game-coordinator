@@ -22,10 +22,10 @@ export class FinalizeRoomHandler
 
     if (command.state.accepted === command.state.total) {
       const radiant = room.balance.teams[0].parties.flatMap(t =>
-        t.players.map(t => t.id),
+        t.players.map(t => t.playerId),
       );
       const dire = room.balance.teams[1].parties.flatMap(t =>
-        t.players.map(t => t.id),
+        t.players.map(t => t.playerId),
       );
       this.ebus.publish(
         new RoomReadyEvent(
@@ -40,7 +40,7 @@ export class FinalizeRoomHandler
       this.ebus.publish(
         new RoomNotReadyEvent(
           room.id,
-          room.players.map(t => t.id),
+          room.players.map(t => t.playerId),
         ),
       );
     }

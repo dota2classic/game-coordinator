@@ -38,7 +38,7 @@ export class RoomModel extends AggregateRoot {
 
   startReadyCheck() {
     this.players.forEach(t =>
-      this.readyCheckMap.set(t.id.value, ReadyState.PENDING),
+      this.readyCheckMap.set(t.playerId.value, ReadyState.PENDING),
     );
     this.readyCheckComplete = false;
     this.apply(
@@ -56,8 +56,8 @@ export class RoomModel extends AggregateRoot {
   readyCheckTimeout() {
     if (this.readyCheckComplete) return;
     this.players.forEach(t => {
-      if (this.readyCheckMap.get(t.id.value) === ReadyState.PENDING) {
-        this.readyCheckMap.set(t.id.value, ReadyState.TIMEOUT);
+      if (this.readyCheckMap.get(t.playerId.value) === ReadyState.PENDING) {
+        this.readyCheckMap.set(t.playerId.value, ReadyState.TIMEOUT);
       }
     });
     this.completeReadyCheck();
@@ -74,7 +74,7 @@ export class RoomModel extends AggregateRoot {
     // no-no, nothing here.
     if (this.readyCheckComplete) return;
 
-    if (this.players.find(t => t.id.value === playerId.value)) {
+    if (this.players.find(t => t.playerId.value === playerId.value)) {
       // one vote for one guy
       if (this.readyCheckMap.get(playerId.value) !== ReadyState.PENDING) return;
 
@@ -120,7 +120,7 @@ export class RoomModel extends AggregateRoot {
     return this.entries.filter(t => {
       // if all from this party accepted, we re count them as good
       return t.players.reduce((total, b) => {
-        return total && this.readyCheckMap.get(b.id.value) === ReadyState.READY;
+        return total && this.readyCheckMap.get(b.playerId.value) === ReadyState.READY;
       }, true);
     });
   }

@@ -87,63 +87,6 @@ export class QueueService {
     return new QueueGameEntity(q.mode, slice);
   }
 
-  private rankedGameBalance2(q: QueueModel): QueueGameEntity | undefined {
-    const pins = q.entries.map(
-      z =>
-        new PartyInRoom(
-          z.id,
-          z.players.map(
-            p =>
-              new PlayerInPartyInRoom(
-                p.playerId,
-                p.mmr,
-                p.recentWinrate,
-                p.gamesPlayed,
-              ),
-          ),
-        ),
-    );
-
-    // this thing finds first SET with total of 10 players, which meets balance algo
-    const set: PartyInRoom[] | undefined = findFirstCombination(
-      RoomSizes[MatchmakingMode.RANKED],
-      pins,
-      parties => {
-        try {
-          this.balanceService.rankedBalance(RoomSizes[q.mode] / 2, parties);
-
-          return true;
-        } catch (e) {
-          console.error(e);
-          return false;
-        }
-      },
-      party => party.players.length,
-    );
-
-    if (!set) return undefined;
-
-    console.log(JSON.stringify(set));
-    return new QueueGameEntity(
-      q.mode,
-      set.map(
-        p =>
-          new QueueEntryModel(
-            p.id,
-            q.mode,
-            p.players.map(
-              u =>
-                new PlayerInQueueEntity(
-                  u.id,
-                  u.mmr,
-                  u.recentWinrate,
-                  u.gamesPlayed,
-                ),
-            ),
-          ),
-      ),
-    );
-  }
 
   private rankedGameBalance(q: QueueModel) {
     const sortedBySize = [...q.entries];
@@ -183,15 +126,7 @@ export class QueueService {
           z =>
             new PartyInRoom(
               z.id,
-              z.players.map(
-                p =>
-                  new PlayerInPartyInRoom(
-                    p.playerId,
-                    p.mmr,
-                    p.recentWinrate,
-                    p.gamesPlayed,
-                  ),
-              ),
+              z.players
             ),
         ),
       );

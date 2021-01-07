@@ -34,15 +34,7 @@ export class RoomSaga {
               party =>
                 new PartyInRoom(
                   party.id,
-                  party.players.map(
-                    player =>
-                      new PlayerInPartyInRoom(
-                        player.id,
-                        player.mmr,
-                        player.recentWinrate,
-                        player.gamesPlayed,
-                      ),
-                  ),
+                  party.players
                 ),
             ),
           ),
@@ -83,15 +75,7 @@ export class RoomSaga {
           t =>
             new EnterQueueCommand(
               t.partyId,
-              t.players.map(
-                i =>
-                  new PlayerInQueueEntity(
-                    i.id,
-                    i.mmr,
-                    i.recentWinrate,
-                    i.gamesPlayed
-                  ),
-              ),
+              t.players,
               t.mode,
             ),
         ),

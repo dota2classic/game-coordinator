@@ -32,15 +32,7 @@ export class GameCheckCycleHandler
           t =>
             new FoundGameParty(
               t.partyID,
-              t.players.map(
-                p =>
-                  new PlayerInParty(
-                    p.playerId,
-                    p.mmr,
-                    p.recentWinrate,
-                    p.gamesPlayed,
-                  ),
-              ),
+              t.players
             ),
         ),
       ),

@@ -34,7 +34,8 @@ describe("PlayerEnterQueueHandler", () => {
           rankedGamesPlayed: 100,
           totalWinrate: 0.5,
           bestHeroes: [],
-          rank: 5
+          rank: 5,
+          newbieGamesLeft: 0
         },
         new BanStatus(false, 0, BanReason.GAME_DECLINE),
       ),
@@ -71,6 +72,8 @@ describe("PlayerEnterQueueHandler", () => {
           mmr: 3000,
           recentWinrate: 0.5,
           gamesPlayed: 100,
+          banStatus: undefined,
+          unrankedGamesLeft: 0
         })),
         MatchmakingMode.SOLOMID,
       ),

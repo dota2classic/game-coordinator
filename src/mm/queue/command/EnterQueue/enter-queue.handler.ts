@@ -1,13 +1,22 @@
-import {CommandHandler, EventBus, ICommandHandler} from "@nestjs/cqrs";
-import {Logger} from "@nestjs/common";
-import {EnterQueueCommand} from "src/mm/queue/command/EnterQueue/enter-queue.command";
-import {QueueRepository} from "src/mm/queue/repository/queue.repository";
-import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
-import {QueueModel} from "src/mm/queue/model/queue.model";
-import {QueueService} from "src/mm/queue/service/queue.service";
-import {FoundGameParty, GameFoundEvent, PlayerInParty,} from "src/mm/queue/event/game-found.event";
-import {MatchmakingMode, RoomSizes,} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import {EnterQueueDeclinedEvent} from "src/gateway/gateway/events/mm/enter-queue-declined.event";
+import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
+import { Logger } from "@nestjs/common";
+import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
+import { QueueRepository } from "src/mm/queue/repository/queue.repository";
+import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
+import { QueueModel } from "src/mm/queue/model/queue.model";
+import { QueueService } from "src/mm/queue/service/queue.service";
+import {
+  FoundGameParty,
+  GameFoundEvent,
+  PlayerInParty,
+} from "src/mm/queue/event/game-found.event";
+import {
+  MatchmakingMode,
+  RoomSizes,
+} from "src/gateway/gateway/shared-types/matchmaking-mode";
+import { EnterQueueDeclinedEvent } from "src/gateway/gateway/events/mm/enter-queue-declined.event";
+import { PartyId } from "src/gateway/gateway/shared-types/party-id";
+import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
 
 @CommandHandler(EnterQueueCommand)
 export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
@@ -19,10 +28,11 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     private readonly queueService: QueueService,
   ) {}
 
-  async execute({ partyId, mode, players }: EnterQueueCommand) {
-    const q = await this.queueRepository.get(mode);
-    if (!q) return;
-
+  private checkForBans(
+    partyId: PartyId,
+    mode: MatchmakingMode,
+    players: PlayerInQueueEntity[],
+  ) {
     // here we check for ban status
 
     const bannedPlayers = players.filter(player => player.banStatus?.isBanned);
@@ -37,7 +47,35 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
         ),
       );
 
+      return true;
+    }
+
+    return false;
+  }
+
+  private checkForNewbies(
+    partyId: PartyId,
+    mode: MatchmakingMode,
+    players: PlayerInQueueEntity[],
+  ) {
+
+
+
+    console.log(JSON.stringify(players))
+
+    return false;
+  }
+  async execute({ partyId, mode, players }: EnterQueueCommand) {
+    const q = await this.queueRepository.get(mode);
+    if (!q) return;
+
+    if (this.checkForBans(partyId, mode, players)) {
+      // if can't go cause of bans we return
       return;
+    }
+
+    if(this.checkForNewbies(partyId, mode, players)){
+      return ;
     }
 
     const allQueues = await this.queueRepository.all();
@@ -59,11 +97,10 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
   }
 
   private async checkForGame(q: QueueModel) {
-
     // This mode is exclusive and uses interval-based game findings
 
     // todo uncomment
-    if(q.mode === MatchmakingMode.BOTS) return;
+    if (q.mode === MatchmakingMode.BOTS) return;
     // if not enough players, return immediately
     if (q.size < RoomSizes[q.mode]) return;
     // if (q.mode !== MatchmakingMode.BOTS && q.size < RoomSizes[q.mode]) return;
@@ -82,15 +119,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
           t =>
             new FoundGameParty(
               t.partyID,
-              t.players.map(
-                p =>
-                  new PlayerInParty(
-                    p.playerId,
-                    p.mmr,
-                    p.recentWinrate,
-                    p.gamesPlayed,
-                  ),
-              ),
+              t.players
             ),
         ),
       ),

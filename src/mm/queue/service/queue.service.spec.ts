@@ -24,7 +24,7 @@ describe("QueueService", () => {
     expect(qs.findGame(qModel)).toBeUndefined();
     qModel.addEntry(
       new QueueEntryModel("1", MatchmakingMode.SOLOMID, [
-        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100),
+        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100, undefined, 0),
       ]),
     );
     expect(qs.findGame(qModel)).toBeUndefined();
@@ -34,12 +34,12 @@ describe("QueueService", () => {
     const qModel = new QueueModel(MatchmakingMode.SOLOMID);
     qModel.addEntry(
       new QueueEntryModel("1", MatchmakingMode.SOLOMID, [
-        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100),
+        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100, undefined, 0),
       ]),
     );
     qModel.addEntry(
       new QueueEntryModel("2", MatchmakingMode.SOLOMID, [
-        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100),
+        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100, undefined, 0),
       ]),
     );
     expect(qs.findGame(qModel)).toBeDefined();
@@ -49,8 +49,8 @@ describe("QueueService", () => {
     const qModel = new QueueModel(MatchmakingMode.SOLOMID);
     qModel.addEntry(
       new QueueEntryModel("1", MatchmakingMode.SOLOMID, [
-        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100),
-        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100),
+        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100, undefined, 0),
+        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100, undefined, 0),
       ]),
     );
     expect(qs.findGame(qModel)).toBeDefined();
@@ -60,9 +60,9 @@ describe("QueueService", () => {
     const qModel = new QueueModel(MatchmakingMode.SOLOMID);
     qModel.addEntry(
       new QueueEntryModel("1", MatchmakingMode.SOLOMID, [
-        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100),
-        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100),
-        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100),
+        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100, undefined, 0),
+        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100, undefined, 0),
+        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100, undefined, 0),
       ]),
     );
     expect(qs.findGame(qModel)).toBeUndefined();

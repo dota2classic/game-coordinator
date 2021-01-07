@@ -7,7 +7,6 @@ import {GetPlayerInfoQuery} from "src/gateway/gateway/queries/GetPlayerInfo/get-
 import {Dota2Version} from "src/gateway/gateway/shared-types/dota2version";
 import {GetPlayerInfoQueryResult} from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
 import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
-import {MatchmakingBannedEvent} from "src/gateway/gateway/events/matchmaking-banned.event";
 
 @CommandHandler(PlayerEnterQueueCommand)
 export class PlayerEnterQueueHandler
@@ -35,27 +34,13 @@ export class PlayerEnterQueueHandler
           recentWinrate: mmr.recentWinrate,
           gamesPlayed: mmr.summary.rankedGamesPlayed,
           banStatus: mmr.banStatus,
+          unrankedGamesLeft: mmr.summary.newbieGamesLeft,
         };
       }),
     );
 
-    // let any1Banned = false;
-    //
-    // const banStuff = formattedEntries.map(async t => {
-    //   if (t.banStatus.isBanned) {
-    //     any1Banned = true;
-    //     await this.ebus.publish(
-    //       new MatchmakingBannedEvent(t.playerId, t.banStatus),
-    //     );
-    //   }
-    // });
-    //
-    // await Promise.all(banStuff);
-
-
-    // if (!any1Banned)
-      this.ebus.publish(
-        new PlayerEnterQueueResolvedEvent(p.id, formattedEntries, command.mode),
-      );
+    this.ebus.publish(
+      new PlayerEnterQueueResolvedEvent(p.id, formattedEntries, command.mode),
+    );
   }
 }

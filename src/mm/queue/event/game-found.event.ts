@@ -1,6 +1,7 @@
 import {MatchmakingMode} from "../../../gateway/gateway/shared-types/matchmaking-mode";
 import {PartyId} from "../../../gateway/gateway/shared-types/party-id";
 import {PlayerId} from "src/gateway/gateway/shared-types/player-id";
+import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
 
 export class PlayerInParty {
   constructor(
@@ -14,7 +15,7 @@ export class PlayerInParty {
 export class FoundGameParty {
   constructor(
     public readonly id: PartyId,
-    public readonly players: PlayerInParty[],
+    public readonly players: PlayerInQueueEntity[],
   ) {}
 }
 export class GameFoundEvent {

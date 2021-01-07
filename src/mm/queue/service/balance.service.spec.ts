@@ -1,11 +1,11 @@
-import {Test, TestingModule} from "@nestjs/testing";
-import {TestEnvironment} from "src/@test/cqrs";
-import {BalanceService} from "src/mm/queue/service/balance.service";
-import {PartyInRoom} from "src/mm/room/command/CreateRoom/create-room.command";
-import {PlayerInPartyInRoom} from "src/mm/room/model/room-entry";
-import {randomUser} from "src/@test/values";
-import {BalanceException} from "src/mm/queue/exception/BalanceException";
-import {inspect} from "util";
+import { Test, TestingModule } from "@nestjs/testing";
+import { TestEnvironment } from "src/@test/cqrs";
+import { BalanceService } from "src/mm/queue/service/balance.service";
+import { PartyInRoom } from "src/mm/room/command/CreateRoom/create-room.command";
+import { randomUser } from "src/@test/values";
+import { BalanceException } from "src/mm/queue/exception/BalanceException";
+import { inspect } from "util";
+import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
 
 describe("BalanceService", () => {
   let module: TestingModule;
@@ -85,7 +85,7 @@ describe("BalanceService", () => {
   it("should able to balance an OK game", () => {
     const p = new Array(10).fill(null).map((t, index) => {
       return new PartyInRoom("id" + index, [
-        new PlayerInPartyInRoom(randomUser(), 1000, 0.5, 1000),
+        new PlayerInQueueEntity(randomUser(), 1000, 0.5, 1000, undefined, 0),
       ]);
     });
     expect(() => {
@@ -96,25 +96,26 @@ describe("BalanceService", () => {
   it("should not be able to balance bad game(high score difference)", () => {
     const p: PartyInRoom[] = [
       new PartyInRoom("big mmr party", [
-        new PlayerInPartyInRoom(randomUser(), 4500, 0.7, 100),
-        new PlayerInPartyInRoom(randomUser(), 3900, 0.6, 100),
+        new PlayerInQueueEntity(randomUser(), 4500, 0.7, 100, undefined, 0),
+        new PlayerInQueueEntity(randomUser(), 3900, 0.6, 100, undefined, 0),
       ]),
       ...new Array(8)
         .fill(null)
         .map(
           (t, index) =>
             new PartyInRoom("id" + index, [
-              new PlayerInPartyInRoom(
+              new PlayerInQueueEntity(
                 randomUser(),
                 2000 + Math.round(Math.random() * 1000 - 500),
                 0.5,
                 1000,
+                undefined,
+                0
               ),
             ]),
-        )
+        ),
     ];
 
     expect(() => service.rankedBalance(5, p)).toThrow(BalanceException);
   });
-
 });
