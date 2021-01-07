@@ -1,22 +1,15 @@
-import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
-import { Logger } from "@nestjs/common";
-import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
-import { QueueRepository } from "src/mm/queue/repository/queue.repository";
-import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
-import { QueueModel } from "src/mm/queue/model/queue.model";
-import { QueueService } from "src/mm/queue/service/queue.service";
-import {
-  FoundGameParty,
-  GameFoundEvent,
-  PlayerInParty,
-} from "src/mm/queue/event/game-found.event";
-import {
-  MatchmakingMode,
-  RoomSizes,
-} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { EnterQueueDeclinedEvent } from "src/gateway/gateway/events/mm/enter-queue-declined.event";
-import { PartyId } from "src/gateway/gateway/shared-types/party-id";
-import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
+import {CommandHandler, EventBus, ICommandHandler} from "@nestjs/cqrs";
+import {Logger} from "@nestjs/common";
+import {EnterQueueCommand} from "src/mm/queue/command/EnterQueue/enter-queue.command";
+import {QueueRepository} from "src/mm/queue/repository/queue.repository";
+import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
+import {QueueModel} from "src/mm/queue/model/queue.model";
+import {QueueService} from "src/mm/queue/service/queue.service";
+import {FoundGameParty, GameFoundEvent,} from "src/mm/queue/event/game-found.event";
+import {MatchmakingMode, RoomSizes,} from "src/gateway/gateway/shared-types/matchmaking-mode";
+import {EnterQueueDeclinedEvent} from "src/gateway/gateway/events/mm/enter-queue-declined.event";
+import {PartyId} from "src/gateway/gateway/shared-types/party-id";
+import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
 import {EnterRankedQueueDeclinedEvent} from "src/gateway/gateway/events/mm/enter-ranked-queue-declined.event";
 
 @CommandHandler(EnterQueueCommand)
@@ -59,6 +52,8 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     mode: MatchmakingMode,
     players: PlayerInQueueEntity[],
   ) {
+
+    if(mode !== MatchmakingMode.RANKED) return false;
     const newPlayers = players.filter(player => player.unrankedGamesLeft > 0);
     if (newPlayers.length > 0) {
       // if there are banned players in party, we can't let them in

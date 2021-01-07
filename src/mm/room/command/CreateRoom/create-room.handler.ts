@@ -56,14 +56,10 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
 
     if (mode === MatchmakingMode.BOTS)
       return this.balanceService.botsBalance(teamSize, parties);
+
+    if (mode === MatchmakingMode.SOLOMID)
+      return this.balanceService.soloMidBalance(teamSize, parties);
     // todo: more specific balance algorithms. ranked should work for now though
     else return this.balanceService.rankedBalance(teamSize, parties);
-  }
-
-  private async soloMidBalance(
-    teamSize: number,
-    parties: PartyInRoom[],
-  ): Promise<RoomBalance> {
-    return this.balanceService.soloMidBalance(teamSize, parties);
   }
 }
