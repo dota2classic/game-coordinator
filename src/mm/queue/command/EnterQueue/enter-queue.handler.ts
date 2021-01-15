@@ -110,7 +110,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     // This mode is exclusive and uses interval-based game findings
 
     // todo uncomment
-    if (q.mode === MatchmakingMode.BOTS) return;
+    if (q.mode === MatchmakingMode.BOTS && q.size !== RoomSizes[q.mode]) return;
     // if not enough players, return immediately
     if (q.size < RoomSizes[q.mode]) return;
     // if (q.mode !== MatchmakingMode.BOTS && q.size < RoomSizes[q.mode]) return;
