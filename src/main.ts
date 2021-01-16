@@ -1,5 +1,5 @@
 import { NestFactory } from "@nestjs/core";
-import { CommandBus, EventBus, EventPublisher } from "@nestjs/cqrs";
+import {CommandBus, EventBus, EventPublisher, QueryBus} from "@nestjs/cqrs";
 import { QueueModel } from "./mm/queue/model/queue.model";
 import { PartyModel } from "./mm/party/model/party.model";
 import { PlayerModel } from "./mm/player/model/player.model";
@@ -41,29 +41,30 @@ async function bootstrap() {
     },
   );
 
+  const qbus = app.get(QueryBus);
   const ebus = app.get(EventBus);
-  const cbus = app.get(CommandBus);
 
   const clogger = new Logger("CommandLogger");
-  const elogger = new Logger("EventLogger");
+  const qlogger = new Logger("QueryBus");
 
-  ebus._subscribe(
+
+  qbus._subscribe(
     new Subscriber<any>(e => {
-      elogger.log(
+      qlogger.log(
         `${inspect(e)}`,
         // e.__proto__.constructor.name,
       );
     }),
   );
-
-  cbus._subscribe(
-    new Subscriber<any>(e => {
-      clogger.log(
-        `${inspect(e)}`,
-        // e.__proto__.constructor.name,
-      );
-    }),
-  );
+  //
+  // cbus._subscribe(
+  //   new Subscriber<any>(e => {
+  //     clogger.log(
+  //       `${inspect(e)}`,
+  //       // e.__proto__.constructor.name,
+  //     );
+  //   }),
+  // );
 
   await app.listenAsync();
   // console.log(`Started matchmaking core`);

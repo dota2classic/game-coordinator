@@ -1,19 +1,19 @@
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { Logger } from "@nestjs/common";
 import { QueueRepository } from "src/mm/queue/repository/queue.repository";
-import { QueueStateQuery } from "src/gateway/gateway/queries/QueueState/queue-state.query";
-import { QueueStateQueryResult } from "src/gateway/gateway/queries/QueueState/queue-state-query.result";
+import { GetQueueStateQuery } from "src/gateway/gateway/queries/QueueState/get-queue-state.query";
+import { GetQueueStateQueryResult } from "src/gateway/gateway/queries/QueueState/get-queue-state-query.result";
 
-@QueryHandler(QueueStateQuery)
+@QueryHandler(GetQueueStateQuery)
 export class QueueStateHandler
-  implements IQueryHandler<QueueStateQuery, QueueStateQueryResult> {
+  implements IQueryHandler<GetQueueStateQuery, GetQueueStateQueryResult> {
   private readonly logger = new Logger(QueueStateHandler.name);
 
   constructor(private readonly queueRepository: QueueRepository) {}
 
-  async execute(command: QueueStateQuery): Promise<QueueStateQueryResult> {
+  async execute(command: GetQueueStateQuery): Promise<GetQueueStateQueryResult> {
     const q = await this.queueRepository.get(command.mode);
-    return new QueueStateQueryResult(
+    return new GetQueueStateQueryResult(
       command.mode,
       q.entries.map(t => ({
         partyID: t.partyID,
