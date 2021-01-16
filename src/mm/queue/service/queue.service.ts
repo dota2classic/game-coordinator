@@ -19,7 +19,7 @@ export class QueueService {
     private readonly ebus: EventBus,
   ) {}
 
-  @Cron("0 */3 * * * *")
+  @Cron("0 */7 * * * *")
   // @Cron("*/10 * * * * *")
   async checkBotGame() {
     this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.BOTS));
