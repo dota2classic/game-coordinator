@@ -13,6 +13,11 @@ export class QueueStateHandler
 
   async execute(command: GetQueueStateQuery): Promise<GetQueueStateQueryResult> {
     const q = await this.queueRepository.get(command.mode);
+
+    if(!q) return new GetQueueStateQueryResult(
+      command.mode,
+     []
+    )
     return new GetQueueStateQueryResult(
       command.mode,
       q.entries.map(t => ({
