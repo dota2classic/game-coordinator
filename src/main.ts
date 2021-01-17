@@ -43,7 +43,9 @@ async function bootstrap() {
 
   const qbus = app.get(QueryBus);
   const ebus = app.get(EventBus);
+  const cbus = app.get(CommandBus);
 
+  const elogger = new Logger("EventLogger");
   const clogger = new Logger("CommandLogger");
   const qlogger = new Logger("QueryBus");
 
@@ -57,14 +59,23 @@ async function bootstrap() {
     }),
   );
   //
-  // cbus._subscribe(
-  //   new Subscriber<any>(e => {
-  //     clogger.log(
-  //       `${inspect(e)}`,
-  //       // e.__proto__.constructor.name,
-  //     );
-  //   }),
-  // );
+  ebus._subscribe(
+    new Subscriber<any>(e => {
+      elogger.log(
+        `${inspect(e)}`,
+        // e.__proto__.constructor.name,
+      );
+    }),
+  );
+
+  cbus._subscribe(
+    new Subscriber<any>(e => {
+      clogger.log(
+        `${inspect(e)}`,
+        // e.__proto__.constructor.name,
+      );
+    }),
+  );
 
   await app.listenAsync();
   // console.log(`Started matchmaking core`);
@@ -75,21 +86,6 @@ async function bootstrap() {
   ebus.publish(new StartEvent());
 
 
-  // wait(1000).then(async t => {
-  //   // find a game and accept it
-  //   const room = waitFor(ebus, RoomCreatedEvent);
-  //   await cbus.execute(
-  //     new PlayerEnterQueueCommand(user1, MatchmakingMode.SOLOMID),
-  //   );
-  //   await cbus.execute(
-  //     new PlayerEnterQueueCommand(user2, MatchmakingMode.SOLOMID),
-  //   );
-  //
-  //   const e = await room;
-  //
-  //   await cbus.execute(new SetReadyCheckCommand(user1, e.id, ReadyState.READY));
-  //   await cbus.execute(new SetReadyCheckCommand(user2, e.id, ReadyState.READY));
-  // });
 }
 bootstrap();
 

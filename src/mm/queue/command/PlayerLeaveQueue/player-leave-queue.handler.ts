@@ -15,9 +15,13 @@ export class PlayerLeaveQueueHandler
   ) {}
 
   async execute(command: PlayerLeaveQueueCommand) {
-    const p = await this.partyRepository.getPartyOf(command.playerID);
-    return this.ebus.publish(
-      new PlayerLeaveQueueResolvedEvent(p.id, command.mode),
-    );
+    try {
+      const p = await this.partyRepository.getPartyOf(command.playerID);
+      return this.ebus.publish(
+        new PlayerLeaveQueueResolvedEvent(p.id, command.mode),
+      );
+    }catch (e){
+
+    }
   }
 }

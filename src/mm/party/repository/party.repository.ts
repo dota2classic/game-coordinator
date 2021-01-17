@@ -15,7 +15,7 @@ export class PartyRepository extends RuntimeRepository<PartyModel, "id"> {
     return [...this.cache.values()].find(it => it.players.find(z => z.value === pid.value));
   }
 
-  async getPartyOf(id: PlayerId) {
+  async getPartyOf(id?: PlayerId) {
     const parties = await this.all();
     const party = parties.find(it => it.players.find(z => z.value == id.value));
 
