@@ -19,6 +19,7 @@ import {MatchmakingBannedEvent} from "src/gateway/gateway/events/matchmaking-ban
 import {RoomImpossibleEvent} from "src/gateway/gateway/events/mm/room-impossible.event";
 import {EnterQueueDeclinedEvent} from "src/gateway/gateway/events/mm/enter-queue-declined.event";
 import {EnterRankedQueueDeclinedEvent} from "src/gateway/gateway/events/mm/enter-ranked-queue-declined.event";
+import {PlayerDeclinedGameEvent} from "src/gateway/gateway/events/mm/player-declined-game.event";
 
 @Injectable()
 export class GatewayService implements OnApplicationBootstrap {
@@ -56,7 +57,8 @@ export class GatewayService implements OnApplicationBootstrap {
       MatchmakingBannedEvent,
 
       EnterQueueDeclinedEvent,
-      EnterRankedQueueDeclinedEvent
+      EnterRankedQueueDeclinedEvent,
+      PlayerDeclinedGameEvent
     ];
     this.ebus
       .pipe(ofType(...publicEvents))

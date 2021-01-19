@@ -12,6 +12,7 @@ import {
 import {ReadyCheckStartedEvent} from "src/gateway/gateway/events/ready-check-started.event";
 import {ReadyStateUpdatedEvent} from "src/gateway/gateway/events/ready-state-updated.event";
 import {MatchmakingMode} from "src/gateway/gateway/shared-types/matchmaking-mode";
+import {PlayerDeclinedGameEvent} from "src/gateway/gateway/events/mm/player-declined-game.event";
 
 export class RoomModel extends AggregateRoot {
   public readonly id: string = uuid();
@@ -100,6 +101,8 @@ export class RoomModel extends AggregateRoot {
             this.readyCheckMap.set(t, ReadyState.READY);
           }
         });
+
+        this.apply(new PlayerDeclinedGameEvent(playerId))
         this.completeReadyCheck();
       }
     }
