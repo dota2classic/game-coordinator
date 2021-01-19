@@ -1,11 +1,11 @@
 import {CacheMiddleware} from "src/gateway/gateway/util/outerQuery";
-import cacheManager, {Cache} from "cache-manager"
+import {caching, Cache} from "cache-manager"
 
 export class QueryCache<T, B> implements CacheMiddleware<T, B> {
   private cache: Cache;
 
   constructor(public readonly ttl: number = 60) {
-    this.cache = cacheManager.caching({
+    this.cache = caching({
       store: "memory",
       max: 5000,
       ttl,

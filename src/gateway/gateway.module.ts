@@ -31,8 +31,7 @@ import {GetPlayerInfoQueryResult} from "src/gateway/gateway/queries/GetPlayerInf
   controllers: [QueryController, CommandController],
   providers: [
     GatewayService,
-    outerQuery(GetPlayerInfoQuery),
-    new QueryCache<GetPlayerInfoQuery, GetPlayerInfoQueryResult>(),
+    outerQuery(GetPlayerInfoQuery, 'RedisQueue', new QueryCache<GetPlayerInfoQuery, GetPlayerInfoQueryResult>())
   ],
 })
 export class GatewayModule {}
