@@ -29,7 +29,7 @@ export class GatewayService implements OnApplicationBootstrap {
     private readonly partyRepository: PartyRepository,
     private readonly queueRepository: QueueRepository,
     @Inject("RedisQueue") private readonly redisEventQueue: ClientProxy,
-  ) {}я
+  ) {}
 
   async onApplicationBootstrap() {
     try {
