@@ -1,0 +1,21 @@
+import {CacheMiddleware} from "src/gateway/gateway/util/outerQuery";
+import cacheManager, {Cache} from "cache-manager"
+
+export class QueryCache<T, B> implements CacheMiddleware<T, B> {
+  private cache: Cache;
+
+  constructor(public readonly ttl: number = 60) {
+    this.cache = cacheManager.caching({
+      store: "memory",
+      max: 5000,
+      ttl,
+    });
+  }
+  async getCached(query: T): Promise<B | undefined> {
+    return this.cache.get(JSON.stringify(query));
+  }
+
+  async setNew(query: T, value: B) {
+    await this.cache.set(JSON.stringify(query), value, { ttl: this.ttl });
+  }
+}
