@@ -19,10 +19,10 @@ export class QueueService {
     private readonly ebus: EventBus,
   ) {}
 
-  @Cron("0 */7 * * * *")
-  // @Cron("*/10 * * * * *")
+  // @Cron("0 */7 * * * *")
+  @Cron("* */10 * * * *")
   async checkBotGame() {
-    // this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.BOTS));
+    this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.BOTS));
   }
 
   public findGame(q: QueueModel): QueueGameEntity | undefined {

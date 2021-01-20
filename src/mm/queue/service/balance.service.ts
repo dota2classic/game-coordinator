@@ -66,7 +66,7 @@ export class BalanceService {
     };
   }
 
-  public rankedBalance(teamSize: number, parties: PartyInRoom[]): RoomBalance {
+  public rankedBalance(teamSize: number, parties: PartyInRoom[], mmrDiffStrict: boolean = true): RoomBalance {
     let radiantMMR = 0;
     let direMMR = 0;
 
@@ -119,7 +119,7 @@ export class BalanceService {
     const rAvrg = radiantMMR / teamSize;
     const dAvrg = direMMR / teamSize;
 
-    if (Math.abs(rAvrg - dAvrg) >= this.MAX_AVERAGE_SCORE_FOR_GAME) {
+    if (mmrDiffStrict && Math.abs(rAvrg - dAvrg) >= this.MAX_AVERAGE_SCORE_FOR_GAME) {
       throw new BalanceException(
         `Radiant ${rAvrg} Dire ${dAvrg}. Diff: ${Math.abs(
           rAvrg - dAvrg,

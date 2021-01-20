@@ -60,6 +60,6 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
     if (mode === MatchmakingMode.SOLOMID)
       return this.balanceService.soloMidBalance(teamSize, parties);
     // todo: more specific balance algorithms. ranked should work for now though
-    else return this.balanceService.rankedBalance(teamSize, parties);
+    else return this.balanceService.rankedBalance(teamSize, parties, false);
   }
 }
