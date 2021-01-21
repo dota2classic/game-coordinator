@@ -61,14 +61,14 @@ async function bootstrap() {
   //   }),
   // );
   //
-  ebus.pipe(ofType<{}, {}>(GameFoundEvent, RoomReadyEvent))._subscribe(
-    new Subscriber<any>(e => {
-      elogger.log(
-        `${inspect(e)}`,
-        // e.__proto__.constructor.name,
-      );
-    }),
-  );
+  // ebus.pipe(ofType<{}, {}>(GameFoundEvent, RoomReadyEvent))._subscribe(
+  //   new Subscriber<any>(e => {
+  //     elogger.log(
+  //       `${inspect(e)}`,
+  //       // e.__proto__.constructor.name,
+  //     );
+  //   }),
+  // );
 
   // cbus._subscribe(
   //   new Subscriber<any>(e => {
