@@ -42,6 +42,7 @@ describe("EnterQueueHandler", () => {
 
     await createTestQ(MatchmakingMode.SOLOMID);
     await createTestQ(MatchmakingMode.RANKED);
+    await createTestQ(MatchmakingMode.UNRANKED);
   });
 
   afterEach(() => {
@@ -102,7 +103,7 @@ describe("EnterQueueHandler", () => {
   });
 
   it("Should find 5x5 game", async () => {
-    const mode = MatchmakingMode.RANKED;
+    const mode = MatchmakingMode.UNRANKED;
 
     const players: PlayerId[] = [];
     for (let i = 0; i < 10; i++) {
@@ -139,7 +140,7 @@ describe("EnterQueueHandler", () => {
   });
 
   it("Should find 5x5 game with parties", async () => {
-    const mode = MatchmakingMode.RANKED;
+    const mode = MatchmakingMode.UNRANKED;
 
     const parties = [
       // solo

@@ -67,4 +67,17 @@ describe("QueueService", () => {
     );
     expect(qs.findGame(qModel)).toBeUndefined();
   });
+
+
+  it('should find ranked game when cycle', () => {
+    // const qModel = new QueueModel(MatchmakingMode.RANKED);
+    // qModel.addEntry(
+    //   new QueueEntryModel("1", MatchmakingMode.SOLOMID, [
+    //     new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100, undefined, 0),
+    //     new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100, undefined, 0),
+    //     new PlayerInQueueEntity(randomUser(), 1000, 0.5, 100, undefined, 0),
+    //   ]),
+    // );
+    // expect(qs.findGame(qModel)).toBeUndefined();
+  });
 });

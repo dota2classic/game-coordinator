@@ -25,6 +25,13 @@ export class QueueService {
     this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.BOTS));
   }
 
+
+  // each minute
+  @Cron("* */1 * * * *")
+  async checkRankedGame() {
+    this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.RANKED));
+  }
+
   public findGame(q: QueueModel): QueueGameEntity | undefined {
     if (q.mode === MatchmakingMode.RANKED) {
       return this.findRankedGame(q);
@@ -90,7 +97,7 @@ export class QueueService {
 
   private rankedGameBalance(q: QueueModel) {
     const sortedBySize = [...q.entries];
-    sortedBySize.sort((a, b) => b.size - a.size);
+    sortedBySize.sort((a, b) => b.averageMMR - a.averageMMR);
 
     const queueUnits = sortedBySize.map(t =>
       this.balanceService.getPartyScore({

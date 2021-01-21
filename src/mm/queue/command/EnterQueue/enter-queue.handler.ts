@@ -70,9 +70,6 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     }
 
 
-
-    console.log(JSON.stringify(players))
-
     return false;
   }
   async execute({ partyId, mode, players }: EnterQueueCommand) {
@@ -109,6 +106,10 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
   private async checkForGame(q: QueueModel) {
     // This mode is exclusive and uses interval-based game findings
 
+
+
+    // we go for cycle based queue
+    if(q.mode === MatchmakingMode.RANKED) return;
     // todo uncomment
     // if (q.mode === MatchmakingMode.BOTS && q.size < RoomSizes[q.mode]) return;
     // if not enough players, return immediately
