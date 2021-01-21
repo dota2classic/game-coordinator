@@ -75,6 +75,7 @@ export class BalanceService {
     const lowestMmr = playersSorted[playersSorted.length - 1].mmr;
 
     if (
+      mmrDiffStrict &&
       Math.abs(highestPartyScore - lowestPartyScore) >
       BalanceService.MAX_SCORE_DIFFERENCE
     ) {

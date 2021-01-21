@@ -1,23 +1,17 @@
-import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
-import { Logger } from "@nestjs/common";
-import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
-import { QueueRepository } from "src/mm/queue/repository/queue.repository";
-import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
-import { QueueModel } from "src/mm/queue/model/queue.model";
-import { QueueService } from "src/mm/queue/service/queue.service";
-import {
-  FoundGameParty,
-  GameFoundEvent,
-} from "src/mm/queue/event/game-found.event";
-import {
-  MatchmakingMode,
-  RoomSizes,
-} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { EnterQueueDeclinedEvent } from "src/gateway/gateway/events/mm/enter-queue-declined.event";
-import { PartyId } from "src/gateway/gateway/shared-types/party-id";
-import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
-import { EnterRankedQueueDeclinedEvent } from "src/gateway/gateway/events/mm/enter-ranked-queue-declined.event";
-import { BalanceService } from "src/mm/queue/service/balance.service";
+import {CommandHandler, EventBus, ICommandHandler} from "@nestjs/cqrs";
+import {Logger} from "@nestjs/common";
+import {EnterQueueCommand} from "src/mm/queue/command/EnterQueue/enter-queue.command";
+import {QueueRepository} from "src/mm/queue/repository/queue.repository";
+import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
+import {QueueModel} from "src/mm/queue/model/queue.model";
+import {QueueService} from "src/mm/queue/service/queue.service";
+import {GameFoundEvent,} from "src/mm/queue/event/game-found.event";
+import {MatchmakingMode, RoomSizes,} from "src/gateway/gateway/shared-types/matchmaking-mode";
+import {EnterQueueDeclinedEvent} from "src/gateway/gateway/events/mm/enter-queue-declined.event";
+import {PartyId} from "src/gateway/gateway/shared-types/party-id";
+import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
+import {EnterRankedQueueDeclinedEvent} from "src/gateway/gateway/events/mm/enter-ranked-queue-declined.event";
+import {BalanceService} from "src/mm/queue/service/balance.service";
 
 @CommandHandler(EnterQueueCommand)
 export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
@@ -121,6 +115,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     // if not enough players, return immediately
     if (q.size < RoomSizes[q.mode]) return;
     // if (q.mode !== MatchmakingMode.BOTS && q.size < RoomSizes[q.mode]) return;
+
 
     const game = this.queueService.findGame(q);
 
