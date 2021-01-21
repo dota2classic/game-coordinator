@@ -3,6 +3,7 @@ import { Logger } from "@nestjs/common";
 import { GetPartyQuery } from "src/gateway/gateway/queries/GetParty/get-party.query";
 import { GetPartyQueryResult } from "src/gateway/gateway/queries/GetParty/get-party-query.result";
 import { PartyRepository } from "src/mm/party/repository/party.repository";
+import {cached} from "src/util/method-cache";
 
 @QueryHandler(GetPartyQuery)
 export class GetPartyHandler
@@ -11,6 +12,8 @@ export class GetPartyHandler
 
   constructor(private readonly partyRepository: PartyRepository) {}
 
+
+  @cached(10)
   async execute(command: GetPartyQuery): Promise<GetPartyQueryResult> {
     const p = await this.partyRepository.getPartyOf(command.id);
     return new GetPartyQueryResult(p.id, p.leader, p.players);

@@ -51,9 +51,8 @@ export class GameCheckCycleHandler
   }
 
   private async checkRanked(event: GameCheckCycleEvent, q: QueueModel) {
-
     // async yeah
-    if(this.isProcessingRanked) return;
+    if (this.isProcessingRanked) return;
 
     this.isProcessingRanked = true;
     const teamSize = Math.round(RoomSizes[event.mode] / 2);
@@ -73,9 +72,12 @@ export class GameCheckCycleHandler
       t => t.size,
     );
 
-    games.forEach(game =>
-      this.ebus.publish(new GameFoundEvent(event.mode, game)),
-    );
+    for (let i = 0; i < games.length; i++) {
+      const game = games[i];
+      this.ebus.publish(new GameFoundEvent(event.mode, game));
+
+      await new Promise(r => setTimeout(r, 1000));
+    }
 
     this.isProcessingRanked = false;
   }
