@@ -7,10 +7,15 @@ export function findAllCombinations<T>(
   unitSize: (t: T) => number = () => 1,
 ): T[][] {
   const combos: T[][] = [];
-  iterateCombinations(sourceArray, comboLength, z => {
-    combos.push(z);
-    return true;
-  }, unitSize);
+  iterateCombinations(
+    sourceArray,
+    comboLength,
+    z => {
+      combos.push(z);
+      return true;
+    },
+    unitSize,
+  );
 
   return combos;
 }
@@ -24,8 +29,11 @@ function iterateCombinations<T>(
   const sourceLength = sourceArray.length;
   // if (comboLength > sourceLength) return [];
 
-  const makeNextCombos = (workingCombo, currentIndex: number, remainingCount: number) => {
-
+  const makeNextCombos = (
+    workingCombo,
+    currentIndex: number,
+    remainingCount: number,
+  ) => {
     // For each element that remaines to be added to the working combination.
     for (
       let sourceIndex: number = currentIndex;
@@ -48,7 +56,11 @@ function iterateCombinations<T>(
       } else {
         // Otherwise go deeper to add more elements to the current partial combination.
 
-        const goOn = makeNextCombos(next, sourceIndex + 1, remainingCount - size);
+        const goOn = makeNextCombos(
+          next,
+          sourceIndex + 1,
+          remainingCount - size,
+        );
         if (!goOn) return false;
       }
     }
@@ -81,4 +93,36 @@ export function findFirstCombination<T>(
   );
 
   return found;
+}
+
+export function findAllMatchingCombinations<T>(
+  groupSize: number,
+  sourceArray: T[],
+  predicate: (c: T[]) => boolean,
+  unitSize: (t: T) => number = () => 1,
+): T[][] {
+  const sourceArrayCopy = [...sourceArray];
+  const foundMatches: T[][] = [];
+
+  while (true) {
+    const found = findFirstCombination<T>(
+      groupSize,
+      sourceArrayCopy,
+      predicate,
+      unitSize,
+    );
+
+    if (!found) break;
+
+    foundMatches.push(found);
+
+    found.forEach(t => {
+      const found = sourceArrayCopy.findIndex(z => z === t);
+
+      if (found === -1) throw "Something wrong";
+      sourceArrayCopy.splice(found, 1);
+    });
+  }
+
+  return foundMatches;
 }

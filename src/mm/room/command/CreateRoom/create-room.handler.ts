@@ -9,6 +9,7 @@ import {MatchmakingMode, RoomSizes} from "src/gateway/gateway/shared-types/match
 import {RoomBalance} from "src/mm/room/model/entity/room-balance";
 import {RoomImpossibleEvent} from "src/gateway/gateway/events/mm/room-impossible.event";
 import {BalanceService} from "src/mm/queue/service/balance.service";
+import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
 
 @CommandHandler(CreateRoomCommand)
 export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
@@ -48,12 +49,12 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
   }
 
   private async balanceRoom(
-    parties: PartyInRoom[],
+    parties: QueueEntryModel[],
     mode: MatchmakingMode,
   ): Promise<RoomBalance> {
     const teamSize = Math.round(RoomSizes[mode] / 2);
     if (mode === MatchmakingMode.RANKED)
-      return this.balanceService.rankedBalance(teamSize, parties);
+      return BalanceService.rankedBalance(teamSize, parties);
 
     if (mode === MatchmakingMode.BOTS)
       return this.balanceService.botsBalance(teamSize, parties);
@@ -61,6 +62,6 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
     if (mode === MatchmakingMode.SOLOMID)
       return this.balanceService.soloMidBalance(teamSize, parties);
     // todo: more specific balance algorithms. ranked should work for now though
-    else return this.balanceService.rankedBalance(teamSize, parties, false);
+    else return BalanceService.rankedBalance(teamSize, parties, false);
   }
 }

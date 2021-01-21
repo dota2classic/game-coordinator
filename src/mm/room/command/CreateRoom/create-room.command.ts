@@ -1,6 +1,7 @@
 import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
 import { PlayerInPartyInRoom } from "src/mm/room/model/room-entry";
 import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
+import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
 
 export class PartyInRoom {
   constructor(
@@ -20,6 +21,6 @@ export class CreateRoomCommand {
   constructor(
     public readonly mode: MatchmakingMode,
     public readonly size: number,
-    public readonly parties: PartyInRoom[],
+    public readonly parties: QueueEntryModel[],
   ) {}
 }

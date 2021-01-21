@@ -5,7 +5,7 @@ import { PartyId } from "src/gateway/gateway/shared-types/party-id";
 
 export type QueueEntryId = string;
 
-export class QueueEntryModel extends AggregateRoot {
+export class QueueEntryModel {
   public get id(): QueueEntryId {
     return `${this.mode}${this.partyID}`;
   }
@@ -14,8 +14,8 @@ export class QueueEntryModel extends AggregateRoot {
     public readonly partyID: PartyId,
     public readonly mode: MatchmakingMode,
     public readonly players: PlayerInQueueEntity[],
+    public readonly score: number
   ) {
-    super();
   }
 
   public get size() {

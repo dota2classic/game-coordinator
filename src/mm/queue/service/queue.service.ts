@@ -33,9 +33,9 @@ export class QueueService {
   }
 
   public findGame(q: QueueModel): QueueGameEntity | undefined {
-    if (q.mode === MatchmakingMode.RANKED) {
-      return this.findRankedGame(q);
-    }
+    // if (q.mode === MatchmakingMode.RANKED) {
+    //   return this.findRankedGame(q);
+    // }
 
     if (q.mode === MatchmakingMode.SOLOMID) {
       return this.findSoloMidGame(q);
@@ -51,7 +51,7 @@ export class QueueService {
   private findRankedGame(q: QueueModel): QueueGameEntity | undefined {
     if (q.size < RoomSizes[q.mode]) return undefined;
 
-    return this.rankedGameBalance(q);
+    // return this.rankedGameBalance(q);
   }
 
   private findUnrankedGame(q: QueueModel): QueueGameEntity | undefined {
@@ -96,53 +96,11 @@ export class QueueService {
 
 
   private rankedGameBalance(q: QueueModel) {
-    const sortedBySize = [...q.entries];
-    sortedBySize.sort((a, b) => b.averageMMR - a.averageMMR);
+    const scoreSortedDesc = [...q.entries];
+    scoreSortedDesc.sort((a, b) => b.score - a.score);
 
-    const queueUnits = sortedBySize.map(t =>
-      this.balanceService.getPartyScore({
-        players: t.players.map(p => ({
-          mmr: p.mmr,
-          wrLast20Games: p.recentWinrate,
-          gamesPlayed: p.gamesPlayed,
-        })),
-        partyId: t.partyID,
-      }),
-    );
 
-    const desiredSize = RoomSizes[q.mode];
 
-    const slice: QueueEntryModel[] = [];
-    let size = 0;
-    for (let i = 0; i < queueUnits.length; i++) {
-      const t = queueUnits[i];
-      if (size + t.players > desiredSize) {
-        // skip
-        continue;
-      }
-
-      size += t.players;
-      slice.push(sortedBySize.find(z => z.partyID === t.partyId));
-    }
-    if (size !== desiredSize) return undefined;
-
-    try {
-      this.balanceService.rankedBalance(
-        RoomSizes[q.mode] / 2,
-        slice.map(
-          z =>
-            new PartyInRoom(
-              z.id,
-              z.players
-            ),
-        ),
-      );
-
-      return new QueueGameEntity(q.mode, slice);
-    } catch (e) {
-      console.error(e);
-      return undefined;
-    }
   }
 
   private findBotsGame(q: QueueModel): QueueGameEntity | undefined {

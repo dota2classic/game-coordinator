@@ -30,13 +30,7 @@ export class RoomSaga {
           new CreateRoomCommand(
             e.mode,
             RoomSizes[e.mode],
-            e.parties.map(
-              party =>
-                new PartyInRoom(
-                  party.id,
-                  party.players
-                ),
-            ),
+            e.parties
           ),
       ),
     );
