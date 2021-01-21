@@ -1,5 +1,5 @@
 import { NestFactory } from "@nestjs/core";
-import {CommandBus, EventBus, EventPublisher, QueryBus} from "@nestjs/cqrs";
+import {CommandBus, EventBus, EventPublisher, ofType, QueryBus} from "@nestjs/cqrs";
 import { QueueModel } from "./mm/queue/model/queue.model";
 import { PartyModel } from "./mm/party/model/party.model";
 import { PlayerModel } from "./mm/player/model/player.model";
@@ -19,6 +19,8 @@ import { RoomCreatedEvent } from "src/mm/room/event/room-created.event";
 import { ReadyState } from "src/gateway/gateway/events/ready-state-received.event";
 import {inspect} from "util";
 import {PartyInvitationModel} from "src/mm/party/model/party-invitation.model";
+import {GameFoundEvent} from "src/mm/queue/event/game-found.event";
+import {RoomReadyEvent} from "src/gateway/gateway/events/room-ready.event";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
@@ -50,16 +52,16 @@ async function bootstrap() {
   const qlogger = new Logger("QueryBus");
 
 
-  qbus._subscribe(
-    new Subscriber<any>(e => {
-      qlogger.log(
-        `${inspect(e)}`,
-        // e.__proto__.constructor.name,
-      );
-    }),
-  );
+  // qbus._subscribe(
+  //   new Subscriber<any>(e => {
+  //     qlogger.log(
+  //       `${inspect(e)}`,
+  //       // e.__proto__.constructor.name,
+  //     );
+  //   }),
+  // );
   //
-  ebus._subscribe(
+  ebus.pipe(ofType<{}, {}>(GameFoundEvent, RoomReadyEvent))._subscribe(
     new Subscriber<any>(e => {
       elogger.log(
         `${inspect(e)}`,
@@ -68,14 +70,14 @@ async function bootstrap() {
     }),
   );
 
-  cbus._subscribe(
-    new Subscriber<any>(e => {
-      clogger.log(
-        `${inspect(e)}`,
-        // e.__proto__.constructor.name,
-      );
-    }),
-  );
+  // cbus._subscribe(
+  //   new Subscriber<any>(e => {
+  //     clogger.log(
+  //       `${inspect(e)}`,
+  //       // e.__proto__.constructor.name,
+  //     );
+  //   }),
+  // );
 
   await app.listenAsync();
   // console.log(`Started matchmaking core`);

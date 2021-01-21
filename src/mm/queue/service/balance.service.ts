@@ -29,7 +29,7 @@ export class BalanceService {
   constructor() {
     this.RECENT_WINRATE_CAP = 20;
     this.WINRATE_FACTOR = 2000;
-    this.MAX_AVERAGE_SCORE_FOR_GAME = 500;
+    this.MAX_AVERAGE_SCORE_FOR_GAME = 200;
   }
 
   private static getPartyFactor(count: number): number {

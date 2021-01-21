@@ -8,7 +8,7 @@ import {PartyInRoom} from "src/mm/room/command/CreateRoom/create-room.command";
 import {PlayerInPartyInRoom} from "src/mm/room/model/room-entry";
 import {findFirstCombination} from "src/util/combinations";
 import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
-import {Cron} from "@nestjs/schedule";
+import {Cron, CronExpression} from "@nestjs/schedule";
 import {EventBus} from "@nestjs/cqrs";
 import {GameCheckCycleEvent} from "src/mm/queue/event/game-check-cycle.event";
 
@@ -27,7 +27,7 @@ export class QueueService {
 
 
   // each minute
-  @Cron("* */1 * * * *")
+  @Cron(CronExpression.EVERY_MINUTE)
   async checkRankedGame() {
     this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.RANKED));
   }
