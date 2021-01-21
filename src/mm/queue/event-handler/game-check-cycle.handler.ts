@@ -74,6 +74,9 @@ export class GameCheckCycleHandler
 
     for (let i = 0; i < games.length; i++) {
       const game = games[i];
+
+      q.removeAll(game);
+      q.commit();
       this.ebus.publish(new GameFoundEvent(event.mode, game));
 
       await new Promise(r => setTimeout(r, 1000));
