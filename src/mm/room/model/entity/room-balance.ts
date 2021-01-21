@@ -15,7 +15,7 @@ export class TeamEntry {
 }
 
 export class RoomBalance {
-  constructor(public readonly teams: TeamEntry[], public readonly mode: MatchmakingMode) {}
+  constructor(public readonly teams: TeamEntry[], public mode: MatchmakingMode) {}
 
   public get totalMMR() {
     return this.teams

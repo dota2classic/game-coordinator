@@ -126,6 +126,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
         game.entries,
       );
 
+
       q.removeAll(game.entries);
       q.commit();
 

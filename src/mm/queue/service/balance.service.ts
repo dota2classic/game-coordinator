@@ -196,7 +196,9 @@ export class BalanceService {
     const teamSize = Math.round(RoomSizes[mode] / 2);
     switch (mode) {
       case MatchmakingMode.UNRANKED:
-        return BalanceService.rankedBalance(teamSize, entries, false);
+        const balance = BalanceService.rankedBalance(teamSize, entries, false)
+        balance.mode = mode;
+        return balance;
       case MatchmakingMode.BOTS:
         return this.botsBalance(teamSize, entries);
       default:
