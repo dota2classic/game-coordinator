@@ -54,7 +54,7 @@ export class BalanceService {
 
   private static calculateScoreDeviation(dScore: number) {
     return (
-      (Math.max(BalanceService.DEVIATION_MAX_SCORE, dScore) /
+      (Math.min(BalanceService.DEVIATION_MAX_SCORE, dScore) /
         BalanceService.DEVIATION_MAX_SCORE) *
       BalanceService.DEVIATION_MAX_FACTOR
     );
