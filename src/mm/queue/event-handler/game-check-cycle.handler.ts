@@ -22,6 +22,7 @@ export class GameCheckCycleHandler
     private readonly rep: QueueRepository,
     private readonly qService: QueueService,
     private readonly ebus: EventBus,
+    private readonly balanceService: BalanceService,
   ) {}
 
   async handle(event: GameCheckCycleEvent) {
@@ -42,11 +43,18 @@ export class GameCheckCycleHandler
       if (!game) {
         break;
       }
+      try {
+        const balance = this.balanceService.genericBalance(
+          game.mode,
+          game.entries,
+        );
+        q.removeAll(game.entries);
+        q.commit();
 
-      q.removeAll(game.entries);
-      q.commit();
-
-      this.ebus.publish(new GameFoundEvent(q.mode, game.entries));
+        this.ebus.publish(new GameFoundEvent(balance));
+      } catch (e) {
+        // console.log("Bot stuff")
+      }
     }
   }
 
@@ -75,11 +83,18 @@ export class GameCheckCycleHandler
     for (let i = 0; i < games.length; i++) {
       const game = games[i];
 
-      q.removeAll(game);
-      q.commit();
-      this.ebus.publish(new GameFoundEvent(event.mode, game));
+      try {
+        const balance = BalanceService.rankedBalance(teamSize, game);
 
-      await new Promise(r => setTimeout(r, 1000));
+        q.removeAll(game);
+        q.commit();
+
+        this.ebus.publish(new GameFoundEvent(balance));
+
+        await new Promise(r => setTimeout(r, 1000));
+      } catch (e) {
+        console.log("How can it fail right away");
+      }
     }
 
     this.isProcessingRanked = false;

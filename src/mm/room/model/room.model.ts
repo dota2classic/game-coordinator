@@ -13,6 +13,7 @@ import {ReadyCheckStartedEvent} from "src/gateway/gateway/events/ready-check-sta
 import {ReadyStateUpdatedEvent} from "src/gateway/gateway/events/ready-state-updated.event";
 import {MatchmakingMode} from "src/gateway/gateway/shared-types/matchmaking-mode";
 import {PlayerDeclinedGameEvent} from "src/gateway/gateway/events/mm/player-declined-game.event";
+import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
 
 export class RoomModel extends AggregateRoot {
   public readonly id: string = uuid();
@@ -31,7 +32,7 @@ export class RoomModel extends AggregateRoot {
 
   constructor(
     public readonly mode: MatchmakingMode,
-    public readonly entries: RoomEntry[],
+    public readonly entries: QueueEntryModel[],
     public readonly balance: RoomBalance,
   ) {
     super();

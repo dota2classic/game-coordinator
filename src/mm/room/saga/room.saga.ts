@@ -28,9 +28,7 @@ export class RoomSaga {
       map(
         e =>
           new CreateRoomCommand(
-            e.mode,
-            RoomSizes[e.mode],
-            e.parties
+            e.balance
           ),
       ),
     );
@@ -68,7 +66,7 @@ export class RoomSaga {
         t.goodParties.map(
           t =>
             new EnterQueueCommand(
-              t.partyId,
+              t.partyID,
               t.players,
               t.mode,
             ),

@@ -115,7 +115,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     // This mode is exclusive and uses interval-based game findings
 
     // we go for cycle based queue
-    if(q.mode === MatchmakingMode.RANKED) return;
+    if (q.mode === MatchmakingMode.RANKED) return;
     // todo uncomment
     // if (q.mode === MatchmakingMode.BOTS && q.size < RoomSizes[q.mode]) return;
     // if not enough players, return immediately
@@ -125,10 +125,16 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     const game = this.queueService.findGame(q);
 
     if (!game) return;
+    try {
+      const balance = this.balanceService.genericBalance(
+        game.mode,
+        game.entries,
+      );
 
-    q.removeAll(game.entries);
-    q.commit();
+      q.removeAll(game.entries);
+      q.commit();
 
-    this.ebus.publish(new GameFoundEvent(q.mode, game.entries));
+      this.ebus.publish(new GameFoundEvent(balance));
+    } catch (e) {}
   }
 }

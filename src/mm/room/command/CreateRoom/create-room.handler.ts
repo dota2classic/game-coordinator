@@ -21,47 +21,16 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
     private readonly balanceService: BalanceService,
   ) {}
 
-  async execute({ parties, mode }: CreateRoomCommand) {
-    try {
-      const balance = await this.balanceRoom(parties, mode);
+  async execute({ balance }: CreateRoomCommand) {
+    const room = new RoomModel(
+      balance.mode,
+      balance.teams.flatMap(t => t.parties),
+      balance,
+    );
+    await this.roomRepository.save(room.id, room);
 
-      const room = new RoomModel(
-        mode,
-        parties.map(t => new RoomEntry(t.id, t.players, mode)),
-        balance,
-      );
-      await this.roomRepository.save(room.id, room);
-
-      this.ebus.publish(new RoomCreatedEvent(room.id));
-      this.logger.log(JSON.stringify(room.balance))
-
-      return room.id;
-    } catch (e) {
-      // we can't make this game possible.
-      this.ebus.publish(
-        new RoomImpossibleEvent(
-          mode,
-          parties.map(it => it.id),
-        ),
-      );
-      return undefined;
-    }
+    this.ebus.publish(new RoomCreatedEvent(room.id));
+    this.logger.log(JSON.stringify(room.balance))
   }
 
-  private async balanceRoom(
-    parties: QueueEntryModel[],
-    mode: MatchmakingMode,
-  ): Promise<RoomBalance> {
-    const teamSize = Math.round(RoomSizes[mode] / 2);
-    if (mode === MatchmakingMode.RANKED)
-      return BalanceService.rankedBalance(teamSize, parties);
-
-    if (mode === MatchmakingMode.BOTS)
-      return this.balanceService.botsBalance(teamSize, parties);
-
-    if (mode === MatchmakingMode.SOLOMID)
-      return this.balanceService.soloMidBalance(teamSize, parties);
-    // todo: more specific balance algorithms. ranked should work for now though
-    else return BalanceService.rankedBalance(teamSize, parties, false);
-  }
 }
