@@ -1,9 +1,12 @@
-import {Injectable} from "@nestjs/common";
-import {RoomBalance, TeamEntry} from "src/mm/room/model/entity/room-balance";
-import {BalanceException} from "src/mm/queue/exception/BalanceException";
-import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
-import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
-import {MatchmakingMode, RoomSizes,} from "src/gateway/gateway/shared-types/matchmaking-mode";
+import { Injectable } from "@nestjs/common";
+import { RoomBalance, TeamEntry } from "src/mm/room/model/entity/room-balance";
+import { BalanceException } from "src/mm/queue/exception/BalanceException";
+import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
+import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
+import {
+  MatchmakingMode,
+  RoomSizes,
+} from "src/gateway/gateway/shared-types/matchmaking-mode";
 
 @Injectable()
 export class BalanceService {
@@ -12,6 +15,8 @@ export class BalanceService {
   private static readonly MAX_AVERAGE_SCORE_FOR_GAME: number = 200;
   private static readonly MAX_SCORE_DIFFERENCE: number = 500;
   private static readonly MAX_RATING_DIFFERENCE: number = 1000;
+  private static readonly DEVIATION_MAX_FACTOR = 500;
+  private static readonly DEVIATION_MAX_SCORE = 10;
 
   private static getPartyFactor(count: number): number {
     // keep score same for single players and higher for parties
@@ -47,6 +52,14 @@ export class BalanceService {
     return scoreSum * BalanceService.getPartyFactor(players.length);
   }
 
+  private static calculateScoreDeviation(dScore: number) {
+    return (
+      (Math.max(BalanceService.DEVIATION_MAX_SCORE, dScore) /
+        BalanceService.DEVIATION_MAX_SCORE) *
+      BalanceService.DEVIATION_MAX_FACTOR
+    );
+  }
+
   public static rankedBalance(
     teamSize: number,
     parties: QueueEntryModel[],
@@ -63,9 +76,14 @@ export class BalanceService {
 
     const preparedParties = parties.sort((a, b) => b.score - a.score);
 
+    const lowestParty = preparedParties[preparedParties.length - 1];
+    const highestParty = preparedParties[0];
+
     const lowestPartyScore =
-      preparedParties[preparedParties.length - 1].averageMMR;
-    const highestPartyScore = preparedParties[0].averageMMR;
+      lowestParty.score +
+      BalanceService.calculateScoreDeviation(lowestParty.DeviationScore);
+
+    const highestPartyScore = highestParty.score - BalanceService.calculateScoreDeviation(highestParty.DeviationScore);
 
     const playersSorted = preparedParties
       .flatMap(t => t.players)
@@ -77,7 +95,7 @@ export class BalanceService {
     if (
       mmrDiffStrict &&
       Math.abs(highestPartyScore - lowestPartyScore) >
-      BalanceService.MAX_SCORE_DIFFERENCE
+        BalanceService.MAX_SCORE_DIFFERENCE
     ) {
       throw new BalanceException(
         `Parties mmr too scattered ${lowestPartyScore} - ${highestPartyScore}`,
@@ -196,7 +214,7 @@ export class BalanceService {
     const teamSize = Math.round(RoomSizes[mode] / 2);
     switch (mode) {
       case MatchmakingMode.UNRANKED:
-        const balance = BalanceService.rankedBalance(teamSize, entries, false)
+        const balance = BalanceService.rankedBalance(teamSize, entries, false);
         balance.mode = mode;
         return balance;
       case MatchmakingMode.BOTS:

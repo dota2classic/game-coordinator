@@ -1,12 +1,15 @@
-import {EventBus, EventsHandler, IEventHandler} from "@nestjs/cqrs";
-import {GameCheckCycleEvent} from "src/mm/queue/event/game-check-cycle.event";
-import {QueueRepository} from "src/mm/queue/repository/queue.repository";
-import {QueueService} from "src/mm/queue/service/queue.service";
-import {GameFoundEvent,} from "src/mm/queue/event/game-found.event";
-import {MatchmakingMode, RoomSizes,} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import {findAllMatchingCombinations} from "src/util/combinations";
-import {BalanceService} from "src/mm/queue/service/balance.service";
-import {QueueModel} from "src/mm/queue/model/queue.model";
+import { EventBus, EventsHandler, IEventHandler } from "@nestjs/cqrs";
+import { GameCheckCycleEvent } from "src/mm/queue/event/game-check-cycle.event";
+import { QueueRepository } from "src/mm/queue/repository/queue.repository";
+import { QueueService } from "src/mm/queue/service/queue.service";
+import { GameFoundEvent } from "src/mm/queue/event/game-found.event";
+import {
+  MatchmakingMode,
+  RoomSizes,
+} from "src/gateway/gateway/shared-types/matchmaking-mode";
+import { findAllMatchingCombinations } from "src/util/combinations";
+import { BalanceService } from "src/mm/queue/service/balance.service";
+import { QueueModel } from "src/mm/queue/model/queue.model";
 
 @EventsHandler(GameCheckCycleEvent)
 export class GameCheckCycleHandler
@@ -31,8 +34,7 @@ export class GameCheckCycleHandler
       return;
     }
 
-
-    if(event.mode !== MatchmakingMode.BOTS) return;
+    if (event.mode !== MatchmakingMode.BOTS) return;
     // should work right
     while (true) {
       const game = this.qService.findGame(q);
@@ -92,6 +94,12 @@ export class GameCheckCycleHandler
         console.log("How can it fail right away");
       }
     }
+
+
+    // we increase this thing
+    q.entries.forEach(entry => {
+      entry.DeviationScore++;
+    });
 
     this.isProcessingRanked = false;
   }

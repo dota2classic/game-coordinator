@@ -14,7 +14,8 @@ export class QueueEntryModel {
     public readonly partyID: PartyId,
     public readonly mode: MatchmakingMode,
     public readonly players: PlayerInQueueEntity[],
-    public readonly score: number
+    public readonly score: number,
+    public DeviationScore: number = 0
   ) {
   }
 
