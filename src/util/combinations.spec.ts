@@ -102,24 +102,24 @@ describe(`combinations`, () => {
       t => t.size,
     );
 
-    console.log(
-      "In queue: ",
-      arr.reduce((a, b) => a + b.size, 0),
-    );
+    // console.log(
+    //   "In queue: ",
+    //   arr.reduce((a, b) => a + b.size, 0),
+    // );
     if (games.length === 0) {
       console.log("No games found");
     }
-    games
-      .map(t => BalanceService.rankedBalance(teamSize, t))
-      .forEach(b => {
-        console.log(
-          JSON.stringify({
-            ...b,
-            average: b.averageMMR,
-            total: b.totalMMR,
-            median: b.mmrMedian,
-          }),
-        );
-      });
+    // games
+    //   .map(t => BalanceService.rankedBalance(teamSize, t))
+    //   .forEach(b => {
+    //     console.log(
+    //       JSON.stringify({
+    //         ...b,
+    //         average: b.averageMMR,
+    //         total: b.totalMMR,
+    //         median: b.mmrMedian,
+    //       }),
+    //     );
+    //   });
   });
 });

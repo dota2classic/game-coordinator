@@ -1,19 +1,23 @@
-import {Test, TestingModule} from "@nestjs/testing";
-import {CommandBus, EventBus} from "@nestjs/cqrs";
-import {clearRepositories, TestEnvironment} from "src/@test/cqrs";
-import {EnterQueueHandler} from "src/mm/queue/command/EnterQueue/enter-queue.handler";
-import {EnterQueueCommand} from "src/mm/queue/command/EnterQueue/enter-queue.command";
-import {MatchmakingMode} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import {QueueUpdatedEvent} from "src/gateway/gateway/events/queue-updated.event";
-import {QueueProviders} from "src/mm/queue";
-import {QueueRepository} from "src/mm/queue/repository/queue.repository";
-import {QueueModel} from "src/mm/queue/model/queue.model";
-import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
-import {FoundGameParty, GameFoundEvent,} from "src/mm/queue/event/game-found.event";
-import {randomUser} from "src/@test/values";
-import {PlayerId} from "src/gateway/gateway/shared-types/player-id";
-import {GameCheckCycleEvent} from "src/mm/queue/event/game-check-cycle.event";
-import {GameCheckCycleHandler} from "src/mm/queue/event-handler/game-check-cycle.handler";
+import { Test, TestingModule } from "@nestjs/testing";
+import { CommandBus, EventBus } from "@nestjs/cqrs";
+import { clearRepositories, TestEnvironment } from "src/@test/cqrs";
+import { EnterQueueHandler } from "src/mm/queue/command/EnterQueue/enter-queue.handler";
+import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
+import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
+import { QueueUpdatedEvent } from "src/gateway/gateway/events/queue-updated.event";
+import { QueueProviders } from "src/mm/queue";
+import { QueueRepository } from "src/mm/queue/repository/queue.repository";
+import { QueueModel } from "src/mm/queue/model/queue.model";
+import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
+import {
+  FoundGameParty,
+  GameFoundEvent,
+} from "src/mm/queue/event/game-found.event";
+import { randomUser } from "src/@test/values";
+import { PlayerId } from "src/gateway/gateway/shared-types/player-id";
+import { GameCheckCycleEvent } from "src/mm/queue/event/game-check-cycle.event";
+import { GameCheckCycleHandler } from "src/mm/queue/event-handler/game-check-cycle.handler";
+import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
 
 const u1 = randomUser();
 const u2 = randomUser();
@@ -92,10 +96,15 @@ describe("EnterQueueHandler", () => {
       new QueueUpdatedEvent(mode), // add first
       new QueueUpdatedEvent(mode), // clear
       new GameFoundEvent(mode, [
-        new FoundGameParty("party", [
-          new PlayerInQueueEntity(u1, 1000, 0.5, 100, undefined, 0),
-          new PlayerInQueueEntity(u2, 1000, 0.5, 100, undefined, 0),
-        ]),
+        new QueueEntryModel(
+          "party",
+          mode,
+          [
+            new PlayerInQueueEntity(u1, 1000, 0.5, 100, undefined, 0),
+            new PlayerInQueueEntity(u2, 1000, 0.5, 100, undefined, 0),
+          ],
+          0,
+        ),
       ]),
     );
   });
@@ -129,9 +138,9 @@ describe("EnterQueueHandler", () => {
         mode,
         players.map(
           (p, idx) =>
-            new FoundGameParty(`party${idx}`, [
+            new QueueEntryModel(`party${idx}`, mode, [
               new PlayerInQueueEntity(p, 3000, 0.5, 1000, undefined, 0),
-            ]),
+            ], 0),
         ),
       ),
     );
@@ -203,7 +212,7 @@ describe("EnterQueueHandler", () => {
         mode,
         parties
           .sort((a, b) => b.players.length - a.players.length)
-          .map(t => new FoundGameParty(t.partyId, t.players)),
+          .map(t => new QueueEntryModel(t.partyId, mode, t.players, 0)),
       ),
     );
   });
@@ -260,7 +269,6 @@ describe("EnterQueueHandler", () => {
   it("should find ranked games in cycle", async () => {
     const mode = MatchmakingMode.RANKED;
 
-
     const parties = new Array(20).fill(null).map((_, index) => {
       const players = new Array(Math.round(Math.random() * 2 + 1))
         .fill(null)
@@ -289,25 +297,28 @@ describe("EnterQueueHandler", () => {
       await cbus.execute(party);
     }
 
-
     const s = module.get(GameCheckCycleHandler);
 
     await s.handle(new GameCheckCycleEvent(MatchmakingMode.RANKED));
 
-    const expectedFoundGames = Math.floor(parties.reduce((a,b) => a + b.size, 0) / 3)
-
-
-    const expectedUpdates = new Array(expectedFoundGames).fill(null).map(() => new QueueUpdatedEvent(mode))
-    const expectedGames = new Array(expectedFoundGames).fill(null).map(() => new GameFoundEvent(
-      mode,
-      parties
-        .sort((a, b) => b.players.length - a.players.length)
-        .map(t => new FoundGameParty(t.partyId, t.players)),
-    ))
-    expect(ebus).toEmit(
-      ...updateEvents,
-      ...expectedUpdates,
-      ...expectedGames
+    const expectedFoundGames = Math.floor(
+      parties.reduce((a, b) => a + b.size, 0) / 3,
     );
+
+    const expectedUpdates = new Array(expectedFoundGames)
+      .fill(null)
+      .map(() => new QueueUpdatedEvent(mode));
+
+
+    const expectedGames = new Array(expectedFoundGames).fill(null).map(
+      () =>
+        new GameFoundEvent(
+          mode,
+          parties
+            .sort((a, b) => b.players.length - a.players.length)
+            .map(t => new QueueEntryModel(t.partyId, mode, t.players, 0)),
+        ),
+    );
+    expect(ebus).toEmit(...updateEvents, ...expectedUpdates, ...expectedGames);
   });
 });

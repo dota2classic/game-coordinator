@@ -43,8 +43,6 @@ export class GameCheckCycleHandler
         break;
       }
 
-      console.log(JSON.stringify(game));
-
       q.removeAll(game.entries);
       q.commit();
 
