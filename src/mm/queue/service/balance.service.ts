@@ -12,8 +12,8 @@ import {
 export class BalanceService {
   private static readonly RECENT_WINRATE_CAP: number = 20;
   private static readonly WINRATE_FACTOR: number = 2000;
-  private static readonly MAX_AVERAGE_SCORE_FOR_GAME: number = 200;
-  private static readonly MAX_SCORE_DIFFERENCE: number = 1000;
+  private static readonly MAX_AVERAGE_SCORE_FOR_GAME: number = 400;
+  private static readonly MAX_SCORE_DIFFERENCE: number = 1100;
   private static readonly MAX_RATING_DIFFERENCE: number = 1000;
   private static readonly DEVIATION_MAX_FACTOR = 500;
   private static readonly DEVIATION_MAX_SCORE = 10;
