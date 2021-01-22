@@ -74,16 +74,16 @@ export class BalanceService {
     let radiantPlayerCount = 0;
     let direPlayerCount = 0;
 
-    const preparedParties = parties.sort((a, b) => b.score - a.score);
+    const preparedParties = parties.sort((a, b) => b.averageScore - a.averageScore);
 
     const lowestParty = preparedParties[preparedParties.length - 1];
     const highestParty = preparedParties[0];
 
     const lowestPartyScore =
-      lowestParty.score +
+      lowestParty.averageScore +
       BalanceService.calculateScoreDeviation(lowestParty.DeviationScore);
 
-    const highestPartyScore = highestParty.score - BalanceService.calculateScoreDeviation(highestParty.DeviationScore);
+    const highestPartyScore = highestParty.averageScore - BalanceService.calculateScoreDeviation(highestParty.DeviationScore);
 
     const playersSorted = preparedParties
       .flatMap(t => t.players)

@@ -93,16 +93,6 @@ export class QueueService {
 
     return new QueueGameEntity(q.mode, slice);
   }
-
-
-  private rankedGameBalance(q: QueueModel) {
-    const scoreSortedDesc = [...q.entries];
-    scoreSortedDesc.sort((a, b) => b.score - a.score);
-
-
-
-  }
-
   private findBotsGame(q: QueueModel): QueueGameEntity | undefined {
     if (q.size < 2) return undefined;
 

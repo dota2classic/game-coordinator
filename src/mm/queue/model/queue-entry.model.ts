@@ -19,6 +19,10 @@ export class QueueEntryModel {
   ) {
   }
 
+  public get averageScore(){
+    return this.score / this.size;
+  }
+
   public get size() {
     return this.players.length;
   }
