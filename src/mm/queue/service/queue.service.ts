@@ -30,6 +30,7 @@ export class QueueService {
   @Cron(CronExpression.EVERY_MINUTE)
   async checkRankedGame() {
     this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.RANKED));
+    this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.HIGHROOM));
   }
 
   public findGame(q: QueueModel): QueueGameEntity | undefined {

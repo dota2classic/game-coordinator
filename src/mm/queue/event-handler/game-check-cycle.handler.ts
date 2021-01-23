@@ -34,6 +34,12 @@ export class GameCheckCycleHandler
       return;
     }
 
+    if (event.mode === MatchmakingMode.HIGHROOM) {
+      await this.checkRanked(event, q);
+
+      return;
+    }
+
     if (event.mode !== MatchmakingMode.BOTS) return;
     // should work right
     while (true) {
