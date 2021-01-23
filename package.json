@@ -33,6 +33,7 @@
     "@nestjs/schedule": "^0.4.1",
     "@ntegral/nestjs-sentry": "^1.0.4",
     "cache-manager": "^3.4.0",
+    "d2c-rcaches": "^1.0.2",
     "dotenv": "^8.2.0",
     "redis": "^3.0.2",
     "reflect-metadata": "^0.1.13",
