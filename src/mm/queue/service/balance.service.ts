@@ -219,6 +219,8 @@ export class BalanceService {
         return balance;
       case MatchmakingMode.BOTS:
         return this.botsBalance(teamSize, entries);
+      case MatchmakingMode.SOLOMID:
+        return this.soloMidBalance(teamSize, entries);
       default:
         return this.botsBalance(teamSize, entries);
     }
