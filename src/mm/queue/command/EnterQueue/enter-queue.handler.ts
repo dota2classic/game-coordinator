@@ -110,6 +110,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
 
     // we go for cycle based queue
     if (q.mode === MatchmakingMode.RANKED) return;
+    if (q.mode === MatchmakingMode.UNRANKED) return;
     // todo uncomment
     // if (q.mode === MatchmakingMode.BOTS && q.size < RoomSizes[q.mode]) return;
     // if not enough players, return immediately
