@@ -145,9 +145,14 @@ export class BalanceService {
     const rAvrg = radiantMMR / teamSize;
     const dAvrg = direMMR / teamSize;
 
+
+    const hrs = new Date().getHours()
+    const isNight = hrs > 22 || hrs < 9
+
+
     if (
       mmrDiffStrict &&
-      Math.abs(rAvrg - dAvrg) >= BalanceService.MAX_AVERAGE_SCORE_FOR_GAME
+      Math.abs(rAvrg - dAvrg) >= (isNight ? 2 * BalanceService.MAX_AVERAGE_SCORE_FOR_GAME : BalanceService.MAX_AVERAGE_SCORE_FOR_GAME)
     ) {
       throw new BalanceException(
         `Radiant ${rAvrg} Dire ${dAvrg}. Diff: ${Math.abs(
