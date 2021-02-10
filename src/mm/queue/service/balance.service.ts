@@ -20,7 +20,9 @@ export class BalanceService {
 
   private static getPartyFactor(count: number): number {
     // keep score same for single players and higher for parties
-    return 1 + 0.1 * (count - 1);
+    // return 1 + 0.1 * (count - 1);
+    // ok lets not increase it for parties.
+    return 1
   }
 
   public static getScore(

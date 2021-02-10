@@ -11,11 +11,11 @@ import {QueueModel} from "src/mm/queue/model/queue.model";
 @EventsHandler(GameCheckCycleEvent)
 export class GameCheckCycleHandler
   implements IEventHandler<GameCheckCycleEvent> {
-
-  private processMap: Partial<{
-    [key in MatchmakingMode]: boolean
-  }> = {};
-
+  private processMap: Partial<
+    {
+      [key in MatchmakingMode]: boolean;
+    }
+  > = {};
 
   constructor(
     private readonly rep: QueueRepository,
@@ -35,7 +35,6 @@ export class GameCheckCycleHandler
 
       return;
     }
-
 
     if (event.mode === MatchmakingMode.UNRANKED) {
       await this.checkRanked(event, q);
@@ -79,13 +78,20 @@ export class GameCheckCycleHandler
 
     const teamSize = Math.round(RoomSizes[event.mode] / 2);
 
-    const arr = [...q.entries];
+    // DESC sorting by deviation score results in prioritizing long waiting players
+    const arr = [...q.entries].sort(
+      (a, b) => b.DeviationScore - a.DeviationScore,
+    );
     const games = findAllMatchingCombinations(
       RoomSizes[event.mode],
       arr,
       entries => {
         try {
-          BalanceService.rankedBalance(teamSize, entries, event.mode === MatchmakingMode.RANKED);
+          BalanceService.rankedBalance(
+            teamSize,
+            entries,
+            event.mode === MatchmakingMode.RANKED,
+          );
           return true;
         } catch (e) {
           return false;
@@ -98,7 +104,11 @@ export class GameCheckCycleHandler
       const game = games[i];
 
       try {
-        const balance = BalanceService.rankedBalance(teamSize, game, event.mode === MatchmakingMode.RANKED);
+        const balance = BalanceService.rankedBalance(
+          teamSize,
+          game,
+          event.mode === MatchmakingMode.RANKED,
+        );
         balance.mode = event.mode;
 
         q.removeAll(game);
