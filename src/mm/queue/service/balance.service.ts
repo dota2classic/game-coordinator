@@ -12,7 +12,7 @@ import {
 export class BalanceService {
   private static readonly RECENT_WINRATE_CAP: number = 20;
   private static readonly WINRATE_FACTOR: number = 1500;
-  private static readonly MAX_AVERAGE_SCORE_FOR_GAME: number = 250;
+  private static readonly MAX_AVERAGE_SCORE_FOR_GAME: number = 400;
   private static readonly MAX_SCORE_DIFFERENCE: number = 500;
   private static readonly MAX_RATING_DIFFERENCE: number = 1000;
   private static readonly DEVIATION_MAX_FACTOR = 500;
@@ -94,15 +94,15 @@ export class BalanceService {
     const highestMmr = playersSorted[0].mmr;
     const lowestMmr = playersSorted[playersSorted.length - 1].mmr;
 
-    if (
-      mmrDiffStrict &&
-      Math.abs(highestPartyScore - lowestPartyScore) >
-        BalanceService.MAX_SCORE_DIFFERENCE
-    ) {
-      throw new BalanceException(
-        `Parties mmr too scattered ${lowestPartyScore} - ${highestPartyScore}`,
-      );
-    }
+    // if (
+    //   mmrDiffStrict &&
+    //   Math.abs(highestPartyScore - lowestPartyScore) >
+    //     BalanceService.MAX_SCORE_DIFFERENCE
+    // ) {
+    //   throw new BalanceException(
+    //     `Parties mmr too scattered ${lowestPartyScore} - ${highestPartyScore}`,
+    //   );
+    // }
 
     // todo: when mmr scatters more and online increase, uncomment
     // if(Math.abs(highestMmr - lowestMmr) > BalanceService.MAX_RATING_DIFFERENCE){

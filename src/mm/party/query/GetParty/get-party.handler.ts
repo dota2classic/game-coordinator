@@ -12,7 +12,7 @@ export class GetPartyHandler
 
   constructor(private readonly partyRepository: PartyRepository) {}
 
-  @cached(10, GetPartyQuery.name)
+  // @cached(10, GetPartyQuery.name)
   async execute(command: GetPartyQuery): Promise<GetPartyQueryResult> {
     const p = await this.partyRepository.getPartyOf(command.id);
     return new GetPartyQueryResult(p.id, p.leader, p.players);
