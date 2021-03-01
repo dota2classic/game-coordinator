@@ -1,12 +1,9 @@
-import { Injectable } from "@nestjs/common";
-import { RoomBalance, TeamEntry } from "src/mm/room/model/entity/room-balance";
-import { BalanceException } from "src/mm/queue/exception/BalanceException";
-import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
-import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
-import {
-  MatchmakingMode,
-  RoomSizes,
-} from "src/gateway/gateway/shared-types/matchmaking-mode";
+import {Injectable} from "@nestjs/common";
+import {RoomBalance, TeamEntry} from "src/mm/room/model/entity/room-balance";
+import {BalanceException} from "src/mm/queue/exception/BalanceException";
+import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
+import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
+import {MatchmakingMode, RoomSizes,} from "src/gateway/gateway/shared-types/matchmaking-mode";
 
 @Injectable()
 export class BalanceService {
@@ -183,7 +180,7 @@ export class BalanceService {
     );
   }
 
-  botsBalance(teamSize: number, parties: QueueEntryModel[]): RoomBalance {
+  botsBalance(teamSize: number, parties: QueueEntryModel[], roomBalanceMode: MatchmakingMode = MatchmakingMode.BOTS): RoomBalance {
     const r: QueueEntryModel[] = [];
     const d: QueueEntryModel[] = [];
 
@@ -210,7 +207,7 @@ export class BalanceService {
 
     return new RoomBalance(
       [new TeamEntry(r, 0), new TeamEntry(d, 0)],
-      MatchmakingMode.BOTS,
+      roomBalanceMode
     );
   }
 
@@ -229,7 +226,7 @@ export class BalanceService {
       case MatchmakingMode.SOLOMID:
         return this.soloMidBalance(teamSize, entries);
       default:
-        return this.botsBalance(teamSize, entries);
+        return this.botsBalance(teamSize, entries, mode);
     }
   }
 }
