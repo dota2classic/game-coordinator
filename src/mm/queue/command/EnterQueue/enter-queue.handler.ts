@@ -78,7 +78,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     return false;
   }
   async execute({ partyId, mode, players, version }: EnterQueueCommand) {
-    const q = await this.queueRepository.get(mode);
+    const q = await this.queueRepository.get(QueueRepository.id(mode, version));
     if (!q) return;
 
     if (this.checkForBans(partyId, mode, players, version)) {

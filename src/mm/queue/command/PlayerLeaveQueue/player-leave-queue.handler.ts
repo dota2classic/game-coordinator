@@ -18,7 +18,7 @@ export class PlayerLeaveQueueHandler
     try {
       const p = await this.partyRepository.getPartyOf(command.playerID);
       return this.ebus.publish(
-        new PlayerLeaveQueueResolvedEvent(p.id, command.mode),
+        new PlayerLeaveQueueResolvedEvent(p.id, command.mode, command.version),
       );
     }catch (e){
 

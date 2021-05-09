@@ -12,8 +12,8 @@ export class LeaveQueueHandler implements ICommandHandler<LeaveQueueCommand> {
 
   }
 
-  async execute({mode, partyId }: LeaveQueueCommand) {
-    const q = await this.queueRepository.get(mode);
+  async execute({mode, partyId, version }: LeaveQueueCommand) {
+    const q = await this.queueRepository.get(QueueRepository.id(mode, version));
 
     if(!q) return
     q.removeEntry(partyId)

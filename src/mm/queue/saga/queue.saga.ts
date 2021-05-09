@@ -40,7 +40,7 @@ export class QueueSaga {
   playerLeaveQueue = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(PlayerLeaveQueueResolvedEvent),
-      map(e => new LeaveQueueCommand(e.mode, e.partyId)),
+      map(e => new LeaveQueueCommand(e.mode, e.version, e.partyId)),
     );
   };
 
@@ -53,7 +53,10 @@ export class QueueSaga {
     return events$.pipe(
       ofType(PartyUpdatedEvent),
       mergeMap(e =>
-        MatchmakingModes.map(t => new LeaveQueueCommand(t, e.partyId)),
+        MatchmakingModes.flatMap(t => [
+          new LeaveQueueCommand(t, Dota2Version.Dota_681, e.partyId),
+          new LeaveQueueCommand(t, Dota2Version.Dota_684, e.partyId),
+        ]),
       ),
     );
   };
@@ -66,7 +69,12 @@ export class QueueSaga {
   partyDeleted = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(PartyDeletedEvent),
-      mergeMap(e => MatchmakingModes.map(t => new LeaveQueueCommand(t, e.id))),
+      mergeMap(e =>
+        MatchmakingModes.flatMap(t => [
+          new LeaveQueueCommand(t, Dota2Version.Dota_681, e.id),
+          new LeaveQueueCommand(t, Dota2Version.Dota_684, e.id),
+        ]),
+      ),
     );
   };
 }

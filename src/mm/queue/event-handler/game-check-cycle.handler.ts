@@ -27,7 +27,7 @@ export class GameCheckCycleHandler
   async handle(event: GameCheckCycleEvent) {
     // ok here we
 
-    const q = await this.rep.get(event.mode);
+    const q = await this.rep.get(QueueRepository.id(event.mode, event.version));
     if (!q) return;
 
     if (event.mode === MatchmakingMode.RANKED) {

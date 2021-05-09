@@ -12,11 +12,11 @@ export class CreateQueueHandler implements ICommandHandler<CreateQueueCommand> {
 
   async execute({ mode, version }: CreateQueueCommand) {
     // check if exists
-    const existing = await this.queueRepository.get(mode);
+    const existing = await this.queueRepository.get(QueueRepository.id(mode, version));
     if (existing) return;
 
     const queue = new QueueModel(mode, version);
-    await this.queueRepository.save(mode, queue);
+    await this.queueRepository.save(QueueRepository.id(mode, version), queue);
 
     queue.init();
     queue.commit();

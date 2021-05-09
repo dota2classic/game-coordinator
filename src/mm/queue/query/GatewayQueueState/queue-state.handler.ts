@@ -12,7 +12,7 @@ export class QueueStateHandler
   constructor(private readonly queueRepository: QueueRepository) {}
 
   async execute(command: GetQueueStateQuery): Promise<GetQueueStateQueryResult> {
-    const q = await this.queueRepository.get(command.mode);
+    const q = await this.queueRepository.get(QueueRepository.id(command.mode, command.version));
 
     if(!q) return new GetQueueStateQueryResult(
       command.mode,
