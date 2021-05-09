@@ -24,7 +24,7 @@ export class QueueModel extends AggregateRoot {
   public addEntry(entry: QueueEntryModel) {
     if (!this.entries.find(it => it.id === entry.id)) {
       this.entries.push(entry);
-      this.apply(new QueueUpdatedEvent(this.mode));
+      this.apply(new QueueUpdatedEvent(this.mode, this.version));
     }
   }
 
@@ -33,14 +33,14 @@ export class QueueModel extends AggregateRoot {
       const index = this.entries.findIndex(t => t.id === it.id);
       if (index !== -1) this.entries.splice(index, 1);
     });
-    this.apply(new QueueUpdatedEvent(this.mode));
+    this.apply(new QueueUpdatedEvent(this.mode, this.version));
   }
 
   public removeEntry(partyId: PartyId) {
     const index = this.entries.findIndex(t => t.partyID === partyId);
     if (index !== -1) {
       this.entries.splice(index, 1);
-      this.publish(new QueueUpdatedEvent(this.mode));
+      this.publish(new QueueUpdatedEvent(this.mode, this.version));
     }
   }
 }

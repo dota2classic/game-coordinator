@@ -21,11 +21,12 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
     private readonly balanceService: BalanceService,
   ) {}
 
-  async execute({ balance }: CreateRoomCommand) {
+  async execute({ balance, version }: CreateRoomCommand) {
     const room = new RoomModel(
       balance.mode,
       balance.teams.flatMap(t => t.parties),
       balance,
+      version
     );
     await this.roomRepository.save(room.id, room);
 

@@ -34,6 +34,7 @@ export class FinalizeRoomHandler
           radiant,
           dire,
           room.balance.averageMMR,
+          room.version
         ),
       );
     } else {

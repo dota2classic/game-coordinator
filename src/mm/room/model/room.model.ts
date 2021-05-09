@@ -14,6 +14,7 @@ import {ReadyStateUpdatedEvent} from "src/gateway/gateway/events/ready-state-upd
 import {MatchmakingMode} from "src/gateway/gateway/shared-types/matchmaking-mode";
 import {PlayerDeclinedGameEvent} from "src/gateway/gateway/events/mm/player-declined-game.event";
 import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
+import {Dota2Version} from "src/gateway/gateway/shared-types/dota2version";
 
 export class RoomModel extends AggregateRoot {
   public readonly id: string = uuid();
@@ -34,6 +35,7 @@ export class RoomModel extends AggregateRoot {
     public readonly mode: MatchmakingMode,
     public readonly entries: QueueEntryModel[],
     public readonly balance: RoomBalance,
+    public readonly version: Dota2Version
   ) {
     super();
   }

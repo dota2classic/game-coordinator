@@ -29,7 +29,8 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     partyId: PartyId,
     mode: MatchmakingMode,
     players: PlayerInQueueEntity[],
-    version: Dota2Version) {
+    version: Dota2Version,
+  ) {
     // here we check for ban status
 
     const bannedPlayers = players.filter(player => player.banStatus?.isBanned);
@@ -41,7 +42,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
           players.map(t => t.playerId),
           bannedPlayers.map(t => t.playerId),
           mode,
-          version
+          version,
         ),
       );
 
@@ -55,7 +56,8 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     partyId: PartyId,
     mode: MatchmakingMode,
     players: PlayerInQueueEntity[],
-    version: Dota2Version) {
+    version: Dota2Version,
+  ) {
     if (mode !== MatchmakingMode.RANKED) return false;
     const newPlayers = players.filter(player => player.unrankedGamesLeft > 0);
     if (newPlayers.length > 0) {
@@ -66,6 +68,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
           players.map(t => t.playerId),
           newPlayers.map(t => t.playerId),
           mode,
+          version,
         ),
       );
 
@@ -119,7 +122,6 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     if (q.size < RoomSizes[q.mode]) return;
     // if (q.mode !== MatchmakingMode.BOTS && q.size < RoomSizes[q.mode]) return;
 
-
     const game = this.queueService.findGame(q);
 
     if (!game) return;
@@ -128,7 +130,6 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
         game.mode,
         game.entries,
       );
-
 
       q.removeAll(game.entries);
       q.commit();

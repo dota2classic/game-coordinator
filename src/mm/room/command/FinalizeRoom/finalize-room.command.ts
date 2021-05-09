@@ -5,6 +5,6 @@ export class FinalizeRoomCommand {
   constructor(
     public readonly roomId: string,
     public readonly mode: MatchmakingMode,
-    public readonly state: RoomReadyState,
+    public readonly state: RoomReadyState
   ) {}
 }
