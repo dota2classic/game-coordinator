@@ -63,7 +63,7 @@ export class GameCheckCycleHandler
         q.removeAll(game.entries);
         q.commit();
 
-        this.ebus.publish(new GameFoundEvent(balance));
+        this.ebus.publish(new GameFoundEvent(balance, event.version));
       } catch (e) {
         // console.log("Bot stuff")
       }
@@ -114,7 +114,7 @@ export class GameCheckCycleHandler
         q.removeAll(game);
         q.commit();
 
-        this.ebus.publish(new GameFoundEvent(balance));
+        this.ebus.publish(new GameFoundEvent(balance, event.version));
 
         await new Promise(r => setTimeout(r, 1000));
       } catch (e) {

@@ -2,6 +2,7 @@ import { AggregateRoot } from "@nestjs/cqrs";
 import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
 import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
 import { PartyId } from "src/gateway/gateway/shared-types/party-id";
+import {Dota2Version} from "src/gateway/gateway/shared-types/dota2version";
 
 export type QueueEntryId = string;
 
@@ -15,6 +16,7 @@ export class QueueEntryModel {
     public readonly mode: MatchmakingMode,
     public readonly players: PlayerInQueueEntity[],
     public readonly score: number,
+    public readonly version: Dota2Version,
     public DeviationScore: number = 0
   ) {
   }

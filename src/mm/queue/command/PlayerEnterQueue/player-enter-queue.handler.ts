@@ -27,7 +27,7 @@ export class PlayerEnterQueueHandler
         const mmr = await this.qbus.execute<
           GetPlayerInfoQuery,
           GetPlayerInfoQueryResult
-        >(new GetPlayerInfoQuery(t, Dota2Version.Dota_681));
+        >(new GetPlayerInfoQuery(t, command.version));
         return {
           playerId: t,
           mmr: mmr.mmr,
@@ -40,7 +40,7 @@ export class PlayerEnterQueueHandler
     );
 
     this.ebus.publish(
-      new PlayerEnterQueueResolvedEvent(p.id, formattedEntries, command.mode),
+      new PlayerEnterQueueResolvedEvent(p.id, formattedEntries, command.mode, command.version),
     );
   }
 }

@@ -10,7 +10,8 @@ import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.c
 import { LeaveQueueCommand } from "src/mm/queue/command/LeaveQueue/leave-queue.command";
 import { PlayerLeaveQueueResolvedEvent } from "src/mm/queue/event/player-leave-queue-resolved.event";
 import { PartyUpdatedEvent } from "src/gateway/gateway/events/party/party-updated.event";
-import {PartyDeletedEvent} from "src/gateway/gateway/events/party/party-deleted.event";
+import { PartyDeletedEvent } from "src/gateway/gateway/events/party/party-deleted.event";
+import { Dota2Version } from "src/gateway/gateway/shared-types/dota2version";
 
 @Injectable()
 export class QueueSaga {
@@ -18,7 +19,12 @@ export class QueueSaga {
   createQueues = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(StartEvent),
-      mergeMap(() => MatchmakingModes.map(it => new CreateQueueCommand(it))),
+      mergeMap(() =>
+        MatchmakingModes.flatMap(it => [
+          new CreateQueueCommand(it, Dota2Version.Dota_681),
+          new CreateQueueCommand(it, Dota2Version.Dota_684),
+        ]),
+      ),
     );
   };
 
@@ -26,7 +32,7 @@ export class QueueSaga {
   playerEnterQueue = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(PlayerEnterQueueResolvedEvent),
-      map(e => new EnterQueueCommand(e.partyId, e.players, e.mode)),
+      map(e => new EnterQueueCommand(e.partyId, e.players, e.mode, e.version)),
     );
   };
 
@@ -60,9 +66,7 @@ export class QueueSaga {
   partyDeleted = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(PartyDeletedEvent),
-      mergeMap(e =>
-        MatchmakingModes.map(t => new LeaveQueueCommand(t, e.id)),
-      ),
+      mergeMap(e => MatchmakingModes.map(t => new LeaveQueueCommand(t, e.id))),
     );
   };
 }

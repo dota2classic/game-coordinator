@@ -4,6 +4,7 @@ import {PlayerId} from "src/gateway/gateway/shared-types/player-id";
 import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
 import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
 import {RoomBalance} from "src/mm/room/model/entity/room-balance";
+import {Dota2Version} from "src/gateway/gateway/shared-types/dota2version";
 
 export class PlayerInParty {
   constructor(
@@ -22,6 +23,7 @@ export class FoundGameParty {
 }
 export class GameFoundEvent {
   constructor(
-    public readonly balance: RoomBalance
+    public readonly balance: RoomBalance,
+    public readonly version: Dota2Version
   ) {}
 }

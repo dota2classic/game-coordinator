@@ -12,6 +12,7 @@ import {PartyId} from "src/gateway/gateway/shared-types/party-id";
 import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
 import {EnterRankedQueueDeclinedEvent} from "src/gateway/gateway/events/mm/enter-ranked-queue-declined.event";
 import {BalanceService} from "src/mm/queue/service/balance.service";
+import {Dota2Version} from "src/gateway/gateway/shared-types/dota2version";
 
 @CommandHandler(EnterQueueCommand)
 export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
@@ -28,7 +29,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     partyId: PartyId,
     mode: MatchmakingMode,
     players: PlayerInQueueEntity[],
-  ) {
+    version: Dota2Version) {
     // here we check for ban status
 
     const bannedPlayers = players.filter(player => player.banStatus?.isBanned);
@@ -40,6 +41,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
           players.map(t => t.playerId),
           bannedPlayers.map(t => t.playerId),
           mode,
+          version
         ),
       );
 
@@ -53,7 +55,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     partyId: PartyId,
     mode: MatchmakingMode,
     players: PlayerInQueueEntity[],
-  ) {
+    version: Dota2Version) {
     if (mode !== MatchmakingMode.RANKED) return false;
     const newPlayers = players.filter(player => player.unrankedGamesLeft > 0);
     if (newPlayers.length > 0) {
@@ -72,16 +74,16 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
 
     return false;
   }
-  async execute({ partyId, mode, players }: EnterQueueCommand) {
+  async execute({ partyId, mode, players, version }: EnterQueueCommand) {
     const q = await this.queueRepository.get(mode);
     if (!q) return;
 
-    if (this.checkForBans(partyId, mode, players)) {
+    if (this.checkForBans(partyId, mode, players, version)) {
       // if can't go cause of bans we return
       return;
     }
 
-    if (this.checkForNewbies(partyId, mode, players)) {
+    if (this.checkForNewbies(partyId, mode, players, version)) {
       return;
     }
 
@@ -89,14 +91,14 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
 
     // remove from other queues
     allQueues
-      .filter(q => q.mode !== mode)
+      .filter(q => q.mode !== mode && q.version !== version)
       .forEach(q => {
         q.removeEntry(partyId);
         q.commit();
       });
 
     const score = BalanceService.getTotalScore(players);
-    const entry = new QueueEntryModel(partyId, mode, players, score);
+    const entry = new QueueEntryModel(partyId, mode, players, score, version);
 
     q.addEntry(entry);
     q.commit();
@@ -131,7 +133,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
       q.removeAll(game.entries);
       q.commit();
 
-      this.ebus.publish(new GameFoundEvent(balance));
+      this.ebus.publish(new GameFoundEvent(balance, q.version));
     } catch (e) {}
   }
 }

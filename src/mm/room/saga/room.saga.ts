@@ -28,7 +28,8 @@ export class RoomSaga {
       map(
         e =>
           new CreateRoomCommand(
-            e.balance
+            e.balance,
+            e.version
           ),
       ),
     );
@@ -69,6 +70,7 @@ export class RoomSaga {
               t.partyID,
               t.players,
               t.mode,
+              t.version
             ),
         ),
       ),
