@@ -14,6 +14,6 @@ export class GetUserQueueHandler
   async execute(command: GetUserQueueQuery): Promise<GetUserQueueQueryResult> {
     const q = await this.qRep.findQueueOf(command.player);
 
-    return new GetUserQueueQueryResult(q?.mode);
+    return new GetUserQueueQueryResult(q?.mode, q?.version);
   }
 }
