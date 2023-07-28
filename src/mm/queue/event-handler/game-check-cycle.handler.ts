@@ -7,6 +7,7 @@ import {MatchmakingMode, RoomSizes,} from "src/gateway/gateway/shared-types/matc
 import {findAllMatchingCombinations} from "src/util/combinations";
 import {BalanceService} from "src/mm/queue/service/balance.service";
 import {QueueModel} from "src/mm/queue/model/queue.model";
+import {LogEvent} from "src/gateway/gateway/events/log.event";
 
 @EventsHandler(GameCheckCycleEvent)
 export class GameCheckCycleHandler

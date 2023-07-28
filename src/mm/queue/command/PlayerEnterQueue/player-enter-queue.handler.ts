@@ -32,6 +32,7 @@ export class PlayerEnterQueueHandler
           playerId: t,
           mmr: mmr.mmr,
           recentWinrate: mmr.recentWinrate,
+          recentKDA: mmr.recentKDA,
           gamesPlayed: mmr.summary.rankedGamesPlayed,
           banStatus: mmr.banStatus,
           unrankedGamesLeft: mmr.summary.newbieGamesLeft,

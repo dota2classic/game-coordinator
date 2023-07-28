@@ -86,9 +86,9 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
       return;
     }
 
-    if (this.checkForNewbies(partyId, mode, players, version)) {
-      return;
-    }
+    // if (this.checkForNewbies(partyId, mode, players, version)) {
+    //   return;
+    // }
 
     const allQueues = await this.queueRepository.all();
 

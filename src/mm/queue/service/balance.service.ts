@@ -4,13 +4,12 @@ import {BalanceException} from "src/mm/queue/exception/BalanceException";
 import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
 import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
 import {MatchmakingMode, RoomSizes,} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import {Dota2Version} from "src/gateway/gateway/shared-types/dota2version";
 
 @Injectable()
 export class BalanceService {
   private static readonly RECENT_WINRATE_CAP: number = 20;
   private static readonly WINRATE_FACTOR: number = 1500;
-  private static readonly MAX_AVERAGE_SCORE_FOR_GAME: number = 400;
+  private static readonly MAX_AVERAGE_SCORE_FOR_GAME: number = 1500;
   private static readonly MAX_SCORE_DIFFERENCE: number = 500;
   private static readonly MAX_RATING_DIFFERENCE: number = 1000;
   private static readonly DEVIATION_MAX_FACTOR = 500;
@@ -20,12 +19,13 @@ export class BalanceService {
     // keep score same for single players and higher for parties
     // return 1 + 0.1 * (count - 1);
     // ok lets not increase it for parties.
-    return 1
+    return 1;
   }
 
   public static getScore(
     mmr: number,
     wrLast20Games: number,
+    kdaLast20Games: number,
     gamesPlayed: number,
   ): number {
     const desiredWinrate = 0.5;
@@ -34,18 +34,26 @@ export class BalanceService {
     const newbieWinrateFactor =
       Math.min(gamesPlayed, this.RECENT_WINRATE_CAP) / this.RECENT_WINRATE_CAP;
 
-    return (
-      mmr +
-      newbieWinrateFactor *
-        this.WINRATE_FACTOR *
-        (wrLast20Games - desiredWinrate)
-    );
+    const minGames = Math.min(gamesPlayed, 20);
+
+    return wrLast20Games * kdaLast20Games * minGames;
+    // return (
+    //   newbieWinrateFactor *
+    //     this.WINRATE_FACTOR *
+    //     (wrLast20Games - desiredWinrate)
+    // );
   }
 
   public static getTotalScore(players: PlayerInQueueEntity[]): number {
     const scoreSum = players.reduce(
       (a, b) =>
-        a + BalanceService.getScore(b.mmr, b.recentWinrate, b.gamesPlayed),
+        a +
+        BalanceService.getScore(
+          b.mmr,
+          b.recentWinrate,
+          b.recentKDA,
+          b.gamesPlayed,
+        ),
       0,
     );
 
@@ -65,8 +73,8 @@ export class BalanceService {
     parties: QueueEntryModel[],
     mmrDiffStrict: boolean = true,
   ): RoomBalance {
-    let radiantMMR = 0;
-    let direMMR = 0;
+    let radiantScore = 0;
+    let direScore = 0;
 
     const radiantParties: QueueEntryModel[] = [];
     const direParties: QueueEntryModel[] = [];
@@ -74,23 +82,27 @@ export class BalanceService {
     let radiantPlayerCount = 0;
     let direPlayerCount = 0;
 
-    const preparedParties = parties.sort((a, b) => b.averageScore - a.averageScore);
+    const preparedParties = parties.sort(
+      (a, b) => b.averageScore - a.averageScore,
+    );
 
-    const lowestParty = preparedParties[preparedParties.length - 1];
-    const highestParty = preparedParties[0];
+    // const lowestParty = preparedParties[preparedParties.length - 1];
+    // const highestParty = preparedParties[0];
 
-    const lowestPartyScore =
-      lowestParty.averageScore +
-      BalanceService.calculateScoreDeviation(lowestParty.DeviationScore);
+    // const lowestPartyScore =
+    //   lowestParty.averageScore +
+    //   BalanceService.calculateScoreDeviation(lowestParty.DeviationScore);
+    //
+    // const highestPartyScore =
+    //   highestParty.averageScore -
+    //   BalanceService.calculateScoreDeviation(highestParty.DeviationScore);
+    //
+    // const playersSorted = preparedParties
+    //   .flatMap(t => t.players)
+    //   .sort((a, b) => b.mmr - a.mmr);
 
-    const highestPartyScore = highestParty.averageScore - BalanceService.calculateScoreDeviation(highestParty.DeviationScore);
-
-    const playersSorted = preparedParties
-      .flatMap(t => t.players)
-      .sort((a, b) => b.mmr - a.mmr);
-
-    const highestMmr = playersSorted[0].mmr;
-    const lowestMmr = playersSorted[playersSorted.length - 1].mmr;
+    // const highestMmr = playersSorted[0].mmr;
+    // const lowestMmr = playersSorted[playersSorted.length - 1].mmr;
 
     // if (
     //   mmrDiffStrict &&
@@ -112,27 +124,27 @@ export class BalanceService {
     preparedParties.forEach(it => {
       if (
         // if radiant less mmr and
-        (radiantMMR <= direMMR && radiantPlayerCount < teamSize) ||
+        (radiantScore <= direScore && radiantPlayerCount < teamSize) ||
         direPlayerCount === teamSize
       ) {
         radiantParties.push(it);
         radiantPlayerCount += it.players.length;
-        radiantMMR += it.score;
+        radiantScore += it.score;
       } else if (
-        (direMMR <= radiantMMR && direPlayerCount < teamSize) ||
+        (direScore <= radiantScore && direPlayerCount < teamSize) ||
         radiantPlayerCount === teamSize
       ) {
         direParties.push(it);
         direPlayerCount += it.players.length;
-        direMMR += it.score;
+        direScore += it.score;
       } else if (radiantPlayerCount < teamSize) {
         radiantParties.push(it);
         radiantPlayerCount += it.players.length;
-        radiantMMR += it.score;
+        radiantScore += it.score;
       } else if (direPlayerCount < teamSize) {
         direParties.push(it);
         direPlayerCount += it.players.length;
-        direMMR += it.score;
+        direScore += it.score;
       }
     });
 
@@ -142,17 +154,18 @@ export class BalanceService {
       );
     }
 
-    const rAvrg = radiantMMR / teamSize;
-    const dAvrg = direMMR / teamSize;
+    const rAvrg = radiantScore / teamSize;
+    const dAvrg = direScore / teamSize;
 
-
-    const hrs = new Date().getHours()
-    const isNight = hrs > 22 || hrs < 9
-
+    const hrs = new Date().getHours();
+    const isNight = hrs > 22 || hrs < 9;
 
     if (
       mmrDiffStrict &&
-      Math.abs(rAvrg - dAvrg) >= (isNight ? 2 * BalanceService.MAX_AVERAGE_SCORE_FOR_GAME : BalanceService.MAX_AVERAGE_SCORE_FOR_GAME)
+      Math.abs(rAvrg - dAvrg) >=
+        (isNight
+          ? 2 * BalanceService.MAX_AVERAGE_SCORE_FOR_GAME
+          : BalanceService.MAX_AVERAGE_SCORE_FOR_GAME)
     ) {
       throw new BalanceException(
         `Radiant ${rAvrg} Dire ${dAvrg}. Diff: ${Math.abs(
@@ -160,6 +173,8 @@ export class BalanceService {
         )}, limit: ${BalanceService.MAX_AVERAGE_SCORE_FOR_GAME}`,
       );
     }
+
+
     return new RoomBalance(
       [radiantParties, direParties].map(
         list =>
@@ -181,7 +196,11 @@ export class BalanceService {
     );
   }
 
-  botsBalance(teamSize: number, parties: QueueEntryModel[], roomBalanceMode: MatchmakingMode = MatchmakingMode.BOTS): RoomBalance {
+  botsBalance(
+    teamSize: number,
+    parties: QueueEntryModel[],
+    roomBalanceMode: MatchmakingMode = MatchmakingMode.BOTS,
+  ): RoomBalance {
     const r: QueueEntryModel[] = [];
     const d: QueueEntryModel[] = [];
 
@@ -208,7 +227,7 @@ export class BalanceService {
 
     return new RoomBalance(
       [new TeamEntry(r, 0), new TeamEntry(d, 0)],
-      roomBalanceMode
+      roomBalanceMode,
     );
   }
 

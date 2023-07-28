@@ -20,6 +20,7 @@ import {RoomImpossibleEvent} from "src/gateway/gateway/events/mm/room-impossible
 import {EnterQueueDeclinedEvent} from "src/gateway/gateway/events/mm/enter-queue-declined.event";
 import {EnterRankedQueueDeclinedEvent} from "src/gateway/gateway/events/mm/enter-ranked-queue-declined.event";
 import {PlayerDeclinedGameEvent} from "src/gateway/gateway/events/mm/player-declined-game.event";
+import {LogEvent} from "src/gateway/gateway/events/log.event";
 
 @Injectable()
 export class GatewayService implements OnApplicationBootstrap {
@@ -55,6 +56,7 @@ export class GatewayService implements OnApplicationBootstrap {
 
       RoomImpossibleEvent,
       MatchmakingBannedEvent,
+      LogEvent,
 
       EnterQueueDeclinedEvent,
       EnterRankedQueueDeclinedEvent,

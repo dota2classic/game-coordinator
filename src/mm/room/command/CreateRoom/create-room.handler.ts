@@ -10,6 +10,7 @@ import {RoomBalance} from "src/mm/room/model/entity/room-balance";
 import {RoomImpossibleEvent} from "src/gateway/gateway/events/mm/room-impossible.event";
 import {BalanceService} from "src/mm/queue/service/balance.service";
 import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
+import {LogEvent} from "src/gateway/gateway/events/log.event";
 
 @CommandHandler(CreateRoomCommand)
 export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
@@ -32,6 +33,9 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
 
     this.ebus.publish(new RoomCreatedEvent(room.id));
     this.logger.log(JSON.stringify(room.balance))
+
+
+    this.ebus.publish(new LogEvent(`Создана игра. Состав команд:\n \`${JSON.stringify(room.balance)}\``))
   }
 
 }

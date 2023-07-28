@@ -6,6 +6,7 @@ export class PlayerInQueueEntity {
     public readonly playerId: PlayerId,
     public readonly mmr: number,
     public readonly recentWinrate: number,
+    public readonly recentKDA: number,
     public readonly gamesPlayed: number,
     public readonly banStatus: BanStatus | undefined,
     public readonly unrankedGamesLeft: number

@@ -1,26 +1,20 @@
-import { NestFactory } from "@nestjs/core";
-import {CommandBus, EventBus, EventPublisher, ofType, QueryBus} from "@nestjs/cqrs";
-import { QueueModel } from "./mm/queue/model/queue.model";
-import { PartyModel } from "./mm/party/model/party.model";
-import { PlayerModel } from "./mm/player/model/player.model";
-import { MicroserviceOptions, Transport } from "@nestjs/microservices";
-import { Subscriber } from "rxjs";
-import { StartEvent } from "src/mm/start.event";
-import { Logger } from "@nestjs/common";
-import { AppModule } from "src/app.module";
+import {NestFactory} from "@nestjs/core";
+import {CommandBus, EventBus, EventPublisher, QueryBus} from "@nestjs/cqrs";
+import {QueueModel} from "./mm/queue/model/queue.model";
+import {PartyModel} from "./mm/party/model/party.model";
+import {PlayerModel} from "./mm/player/model/player.model";
+import {MicroserviceOptions, Transport} from "@nestjs/microservices";
+import {StartEvent} from "src/mm/start.event";
+import {Logger} from "@nestjs/common";
+import {AppModule} from "src/app.module";
 import {REDIS_PASSWORD, REDIS_URL} from "src/@shared/env";
-import { wait } from "src/@shared/wait";
-import { PlayerEnterQueueCommand } from "src/gateway/gateway/commands/player-enter-queue.command";
-import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { user1, user2 } from "src/@test/values";
-import { SetReadyCheckCommand } from "src/mm/room/command/SetReadyCheck/set-ready-check.command";
-import { waitFor } from "src/@test/cqrs";
-import { RoomCreatedEvent } from "src/mm/room/event/room-created.event";
-import { ReadyState } from "src/gateway/gateway/events/ready-state-received.event";
-import {inspect} from "util";
 import {PartyInvitationModel} from "src/mm/party/model/party-invitation.model";
-import {GameFoundEvent} from "src/mm/queue/event/game-found.event";
-import {RoomReadyEvent} from "src/gateway/gateway/events/room-ready.event";
+import {GetPlayerInfoQuery} from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info.query";
+import {PlayerId} from "src/gateway/gateway/shared-types/player-id";
+import {Dota2Version} from "src/gateway/gateway/shared-types/dota2version";
+import {LogEvent} from "src/gateway/gateway/events/log.event";
+import {Subscriber} from "rxjs";
+import {inspect} from "util";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
@@ -51,8 +45,7 @@ async function bootstrap() {
   const clogger = new Logger("CommandLogger");
   const qlogger = new Logger("QueryBus");
 
-
-  // qbus._subscribe(
+  // ebus._subscribe(
   //   new Subscriber<any>(e => {
   //     qlogger.log(
   //       `${inspect(e)}`,
@@ -60,7 +53,8 @@ async function bootstrap() {
   //     );
   //   }),
   // );
-  //
+  // //
+
   // ebus.pipe(ofType<{}, {}>(GameFoundEvent, RoomReadyEvent))._subscribe(
   //   new Subscriber<any>(e => {
   //     elogger.log(
@@ -88,6 +82,9 @@ async function bootstrap() {
   ebus.publish(new StartEvent());
 
 
+  await ebus.publish(new LogEvent("hello"))
+
 }
 bootstrap();
+
 
