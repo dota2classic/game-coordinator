@@ -28,15 +28,16 @@ export class BalanceService {
     kdaLast20Games: number,
     gamesPlayed: number,
   ): number {
-    const desiredWinrate = 0.5;
-
-    // if played < 20 games, winrate will be less effective
-    const newbieWinrateFactor =
-      Math.min(gamesPlayed, this.RECENT_WINRATE_CAP) / this.RECENT_WINRATE_CAP;
-
     const minGames = Math.min(gamesPlayed, 20);
-
     return wrLast20Games * kdaLast20Games * minGames;
+
+
+    // const desiredWinrate = 0.5;
+    //
+    // // if played < 20 games, winrate will be less effective
+    // const newbieWinrateFactor =
+    //   Math.min(gamesPlayed, this.RECENT_WINRATE_CAP) / this.RECENT_WINRATE_CAP;
+
     // return (
     //   newbieWinrateFactor *
     //     this.WINRATE_FACTOR *

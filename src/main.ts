@@ -7,14 +7,9 @@ import {MicroserviceOptions, Transport} from "@nestjs/microservices";
 import {StartEvent} from "src/mm/start.event";
 import {Logger} from "@nestjs/common";
 import {AppModule} from "src/app.module";
-import {REDIS_PASSWORD, REDIS_URL} from "src/@shared/env";
+import {REDIS_HOST, REDIS_PASSWORD} from "src/@shared/env";
 import {PartyInvitationModel} from "src/mm/party/model/party-invitation.model";
-import {GetPlayerInfoQuery} from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info.query";
-import {PlayerId} from "src/gateway/gateway/shared-types/player-id";
-import {Dota2Version} from "src/gateway/gateway/shared-types/dota2version";
 import {LogEvent} from "src/gateway/gateway/events/log.event";
-import {Subscriber} from "rxjs";
-import {inspect} from "util";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
@@ -32,7 +27,7 @@ async function bootstrap() {
         retryAttempts: Infinity,
         retryDelay: 3000,
         password: REDIS_PASSWORD(),
-        url: REDIS_URL(),
+        host: REDIS_HOST(),
       },
     },
   );
@@ -73,7 +68,7 @@ async function bootstrap() {
   //   }),
   // );
 
-  await app.listenAsync();
+  await app.listen();
   // console.log(`Started matchmaking core`);
 
   const publisher = app.get(EventPublisher);
