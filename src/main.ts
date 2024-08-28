@@ -1,15 +1,15 @@
-import {NestFactory} from "@nestjs/core";
-import {CommandBus, EventBus, EventPublisher, QueryBus} from "@nestjs/cqrs";
-import {QueueModel} from "./mm/queue/model/queue.model";
-import {PartyModel} from "./mm/party/model/party.model";
-import {PlayerModel} from "./mm/player/model/player.model";
-import {MicroserviceOptions, Transport} from "@nestjs/microservices";
-import {StartEvent} from "src/mm/start.event";
-import {Logger} from "@nestjs/common";
-import {AppModule} from "src/app.module";
-import {REDIS_HOST, REDIS_PASSWORD} from "src/@shared/env";
-import {PartyInvitationModel} from "src/mm/party/model/party-invitation.model";
-import {LogEvent} from "src/gateway/gateway/events/log.event";
+import { NestFactory } from "@nestjs/core";
+import { CommandBus, EventBus, EventPublisher, QueryBus } from "@nestjs/cqrs";
+import { QueueModel } from "mm/queue/model/queue.model";
+import { PartyModel } from "./mm/party/model/party.model";
+import { PlayerModel } from "./mm/player/model/player.model";
+import { MicroserviceOptions, Transport } from "@nestjs/microservices";
+import { StartEvent } from "mm/start.event";
+import { Logger } from "@nestjs/common";
+import { AppModule } from "app.module";
+import { REDIS_HOST, REDIS_PASSWORD } from "@shared/env";
+import { PartyInvitationModel } from "mm/party/model/party-invitation.model";
+import { LogEvent } from "gateway/gateway/events/log.event";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
@@ -76,10 +76,6 @@ async function bootstrap() {
 
   ebus.publish(new StartEvent());
 
-
-  await ebus.publish(new LogEvent("hello"))
-
+  await ebus.publish(new LogEvent("hello"));
 }
 bootstrap();
-
-

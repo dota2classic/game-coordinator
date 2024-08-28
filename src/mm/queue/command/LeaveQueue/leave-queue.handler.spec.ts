@@ -1,16 +1,16 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CommandBus, EventBus } from "@nestjs/cqrs";
-import { clearRepositories, TestEnvironment } from "src/@test/cqrs";
-import { LeaveQueueHandler } from "src/mm/queue/command/LeaveQueue/leave-queue.handler";
-import { LeaveQueueCommand } from "src/mm/queue/command/LeaveQueue/leave-queue.command";
-import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { QueueRepository } from "src/mm/queue/repository/queue.repository";
-import { QueueModel } from "src/mm/queue/model/queue.model";
-import { QueueProviders } from "src/mm/queue";
-import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
-import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
-import { QueueUpdatedEvent } from "src/gateway/gateway/events/queue-updated.event";
-import {randomUser} from "src/@test/values";
+import { clearRepositories, TestEnvironment } from "@test/cqrs";
+import { LeaveQueueHandler } from "mm/queue/command/LeaveQueue/leave-queue.handler";
+import { LeaveQueueCommand } from "mm/queue/command/LeaveQueue/leave-queue.command";
+import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
+import { QueueRepository } from "mm/queue/repository/queue.repository";
+import { QueueModel } from "mm/queue/model/queue.model";
+import { QueueProviders } from "mm/queue";
+import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
+import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
+import { QueueUpdatedEvent } from "gateway/gateway/events/queue-updated.event";
+import { randomUser } from "@test/values";
 
 describe("LeaveQueueHandler", () => {
   let ebus: EventBus;

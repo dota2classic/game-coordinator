@@ -1,23 +1,20 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CommandBus, EventBus } from "@nestjs/cqrs";
-import { clearRepositories, TestEnvironment } from "src/@test/cqrs";
-import { EnterQueueHandler } from "src/mm/queue/command/EnterQueue/enter-queue.handler";
-import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
-import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { QueueUpdatedEvent } from "src/gateway/gateway/events/queue-updated.event";
-import { QueueProviders } from "src/mm/queue";
-import { QueueRepository } from "src/mm/queue/repository/queue.repository";
-import { QueueModel } from "src/mm/queue/model/queue.model";
-import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
-import {
-  FoundGameParty,
-  GameFoundEvent,
-} from "src/mm/queue/event/game-found.event";
-import { randomUser } from "src/@test/values";
-import { PlayerId } from "src/gateway/gateway/shared-types/player-id";
-import { GameCheckCycleEvent } from "src/mm/queue/event/game-check-cycle.event";
-import { GameCheckCycleHandler } from "src/mm/queue/event-handler/game-check-cycle.handler";
-import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
+import { clearRepositories, TestEnvironment } from "@test/cqrs";
+import { EnterQueueHandler } from "mm/queue/command/EnterQueue/enter-queue.handler";
+import { EnterQueueCommand } from "mm/queue/command/EnterQueue/enter-queue.command";
+import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
+import { QueueUpdatedEvent } from "gateway/gateway/events/queue-updated.event";
+import { QueueProviders } from "mm/queue";
+import { QueueRepository } from "mm/queue/repository/queue.repository";
+import { QueueModel } from "mm/queue/model/queue.model";
+import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
+import { GameFoundEvent } from "mm/queue/event/game-found.event";
+import { randomUser } from "@test/values";
+import { PlayerId } from "gateway/gateway/shared-types/player-id";
+import { GameCheckCycleEvent } from "mm/queue/event/game-check-cycle.event";
+import { GameCheckCycleHandler } from "mm/queue/event-handler/game-check-cycle.handler";
+import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
 
 const u1 = randomUser();
 const u2 = randomUser();

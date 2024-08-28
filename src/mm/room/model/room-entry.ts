@@ -1,6 +1,6 @@
-import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { PlayerId } from "src/gateway/gateway/shared-types/player-id";
-import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
+import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
+import { PlayerId } from "gateway/gateway/shared-types/player-id";
+import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
 
 export class PlayerInPartyInRoom {
   constructor(

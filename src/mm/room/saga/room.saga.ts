@@ -2,22 +2,16 @@ import { Injectable } from "@nestjs/common";
 import { ICommand, ofType, Saga } from "@nestjs/cqrs";
 import { Observable } from "rxjs";
 import { map, mergeMap } from "rxjs/operators";
-import { RoomSizes } from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { GameFoundEvent } from "src/mm/queue/event/game-found.event";
-import {
-  CreateRoomCommand,
-  PartyInRoom,
-} from "src/mm/room/command/CreateRoom/create-room.command";
-import { PlayerInPartyInRoom } from "src/mm/room/model/room-entry";
-import { RoomCreatedEvent } from "src/mm/room/event/room-created.event";
-import { RoomReadyCheckCommand } from "src/mm/room/command/RoomReadyCheck/room-ready-check.command";
-import { ReadyStateReceivedEvent } from "src/gateway/gateway/events/ready-state-received.event";
-import { SetReadyCheckCommand } from "src/mm/room/command/SetReadyCheck/set-ready-check.command";
-import { RoomReadyCheckCompleteEvent } from "src/gateway/gateway/events/room-ready-check-complete.event";
-import { FinalizeRoomCommand } from "src/mm/room/command/FinalizeRoom/finalize-room.command";
-import { BadRoomFinalizedEvent } from "src/mm/room/event/bad-room-finalized.event";
-import { EnterQueueCommand } from "src/mm/queue/command/EnterQueue/enter-queue.command";
-import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
+import { GameFoundEvent } from "mm/queue/event/game-found.event";
+import { CreateRoomCommand } from "mm/room/command/CreateRoom/create-room.command";
+import { RoomCreatedEvent } from "mm/room/event/room-created.event";
+import { RoomReadyCheckCommand } from "mm/room/command/RoomReadyCheck/room-ready-check.command";
+import { ReadyStateReceivedEvent } from "gateway/gateway/events/ready-state-received.event";
+import { SetReadyCheckCommand } from "mm/room/command/SetReadyCheck/set-ready-check.command";
+import { RoomReadyCheckCompleteEvent } from "gateway/gateway/events/room-ready-check-complete.event";
+import { FinalizeRoomCommand } from "mm/room/command/FinalizeRoom/finalize-room.command";
+import { BadRoomFinalizedEvent } from "mm/room/event/bad-room-finalized.event";
+import { EnterQueueCommand } from "mm/queue/command/EnterQueue/enter-queue.command";
 
 @Injectable()
 export class RoomSaga {
@@ -25,13 +19,7 @@ export class RoomSaga {
   checkRoom = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(GameFoundEvent),
-      map(
-        e =>
-          new CreateRoomCommand(
-            e.balance,
-            e.version
-          ),
-      ),
+      map(e => new CreateRoomCommand(e.balance, e.version)),
     );
   };
 
@@ -65,13 +53,7 @@ export class RoomSaga {
       ofType(BadRoomFinalizedEvent),
       mergeMap(t =>
         t.goodParties.map(
-          t =>
-            new EnterQueueCommand(
-              t.partyID,
-              t.players,
-              t.mode,
-              t.version
-            ),
+          t => new EnterQueueCommand(t.partyID, t.players, t.mode, t.version),
         ),
       ),
     );

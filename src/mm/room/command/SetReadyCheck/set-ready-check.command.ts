@@ -1,5 +1,5 @@
-import {PlayerId} from "src/gateway/gateway/shared-types/player-id";
-import {ReadyState} from "src/gateway/gateway/events/ready-state-received.event";
+import { PlayerId } from "gateway/gateway/shared-types/player-id";
+import { ReadyState } from "gateway/gateway/events/ready-state-received.event";
 
 export class SetReadyCheckCommand {
   constructor(

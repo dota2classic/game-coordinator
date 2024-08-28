@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { RuntimeRepository } from "src/@shared/runtime-repository";
-import { PlayerModel } from "src/mm/player/model/player.model";
+import { RuntimeRepository } from "@shared/runtime-repository";
+import { PlayerModel } from "mm/player/model/player.model";
 import { EventPublisher } from '@nestjs/cqrs';
 
 @Injectable()

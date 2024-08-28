@@ -1,14 +1,20 @@
-import {Test, TestingModule} from "@nestjs/testing";
-import {CommandBus, EventBus} from "@nestjs/cqrs";
-import {clearRepositories, TestEnvironment} from "src/@test/cqrs";
-import {RoomProviders} from "src/mm/room";
-import {CreateRoomHandler} from "src/mm/room/command/CreateRoom/create-room.handler";
-import {CreateRoomCommand, PartyInRoom,} from "src/mm/room/command/CreateRoom/create-room.command";
-import {MatchmakingMode, RoomSizes} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import {RoomImpossibleEvent} from "src/gateway/gateway/events/mm/room-impossible.event";
-import {RoomCreatedEvent} from "src/mm/room/event/room-created.event";
-import {randomUser} from "src/@test/values";
-import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
+import { Test, TestingModule } from "@nestjs/testing";
+import { CommandBus, EventBus } from "@nestjs/cqrs";
+import { clearRepositories, TestEnvironment } from "@test/cqrs";
+import { RoomProviders } from "mm/room";
+import { CreateRoomHandler } from "mm/room/command/CreateRoom/create-room.handler";
+import {
+  CreateRoomCommand,
+  PartyInRoom,
+} from "mm/room/command/CreateRoom/create-room.command";
+import {
+  MatchmakingMode,
+  RoomSizes,
+} from "gateway/gateway/shared-types/matchmaking-mode";
+import { RoomImpossibleEvent } from "gateway/gateway/events/mm/room-impossible.event";
+import { RoomCreatedEvent } from "mm/room/event/room-created.event";
+import { randomUser } from "@test/values";
+import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
 
 describe("CreateRoomHandler", () => {
   let ebus: EventBus;
@@ -35,27 +41,24 @@ describe("CreateRoomHandler", () => {
         MatchmakingMode.SOLOMID,
         RoomSizes[MatchmakingMode.SOLOMID],
         [
-          new PartyInRoom(
-            "partyID",
-            [
-              new PlayerInQueueEntity(
-                randomUser(),
-                1000,
-                0.5,
-                1000,
-                undefined,
-                0,
-              ),
-              new PlayerInQueueEntity(
-                randomUser(),
-                1000,
-                0.5,
-                1000,
-                undefined,
-                0,
-              ),
-            ]
-          ),
+          new PartyInRoom("partyID", [
+            new PlayerInQueueEntity(
+              randomUser(),
+              1000,
+              0.5,
+              1000,
+              undefined,
+              0,
+            ),
+            new PlayerInQueueEntity(
+              randomUser(),
+              1000,
+              0.5,
+              1000,
+              undefined,
+              0,
+            ),
+          ]),
         ],
       ),
     );

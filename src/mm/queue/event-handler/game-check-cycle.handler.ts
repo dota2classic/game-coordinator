@@ -1,13 +1,15 @@
-import {EventBus, EventsHandler, IEventHandler} from "@nestjs/cqrs";
-import {GameCheckCycleEvent} from "src/mm/queue/event/game-check-cycle.event";
-import {QueueRepository} from "src/mm/queue/repository/queue.repository";
-import {QueueService} from "src/mm/queue/service/queue.service";
-import {GameFoundEvent} from "src/mm/queue/event/game-found.event";
-import {MatchmakingMode, RoomSizes,} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import {findAllMatchingCombinations} from "src/util/combinations";
-import {BalanceService} from "src/mm/queue/service/balance.service";
-import {QueueModel} from "src/mm/queue/model/queue.model";
-import {LogEvent} from "src/gateway/gateway/events/log.event";
+import { EventBus, EventsHandler, IEventHandler } from "@nestjs/cqrs";
+import { GameCheckCycleEvent } from "mm/queue/event/game-check-cycle.event";
+import { QueueRepository } from "mm/queue/repository/queue.repository";
+import { QueueService } from "mm/queue/service/queue.service";
+import { GameFoundEvent } from "mm/queue/event/game-found.event";
+import {
+  MatchmakingMode,
+  RoomSizes,
+} from "gateway/gateway/shared-types/matchmaking-mode";
+import { findAllMatchingCombinations } from "util/combinations";
+import { BalanceService } from "mm/queue/service/balance.service";
+import { QueueModel } from "mm/queue/model/queue.model";
 
 @EventsHandler(GameCheckCycleEvent)
 export class GameCheckCycleHandler

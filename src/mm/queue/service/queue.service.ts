@@ -1,13 +1,16 @@
-import {Injectable} from "@nestjs/common";
-import {QueueModel} from "src/mm/queue/model/queue.model";
-import {MatchmakingMode, RoomSizes,} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import {QueueGameEntity} from "src/mm/queue/model/entity/queue-game.entity";
-import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
-import {BalanceService} from "src/mm/queue/service/balance.service";
-import {Cron, CronExpression} from "@nestjs/schedule";
-import {EventBus} from "@nestjs/cqrs";
-import {GameCheckCycleEvent} from "src/mm/queue/event/game-check-cycle.event";
-import {Dota2Version} from "src/gateway/gateway/shared-types/dota2version";
+import { Injectable } from "@nestjs/common";
+import { QueueModel } from "mm/queue/model/queue.model";
+import {
+  MatchmakingMode,
+  RoomSizes,
+} from "gateway/gateway/shared-types/matchmaking-mode";
+import { QueueGameEntity } from "mm/queue/model/entity/queue-game.entity";
+import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
+import { BalanceService } from "mm/queue/service/balance.service";
+import { Cron, CronExpression } from "@nestjs/schedule";
+import { EventBus } from "@nestjs/cqrs";
+import { GameCheckCycleEvent } from "mm/queue/event/game-check-cycle.event";
+import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
 
 @Injectable()
 export class QueueService {
@@ -19,22 +22,37 @@ export class QueueService {
   // @Cron("0 */7 * * * *")
   @Cron("* */10 * * * *")
   async checkBotGame() {
-    this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.BOTS, Dota2Version.Dota_681));
-    this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.BOTS, Dota2Version.Dota_684));
+    this.ebus.publish(
+      new GameCheckCycleEvent(MatchmakingMode.BOTS, Dota2Version.Dota_681),
+    );
+    this.ebus.publish(
+      new GameCheckCycleEvent(MatchmakingMode.BOTS, Dota2Version.Dota_684),
+    );
   }
-
 
   // each minute
   @Cron(CronExpression.EVERY_MINUTE)
   async checkRankedGame() {
-    this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.UNRANKED, Dota2Version.Dota_681));
-    this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.UNRANKED, Dota2Version.Dota_684));
+    this.ebus.publish(
+      new GameCheckCycleEvent(MatchmakingMode.UNRANKED, Dota2Version.Dota_681),
+    );
+    this.ebus.publish(
+      new GameCheckCycleEvent(MatchmakingMode.UNRANKED, Dota2Version.Dota_684),
+    );
 
-    this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.RANKED, Dota2Version.Dota_681));
-    this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.RANKED, Dota2Version.Dota_684));
+    this.ebus.publish(
+      new GameCheckCycleEvent(MatchmakingMode.RANKED, Dota2Version.Dota_681),
+    );
+    this.ebus.publish(
+      new GameCheckCycleEvent(MatchmakingMode.RANKED, Dota2Version.Dota_684),
+    );
 
-    this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.HIGHROOM, Dota2Version.Dota_681));
-    this.ebus.publish(new GameCheckCycleEvent(MatchmakingMode.HIGHROOM, Dota2Version.Dota_684));
+    this.ebus.publish(
+      new GameCheckCycleEvent(MatchmakingMode.HIGHROOM, Dota2Version.Dota_681),
+    );
+    this.ebus.publish(
+      new GameCheckCycleEvent(MatchmakingMode.HIGHROOM, Dota2Version.Dota_684),
+    );
   }
 
   public findGame(q: QueueModel): QueueGameEntity | undefined {

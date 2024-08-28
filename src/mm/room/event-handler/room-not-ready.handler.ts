@@ -1,7 +1,7 @@
-import {EventBus, EventsHandler, IEventHandler} from "@nestjs/cqrs";
-import {RoomNotReadyEvent} from "src/gateway/gateway/events/room-not-ready.event";
-import {RoomRepository} from "src/mm/room/repository/room.repository";
-import {BadRoomFinalizedEvent} from "src/mm/room/event/bad-room-finalized.event";
+import { EventBus, EventsHandler, IEventHandler } from "@nestjs/cqrs";
+import { RoomNotReadyEvent } from "gateway/gateway/events/room-not-ready.event";
+import { RoomRepository } from "mm/room/repository/room.repository";
+import { BadRoomFinalizedEvent } from "mm/room/event/bad-room-finalized.event";
 
 @EventsHandler(RoomNotReadyEvent)
 export class RoomNotReadyHandler implements IEventHandler<RoomNotReadyEvent> {

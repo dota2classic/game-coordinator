@@ -1,9 +1,9 @@
-import {CommandHandler, EventBus, ICommandHandler} from "@nestjs/cqrs";
-import {Logger} from "@nestjs/common";
-import {FinalizeRoomCommand} from "src/mm/room/command/FinalizeRoom/finalize-room.command";
-import {RoomReadyEvent} from "src/gateway/gateway/events/room-ready.event";
-import {RoomRepository} from "src/mm/room/repository/room.repository";
-import {RoomNotReadyEvent} from "src/gateway/gateway/events/room-not-ready.event";
+import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
+import { Logger } from "@nestjs/common";
+import { FinalizeRoomCommand } from "mm/room/command/FinalizeRoom/finalize-room.command";
+import { RoomReadyEvent } from "gateway/gateway/events/room-ready.event";
+import { RoomRepository } from "mm/room/repository/room.repository";
+import { RoomNotReadyEvent } from "gateway/gateway/events/room-not-ready.event";
 
 @CommandHandler(FinalizeRoomCommand)
 export class FinalizeRoomHandler
@@ -34,7 +34,7 @@ export class FinalizeRoomHandler
           radiant,
           dire,
           room.balance.averageMMR,
-          room.version
+          room.version,
         ),
       );
     } else {

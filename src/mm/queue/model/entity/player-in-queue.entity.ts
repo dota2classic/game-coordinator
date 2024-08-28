@@ -1,5 +1,5 @@
-import { PlayerId } from "src/gateway/gateway/shared-types/player-id";
-import { BanStatus } from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
+import { PlayerId } from "gateway/gateway/shared-types/player-id";
+import { BanStatus } from "gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
 
 export class PlayerInQueueEntity {
   constructor(
@@ -9,6 +9,6 @@ export class PlayerInQueueEntity {
     public readonly recentKDA: number,
     public readonly gamesPlayed: number,
     public readonly banStatus: BanStatus | undefined,
-    public readonly unrankedGamesLeft: number
+    public readonly unrankedGamesLeft: number,
   ) {}
 }

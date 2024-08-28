@@ -1,10 +1,8 @@
-import {MatchmakingMode} from "../../../gateway/gateway/shared-types/matchmaking-mode";
-import {PartyId} from "../../../gateway/gateway/shared-types/party-id";
-import {PlayerId} from "src/gateway/gateway/shared-types/player-id";
-import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
-import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
-import {RoomBalance} from "src/mm/room/model/entity/room-balance";
-import {Dota2Version} from "src/gateway/gateway/shared-types/dota2version";
+import { PartyId } from "../../../gateway/gateway/shared-types/party-id";
+import { PlayerId } from "gateway/gateway/shared-types/player-id";
+import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
+import { RoomBalance } from "mm/room/model/entity/room-balance";
+import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
 
 export class PlayerInParty {
   constructor(

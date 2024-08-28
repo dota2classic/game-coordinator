@@ -1,7 +1,7 @@
-import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
-import {Logger} from "@nestjs/common";
-import {TimeoutPartyInviteCommand} from "src/mm/party/command/TimeoutPartyInvite/timeout-party-invite.command";
-import {PartyInvitationRepository} from "src/mm/party/repository/party-invitation.repository";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { Logger } from "@nestjs/common";
+import { TimeoutPartyInviteCommand } from "mm/party/command/TimeoutPartyInvite/timeout-party-invite.command";
+import { PartyInvitationRepository } from "mm/party/repository/party-invitation.repository";
 
 @CommandHandler(TimeoutPartyInviteCommand)
 export class TimeoutPartyInviteHandler

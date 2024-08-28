@@ -1,18 +1,21 @@
-import {CommandHandler, EventBus, ICommandHandler} from "@nestjs/cqrs";
-import {Logger} from "@nestjs/common";
-import {EnterQueueCommand} from "src/mm/queue/command/EnterQueue/enter-queue.command";
-import {QueueRepository} from "src/mm/queue/repository/queue.repository";
-import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
-import {QueueModel} from "src/mm/queue/model/queue.model";
-import {QueueService} from "src/mm/queue/service/queue.service";
-import {GameFoundEvent,} from "src/mm/queue/event/game-found.event";
-import {MatchmakingMode, RoomSizes,} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import {EnterQueueDeclinedEvent} from "src/gateway/gateway/events/mm/enter-queue-declined.event";
-import {PartyId} from "src/gateway/gateway/shared-types/party-id";
-import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
-import {EnterRankedQueueDeclinedEvent} from "src/gateway/gateway/events/mm/enter-ranked-queue-declined.event";
-import {BalanceService} from "src/mm/queue/service/balance.service";
-import {Dota2Version} from "src/gateway/gateway/shared-types/dota2version";
+import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
+import { Logger } from "@nestjs/common";
+import { EnterQueueCommand } from "mm/queue/command/EnterQueue/enter-queue.command";
+import { QueueRepository } from "mm/queue/repository/queue.repository";
+import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
+import { QueueModel } from "mm/queue/model/queue.model";
+import { QueueService } from "mm/queue/service/queue.service";
+import { GameFoundEvent } from "mm/queue/event/game-found.event";
+import {
+  MatchmakingMode,
+  RoomSizes,
+} from "gateway/gateway/shared-types/matchmaking-mode";
+import { EnterQueueDeclinedEvent } from "gateway/gateway/events/mm/enter-queue-declined.event";
+import { PartyId } from "gateway/gateway/shared-types/party-id";
+import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
+import { EnterRankedQueueDeclinedEvent } from "gateway/gateway/events/mm/enter-ranked-queue-declined.event";
+import { BalanceService } from "mm/queue/service/balance.service";
+import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
 
 @CommandHandler(EnterQueueCommand)
 export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {

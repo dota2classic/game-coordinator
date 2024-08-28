@@ -1,5 +1,5 @@
-import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
-import { randomUser } from "src/@test/values";
+import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
+import { randomUser } from "@test/values";
 
 export const randomPiq = (maxMmr: number = 5000) =>
   new PlayerInQueueEntity(

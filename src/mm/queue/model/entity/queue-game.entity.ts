@@ -1,5 +1,5 @@
-import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
+import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
+import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
 
 export class QueueGameEntity {
   constructor(

@@ -1,18 +1,17 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { CommandBus, EventBus, EventPublisher } from "@nestjs/cqrs";
-import { TestEnvironment, clearRepositories } from "src/@test/cqrs";
-import { AcceptPartyInviteHandler } from "src/mm/party/command/AcceptPartyInvite/accept-party-invite.handler";
-import { PartyProviders } from "src/mm/party";
-import { PartyInvitationRepository } from "src/mm/party/repository/party-invitation.repository";
-import { PartyInvitationModel } from "src/mm/party/model/party-invitation.model";
-import { printCalls, randomUser } from "src/@test/values";
-import { PartyRepository } from "src/mm/party/repository/party.repository";
-import { AcceptPartyInviteCommand } from "src/mm/party/command/AcceptPartyInvite/accept-party-invite.command";
-import { PartyInviteAcceptedEvent } from "src/gateway/gateway/events/party/party-invite-accepted.event";
-import { PartyCreatedEvent } from "src/mm/party/event/party-created.event";
-import { PartyUpdatedEvent } from "src/gateway/gateway/events/party/party-updated.event";
-import {PartyInviteResultEvent} from "src/gateway/gateway/events/party/party-invite-result.event";
-import {PartyDeletedEvent} from "src/gateway/gateway/events/party/party-deleted.event";
+import { CommandBus, EventBus } from "@nestjs/cqrs";
+import { clearRepositories, TestEnvironment } from "@test/cqrs";
+import { AcceptPartyInviteHandler } from "mm/party/command/AcceptPartyInvite/accept-party-invite.handler";
+import { PartyProviders } from "mm/party";
+import { PartyInvitationRepository } from "mm/party/repository/party-invitation.repository";
+import { PartyInvitationModel } from "mm/party/model/party-invitation.model";
+import { randomUser } from "@test/values";
+import { PartyRepository } from "mm/party/repository/party.repository";
+import { AcceptPartyInviteCommand } from "mm/party/command/AcceptPartyInvite/accept-party-invite.command";
+import { PartyCreatedEvent } from "mm/party/event/party-created.event";
+import { PartyUpdatedEvent } from "gateway/gateway/events/party/party-updated.event";
+import { PartyInviteResultEvent } from "gateway/gateway/events/party/party-invite-result.event";
+import { PartyDeletedEvent } from "gateway/gateway/events/party/party-deleted.event";
 
 describe("AcceptPartyInviteHandler", () => {
   let ebus: EventBus;
@@ -71,7 +70,6 @@ describe("AcceptPartyInviteHandler", () => {
     );
   });
 
-
   it("should make 1 party of two", async () => {
     const rep = module.get(PartyInvitationRepository);
     const pRep = module.get(PartyRepository);
@@ -92,9 +90,8 @@ describe("AcceptPartyInviteHandler", () => {
       new PartyInviteResultEvent(inv.id, u2, false, u),
     );
 
-    await expect(pRep.all()).resolves.toHaveLength(1)
+    await expect(pRep.all()).resolves.toHaveLength(1);
   });
-
 
   it("case when party invite to a user in full party", async () => {
     const rep = module.get(PartyInvitationRepository);
@@ -120,6 +117,6 @@ describe("AcceptPartyInviteHandler", () => {
       new PartyInviteResultEvent(inv.id, u2, false, u),
     );
 
-    await expect(pRep.all()).resolves.toHaveLength(1)
+    await expect(pRep.all()).resolves.toHaveLength(1);
   });
 });

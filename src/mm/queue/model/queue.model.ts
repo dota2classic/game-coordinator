@@ -1,19 +1,22 @@
 import { AggregateRoot } from "@nestjs/cqrs";
-import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { QueueCreatedEvent } from "src/gateway/gateway/events/queue-created.event";
-import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
-import { QueueUpdatedEvent } from "src/gateway/gateway/events/queue-updated.event";
-import { PartyId } from "src/gateway/gateway/shared-types/party-id";
-import {Dota2Version} from "src/gateway/gateway/shared-types/dota2version";
+import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
+import { QueueCreatedEvent } from "gateway/gateway/events/queue-created.event";
+import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
+import { QueueUpdatedEvent } from "gateway/gateway/events/queue-updated.event";
+import { PartyId } from "gateway/gateway/shared-types/party-id";
+import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
 
 export class QueueModel extends AggregateRoot {
   public readonly entries: QueueEntryModel[] = [];
 
-  public get compId(){
-    return `${this.mode}_${this.version}`
+  public get compId() {
+    return `${this.mode}_${this.version}`;
   }
 
-  constructor(public readonly mode: MatchmakingMode, public readonly version: Dota2Version) {
+  constructor(
+    public readonly mode: MatchmakingMode,
+    public readonly version: Dota2Version,
+  ) {
     super();
   }
 

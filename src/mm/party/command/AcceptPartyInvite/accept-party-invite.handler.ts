@@ -1,9 +1,9 @@
-import {CommandHandler, EventBus, ICommandHandler} from "@nestjs/cqrs";
-import {Logger} from "@nestjs/common";
-import {AcceptPartyInviteCommand} from "src/mm/party/command/AcceptPartyInvite/accept-party-invite.command";
-import {PartyInvitationRepository} from "src/mm/party/repository/party-invitation.repository";
-import {PartyRepository} from "src/mm/party/repository/party.repository";
-import {PartyInviteResultEvent} from "src/gateway/gateway/events/party/party-invite-result.event";
+import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
+import { Logger } from "@nestjs/common";
+import { AcceptPartyInviteCommand } from "mm/party/command/AcceptPartyInvite/accept-party-invite.command";
+import { PartyInvitationRepository } from "mm/party/repository/party-invitation.repository";
+import { PartyRepository } from "mm/party/repository/party.repository";
+import { PartyInviteResultEvent } from "gateway/gateway/events/party/party-invite-result.event";
 
 @CommandHandler(AcceptPartyInviteCommand)
 export class AcceptPartyInviteHandler
@@ -34,10 +34,10 @@ export class AcceptPartyInviteHandler
         // we can silently remove it
         await this.pRep.delete(currentParty.id);
         // party update not needed here.
-        currentParty.uncommit()
-        currentParty.deleted()
+        currentParty.uncommit();
+        currentParty.deleted();
       }
-      currentParty.commit()
+      currentParty.commit();
     }
 
     if (command.accept) {
@@ -46,7 +46,12 @@ export class AcceptPartyInviteHandler
     }
 
     this.ebus.publish(
-      new PartyInviteResultEvent(invite.id, invite.invited, command.accept, invite.inviter),
+      new PartyInviteResultEvent(
+        invite.id,
+        invite.invited,
+        command.accept,
+        invite.inviter,
+      ),
     );
 
     await this.iRep.delete(invite.id);

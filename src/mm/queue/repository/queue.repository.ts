@@ -1,10 +1,10 @@
-import {RuntimeRepository} from '@shared/runtime-repository';
-import {QueueModel} from 'mm/queue/model/queue.model';
-import {Injectable} from '@nestjs/common';
-import {EventPublisher} from '@nestjs/cqrs';
-import {PlayerId} from "src/gateway/gateway/shared-types/player-id";
-import {MatchmakingMode} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import {Dota2Version} from "src/gateway/gateway/shared-types/dota2version";
+import { RuntimeRepository } from "@shared/runtime-repository";
+import { QueueModel } from "mm/queue/model/queue.model";
+import { Injectable } from "@nestjs/common";
+import { EventPublisher } from "@nestjs/cqrs";
+import { PlayerId } from "gateway/gateway/shared-types/player-id";
+import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
+import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
 
 @Injectable()
 export class QueueRepository extends RuntimeRepository<QueueModel, "compId"> {

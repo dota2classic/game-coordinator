@@ -1,6 +1,6 @@
-import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
-import { RoomBalance } from "src/mm/room/model/entity/room-balance";
-import { Dota2Version } from "src/gateway/gateway/shared-types/dota2version";
+import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
+import { RoomBalance } from "mm/room/model/entity/room-balance";
+import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
 
 export class PartyInRoom {
   constructor(

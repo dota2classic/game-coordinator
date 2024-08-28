@@ -1,8 +1,8 @@
-import { QueryHandler, IQueryHandler } from "@nestjs/cqrs";
+import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { Logger } from "@nestjs/common";
-import { GetUserQueueQuery } from "src/gateway/gateway/queries/GetUserQueue/get-user-queue.query";
-import { GetUserQueueQueryResult } from "src/gateway/gateway/queries/GetUserQueue/get-user-queue-query.result";
-import { QueueRepository } from "src/mm/queue/repository/queue.repository";
+import { GetUserQueueQuery } from "gateway/gateway/queries/GetUserQueue/get-user-queue.query";
+import { GetUserQueueQueryResult } from "gateway/gateway/queries/GetUserQueue/get-user-queue-query.result";
+import { QueueRepository } from "mm/queue/repository/queue.repository";
 
 @QueryHandler(GetUserQueueQuery)
 export class GetUserQueueHandler

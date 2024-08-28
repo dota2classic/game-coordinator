@@ -1,9 +1,12 @@
-import {Injectable} from "@nestjs/common";
-import {RoomBalance, TeamEntry} from "src/mm/room/model/entity/room-balance";
-import {BalanceException} from "src/mm/queue/exception/BalanceException";
-import {PlayerInQueueEntity} from "src/mm/queue/model/entity/player-in-queue.entity";
-import {QueueEntryModel} from "src/mm/queue/model/queue-entry.model";
-import {MatchmakingMode, RoomSizes,} from "src/gateway/gateway/shared-types/matchmaking-mode";
+import { Injectable } from "@nestjs/common";
+import { RoomBalance, TeamEntry } from "mm/room/model/entity/room-balance";
+import { BalanceException } from "mm/queue/exception/BalanceException";
+import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
+import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
+import {
+  MatchmakingMode,
+  RoomSizes,
+} from "gateway/gateway/shared-types/matchmaking-mode";
 
 @Injectable()
 export class BalanceService {
@@ -30,7 +33,6 @@ export class BalanceService {
   ): number {
     const minGames = Math.min(gamesPlayed, 20);
     return wrLast20Games * kdaLast20Games * minGames;
-
 
     // const desiredWinrate = 0.5;
     //
@@ -174,7 +176,6 @@ export class BalanceService {
         )}, limit: ${BalanceService.MAX_AVERAGE_SCORE_FOR_GAME}`,
       );
     }
-
 
     return new RoomBalance(
       [radiantParties, direParties].map(

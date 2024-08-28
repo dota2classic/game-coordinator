@@ -1,15 +1,15 @@
-import {Module} from "@nestjs/common";
-import {GatewayService} from "src/gateway/gateway.service";
-import {CqrsModule} from "@nestjs/cqrs";
-import {MmModule} from "src/mm/mm.module";
-import {ClientsModule, Transport} from "@nestjs/microservices";
-import {REDIS_HOST, REDIS_PASSWORD, REDIS_URL} from "src/@shared/env";
-import {QueryController} from "src/gateway/query.controller";
-import {CommandController} from "src/gateway/command.controller";
-import {GetPlayerInfoQuery} from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info.query";
-import {outerQuery} from "src/gateway/gateway/util/outerQuery";
-import {GetPlayerInfoQueryResult} from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
-import {QueryCache} from "src/rcache";
+import { Module } from "@nestjs/common";
+import { GatewayService } from "gateway/gateway.service";
+import { CqrsModule } from "@nestjs/cqrs";
+import { MmModule } from "mm/mm.module";
+import { ClientsModule, Transport } from "@nestjs/microservices";
+import { REDIS_HOST, REDIS_PASSWORD, REDIS_URL } from "@shared/env";
+import { QueryController } from "gateway/query.controller";
+import { CommandController } from "gateway/command.controller";
+import { GetPlayerInfoQuery } from "gateway/gateway/queries/GetPlayerInfo/get-player-info.query";
+import { outerQuery } from "gateway/gateway/util/outerQuery";
+import { GetPlayerInfoQueryResult } from "gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
+import { QueryCache } from "rcache";
 
 @Module({
   imports: [
@@ -37,7 +37,7 @@ import {QueryCache} from "src/rcache";
       new QueryCache<GetPlayerInfoQuery, GetPlayerInfoQueryResult>({
         url: REDIS_URL(),
         password: REDIS_PASSWORD(),
-        ttl: 300
+        ttl: 300,
       }), // 5 min caching
     ),
   ],

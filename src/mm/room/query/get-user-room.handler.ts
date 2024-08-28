@@ -1,11 +1,11 @@
-import { QueryHandler, IQueryHandler } from "@nestjs/cqrs";
+import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { Logger } from "@nestjs/common";
-import { GetUserRoomQuery } from "src/gateway/gateway/queries/GetUserRoom/get-user-room.query";
+import { GetUserRoomQuery } from "gateway/gateway/queries/GetUserRoom/get-user-room.query";
 import {
   GetUserRoomQueryResult,
   GetUserRoomQueryResultRoomInfo,
-} from "src/gateway/gateway/queries/GetUserRoom/get-user-room-query.result";
-import { RoomRepository } from "src/mm/room/repository/room.repository";
+} from "gateway/gateway/queries/GetUserRoom/get-user-room-query.result";
+import { RoomRepository } from "mm/room/repository/room.repository";
 
 @QueryHandler(GetUserRoomQuery)
 export class GetUserRoomHandler
@@ -16,7 +16,6 @@ export class GetUserRoomHandler
 
   async execute(command: GetUserRoomQuery): Promise<GetUserRoomQueryResult> {
     const room = await this.roomRep.findWithPlayer(command.playerId);
-
 
     if (!room) return new GetUserRoomQueryResult(undefined);
 

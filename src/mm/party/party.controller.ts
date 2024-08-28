@@ -1,8 +1,8 @@
-import {EventPattern} from "@nestjs/microservices";
-import {construct} from "src/gateway/gateway/util/construct";
-import {Controller} from "@nestjs/common";
-import {EventBus} from "@nestjs/cqrs";
-import {PartyInviteRequestedEvent} from "src/gateway/gateway/events/party/party-invite-requested.event";
+import { EventPattern } from "@nestjs/microservices";
+import { construct } from "gateway/gateway/util/construct";
+import { Controller } from "@nestjs/common";
+import { EventBus } from "@nestjs/cqrs";
+import { PartyInviteRequestedEvent } from "gateway/gateway/events/party/party-invite-requested.event";
 
 @Controller()
 export class PartyController {

@@ -1,7 +1,7 @@
-import { PlayerId } from "src/gateway/gateway/shared-types/player-id";
-import { EventBus } from "@nestjs/cqrs";
-import Mock = jest.Mock;
+import {PlayerId} from "gateway/gateway/shared-types/player-id";
+import {EventBus} from "@nestjs/cqrs";
 import { inspect } from "util";
+import Mock = jest.Mock;
 
 export const randomUser = () => {
   return user(`[U:1:${Math.round(Math.random() * 1000000)}]`);

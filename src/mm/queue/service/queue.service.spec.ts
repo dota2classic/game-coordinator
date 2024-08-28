@@ -1,12 +1,12 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { TestEnvironment } from "src/@test/cqrs";
-import { QueueProviders } from "src/mm/queue";
-import { QueueService } from "src/mm/queue/service/queue.service";
-import { QueueModel } from "src/mm/queue/model/queue.model";
-import { MatchmakingMode } from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
-import { PlayerInQueueEntity } from "src/mm/queue/model/entity/player-in-queue.entity";
-import {randomUser} from "src/@test/values";
+import { TestEnvironment } from "@test/cqrs";
+import { QueueProviders } from "mm/queue";
+import { QueueService } from "mm/queue/service/queue.service";
+import { QueueModel } from "mm/queue/model/queue.model";
+import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
+import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
+import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
+import { randomUser } from "@test/values";
 
 describe("QueueService", () => {
   let qs: QueueService;
@@ -68,8 +68,7 @@ describe("QueueService", () => {
     expect(qs.findGame(qModel)).toBeUndefined();
   });
 
-
-  it('should find ranked game when cycle', () => {
+  it("should find ranked game when cycle", () => {
     // const qModel = new QueueModel(MatchmakingMode.RANKED);
     // qModel.addEntry(
     //   new QueueEntryModel("1", MatchmakingMode.SOLOMID, [

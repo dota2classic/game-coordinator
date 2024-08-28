@@ -1,10 +1,10 @@
-import {AggregateRoot} from "@nestjs/cqrs";
-import {PartyId} from "src/gateway/gateway/shared-types/party-id";
-import {PlayerId} from "src/gateway/gateway/shared-types/player-id";
-import {PartyInviteCreatedEvent} from "src/gateway/gateway/events/party/party-invite-created.event";
-import {uuid} from "src/@shared/generateID";
-import {PartyInviteExpiredEvent} from "src/gateway/gateway/events/party/party-invite-expired.event";
-import {PartyInviteResultEvent} from "src/gateway/gateway/events/party/party-invite-result.event";
+import { AggregateRoot } from "@nestjs/cqrs";
+import { PartyId } from "gateway/gateway/shared-types/party-id";
+import { PlayerId } from "gateway/gateway/shared-types/player-id";
+import { PartyInviteCreatedEvent } from "gateway/gateway/events/party/party-invite-created.event";
+import { uuid } from "@shared/generateID";
+import { PartyInviteExpiredEvent } from "gateway/gateway/events/party/party-invite-expired.event";
+import { PartyInviteResultEvent } from "gateway/gateway/events/party/party-invite-result.event";
 
 export class PartyInvitationModel extends AggregateRoot {
   public readonly id: string;

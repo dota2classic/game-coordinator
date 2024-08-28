@@ -9,8 +9,7 @@ import {
   QueryHandler,
 } from "@nestjs/cqrs";
 import { Provider, Type } from "@nestjs/common";
-import { RuntimeRepository } from "src/@shared/runtime-repository";
-import { ClientProxy } from "@nestjs/microservices";
+import { RuntimeRepository } from "@shared/runtime-repository";
 
 const ebusProvider: Provider = {
   provide: EventBus,

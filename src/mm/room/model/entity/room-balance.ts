@@ -1,6 +1,5 @@
-import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
-import {MatchmakingMode} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import {Dota2Version} from "src/gateway/gateway/shared-types/dota2version";
+import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
+import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
 
 export class TeamEntry {
   public readonly averageScore: number;

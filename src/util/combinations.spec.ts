@@ -2,15 +2,15 @@ import {
   findAllCombinations,
   findAllMatchingCombinations,
   findFirstCombination,
-} from "src/util/combinations";
-import { range } from "src/util/range";
-import { QueueEntryModel } from "src/mm/queue/model/queue-entry.model";
+} from "util/combinations";
+import { range } from "util/range";
+import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
 import {
   MatchmakingMode,
   RoomSizes,
-} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import { BalanceService } from "src/mm/queue/service/balance.service";
-import { randomPiq } from "src/util/randomPlayerInQueue";
+} from "gateway/gateway/shared-types/matchmaking-mode";
+import { BalanceService } from "mm/queue/service/balance.service";
+import { randomPiq } from "util/randomPlayerInQueue";
 
 const f: number[] = [];
 function factorial(n) {

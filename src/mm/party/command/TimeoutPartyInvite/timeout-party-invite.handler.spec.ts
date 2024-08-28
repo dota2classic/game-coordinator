@@ -1,15 +1,15 @@
-import {Test, TestingModule} from "@nestjs/testing";
-import {CommandBus, EventBus} from "@nestjs/cqrs";
-import {clearRepositories, TestEnvironment} from "src/@test/cqrs";
-import {TimeoutPartyInviteHandler} from "src/mm/party/command/TimeoutPartyInvite/timeout-party-invite.handler";
-import {PartyProviders} from "src/mm/party";
-import {PartyInvitationRepository} from "src/mm/party/repository/party-invitation.repository";
-import {PartyInvitationModel} from "src/mm/party/model/party-invitation.model";
-import {uuid} from "src/@shared/generateID";
-import {randomUser} from "src/@test/values";
-import {PartyInviteExpiredEvent} from "src/gateway/gateway/events/party/party-invite-expired.event";
-import {TimeoutPartyInviteCommand} from "src/mm/party/command/TimeoutPartyInvite/timeout-party-invite.command";
-import {PartyInviteResultEvent} from "src/gateway/gateway/events/party/party-invite-result.event";
+import { Test, TestingModule } from "@nestjs/testing";
+import { CommandBus, EventBus } from "@nestjs/cqrs";
+import { clearRepositories, TestEnvironment } from "@test/cqrs";
+import { TimeoutPartyInviteHandler } from "mm/party/command/TimeoutPartyInvite/timeout-party-invite.handler";
+import { PartyProviders } from "mm/party";
+import { PartyInvitationRepository } from "mm/party/repository/party-invitation.repository";
+import { PartyInvitationModel } from "mm/party/model/party-invitation.model";
+import { uuid } from "@shared/generateID";
+import { randomUser } from "@test/values";
+import { PartyInviteExpiredEvent } from "gateway/gateway/events/party/party-invite-expired.event";
+import { TimeoutPartyInviteCommand } from "mm/party/command/TimeoutPartyInvite/timeout-party-invite.command";
+import { PartyInviteResultEvent } from "gateway/gateway/events/party/party-invite-result.event";
 
 describe("TimeoutPartyInviteHandler", () => {
   let ebus: EventBus;
@@ -44,7 +44,7 @@ describe("TimeoutPartyInviteHandler", () => {
 
     expect(ebus).toEmit(
       new PartyInviteResultEvent(inv.id, u, false, u2),
-      new PartyInviteExpiredEvent(inv.id, u, inv.partyId, u2)
+      new PartyInviteExpiredEvent(inv.id, u, inv.partyId, u2),
     );
   });
 

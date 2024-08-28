@@ -1,20 +1,20 @@
 import {Test, TestingModule} from "@nestjs/testing";
 import {CommandBus, EventBus, QueryBus} from "@nestjs/cqrs";
-import {clearRepositories, mockQuery, TestEnvironment} from "src/@test/cqrs";
-import {PlayerEnterQueueHandler} from "src/mm/queue/command/PlayerEnterQueue/player-enter-queue.handler";
-import {PlayerEnterQueueCommand} from "src/gateway/gateway/commands/player-enter-queue.command";
-import {MatchmakingMode} from "src/gateway/gateway/shared-types/matchmaking-mode";
-import {PlayerEnterQueueResolvedEvent} from "src/mm/queue/event/player-enter-queue-resolved.event";
-import {QueueProviders} from "src/mm/queue";
-import {PartyRepository} from "src/mm/party/repository/party.repository";
-import {PartyCreatedEvent} from "src/mm/party/event/party-created.event";
-import {randomUser} from "src/@test/values";
-import {GetPlayerInfoQuery} from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info.query";
+import {clearRepositories, mockQuery, TestEnvironment} from "@test/cqrs";
+import {PlayerEnterQueueHandler} from "mm/queue/command/PlayerEnterQueue/player-enter-queue.handler";
+import {PlayerEnterQueueCommand} from "gateway/gateway/commands/player-enter-queue.command";
+import {MatchmakingMode} from "gateway/gateway/shared-types/matchmaking-mode";
+import {PlayerEnterQueueResolvedEvent} from "mm/queue/event/player-enter-queue-resolved.event";
+import {QueueProviders} from "mm/queue";
+import {PartyRepository} from "mm/party/repository/party.repository";
+import {PartyCreatedEvent} from "mm/party/event/party-created.event";
+import {randomUser} from "@test/values";
+import {GetPlayerInfoQuery} from "gateway/gateway/queries/GetPlayerInfo/get-player-info.query";
 import {
   BanStatus,
   GetPlayerInfoQueryResult
-} from "src/gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
-import {BanReason} from "src/gateway/gateway/shared-types/ban";
+} from "gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
+import {BanReason} from "gateway/gateway/shared-types/ban";
 
 describe("PlayerEnterQueueHandler", () => {
   let ebus: EventBus;

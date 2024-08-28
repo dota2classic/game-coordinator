@@ -1,6 +1,6 @@
-import {Module} from "@nestjs/common";
-import {MmModule} from "src/mm/mm.module";
-import {GatewayModule} from "gateway/gateway.module";
+import { Module } from "@nestjs/common";
+import { MmModule } from "mm/mm.module";
+import { GatewayModule } from "gateway/gateway.module";
 
 @Module({
   imports: [
