@@ -13,7 +13,6 @@ import {
 import { EnterQueueDeclinedEvent } from "gateway/gateway/events/mm/enter-queue-declined.event";
 import { PartyId } from "gateway/gateway/shared-types/party-id";
 import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
-import { EnterRankedQueueDeclinedEvent } from "gateway/gateway/events/mm/enter-ranked-queue-declined.event";
 import { BalanceService } from "mm/queue/service/balance.service";
 import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
 
@@ -55,31 +54,31 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     return false;
   }
 
-  private checkForNewbies(
-    partyId: PartyId,
-    mode: MatchmakingMode,
-    players: PlayerInQueueEntity[],
-    version: Dota2Version,
-  ) {
-    if (mode !== MatchmakingMode.RANKED) return false;
-    const newPlayers = players.filter(player => player.unrankedGamesLeft > 0);
-    if (newPlayers.length > 0) {
-      // if there are banned players in party, we can't let them in
-      this.ebus.publish(
-        new EnterRankedQueueDeclinedEvent(
-          partyId,
-          players.map(t => t.playerId),
-          newPlayers.map(t => t.playerId),
-          mode,
-          version,
-        ),
-      );
-
-      return true;
-    }
-
-    return false;
-  }
+  // private checkForNewbies(
+  //   partyId: PartyId,
+  //   mode: MatchmakingMode,
+  //   players: PlayerInQueueEntity[],
+  //   version: Dota2Version,
+  // ) {
+  //   if (mode !== MatchmakingMode.RANKED) return false;
+  //   const newPlayers = players.filter(player => player.unrankedGamesLeft > 0);
+  //   if (newPlayers.length > 0) {
+  //     // if there are banned players in party, we can't let them in
+  //     this.ebus.publish(
+  //       new EnterRankedQueueDeclinedEvent(
+  //         partyId,
+  //         players.map(t => t.playerId),
+  //         newPlayers.map(t => t.playerId),
+  //         mode,
+  //         version,
+  //       ),
+  //     );
+  //
+  //     return true;
+  //   }
+  //
+  //   return false;
+  // }
   async execute({ partyId, mode, players, version }: EnterQueueCommand) {
     const q = await this.queueRepository.get(QueueRepository.id(mode, version));
     if (!q) return;

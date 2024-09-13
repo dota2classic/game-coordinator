@@ -9,6 +9,5 @@ export class PlayerInQueueEntity {
     public readonly recentKDA: number,
     public readonly gamesPlayed: number,
     public readonly banStatus: BanStatus | undefined,
-    public readonly unrankedGamesLeft: number,
   ) {}
 }
