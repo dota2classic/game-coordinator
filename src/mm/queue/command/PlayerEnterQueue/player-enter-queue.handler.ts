@@ -39,7 +39,7 @@ export class PlayerEnterQueueHandler
           recentKDA: mmr.recentKDA,
           gamesPlayed: mmr.gamesPlayed,
           banStatus: mmr.banStatus,
-          // unrankedGamesLeft: mmr.summary.newbieGamesLeft,
+          // unrankedGamesLeft: mmr.
         };
       }),
     );
