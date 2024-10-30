@@ -7,7 +7,7 @@ import {
 import { QueueGameEntity } from "mm/queue/model/entity/queue-game.entity";
 import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
 import { BalanceService } from "mm/queue/service/balance.service";
-import { Cron, CronExpression } from "@nestjs/schedule";
+import { Cron } from "@nestjs/schedule";
 import { EventBus } from "@nestjs/cqrs";
 import { GameCheckCycleEvent } from "mm/queue/event/game-check-cycle.event";
 import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
@@ -31,7 +31,8 @@ export class QueueService {
   }
 
   // each minute
-  @Cron(CronExpression.EVERY_MINUTE)
+  // @Cron(CronExpression.EVERY_MINUTE)
+  @Cron("*/20 * * * * *")
   async checkRankedGame() {
     this.ebus.publish(
       new GameCheckCycleEvent(MatchmakingMode.UNRANKED, Dota2Version.Dota_681),
