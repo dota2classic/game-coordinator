@@ -8,6 +8,7 @@ import {
 import { RoomRepository } from "mm/room/repository/room.repository";
 import { RoomNotReadyEvent } from "gateway/gateway/events/room-not-ready.event";
 import { DotaTeam } from "../../../../gateway/gateway/shared-types/dota-team";
+import { TeamEntry } from "../../model/entity/room-balance";
 
 @CommandHandler(FinalizeRoomCommand)
 export class FinalizeRoomHandler
@@ -19,25 +20,25 @@ export class FinalizeRoomHandler
     private readonly roomRepository: RoomRepository,
   ) {}
 
+  private static createTeam(team: TeamEntry, dt: DotaTeam): MatchPlayer[] {
+    return team.parties.flatMap(qem =>
+      qem.players.map(t => new MatchPlayer(t.playerId, dt, qem.partyID)),
+    );
+  }
+
   async execute(command: FinalizeRoomCommand) {
     const room = await this.roomRepository.get(command.roomId);
     if (!room) throw "No room";
     // ok here we basically publish event of room-ready
 
     if (command.state.accepted === command.state.total) {
-      const radiant: MatchPlayer[] = room.balance.teams[0].parties.flatMap(t =>
-        t.players.map(t => ({
-          playerId: t.playerId,
-          team: DotaTeam.RADIANT,
-          name: "",
-        })),
+      const radiant = FinalizeRoomHandler.createTeam(
+        room.balance.teams[0],
+        DotaTeam.RADIANT,
       );
-      const dire = room.balance.teams[1].parties.flatMap(t =>
-        t.players.map(t => ({
-          playerId: t.playerId,
-          team: DotaTeam.DIRE,
-          name: "",
-        })),
+      const dire = FinalizeRoomHandler.createTeam(
+        room.balance.teams[1],
+        DotaTeam.DIRE,
       );
       this.ebus.publish(
         new RoomReadyEvent(
