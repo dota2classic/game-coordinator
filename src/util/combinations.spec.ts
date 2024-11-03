@@ -11,6 +11,7 @@ import {
 } from "gateway/gateway/shared-types/matchmaking-mode";
 import { BalanceService } from "mm/queue/service/balance.service";
 import { randomPiq } from "util/randomPlayerInQueue";
+import { Dota2Version } from "../gateway/gateway/shared-types/dota2version";
 
 const f: number[] = [];
 function factorial(n) {
@@ -83,6 +84,7 @@ describe(`combinations`, () => {
         mode,
         players,
         BalanceService.getTotalScore(players),
+        Dota2Version.Dota_684
       );
     });
 

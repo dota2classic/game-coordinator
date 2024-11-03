@@ -28,11 +28,11 @@ export class QueueEntryModel {
     return this.players.length;
   }
 
-  public get totalMMR() {
-    return this.players.reduce((a, b) => a + b.mmr, 0);
-  }
+  // public get totalMMR() {
+  //   return this.players.reduce((a, b) => a + b.mmr, 0);
+  // }
 
-  public get averageMMR() {
-    return this.totalMMR / this.size;
-  }
+  // public get averageMMR() {
+  //   return this.totalMMR / this.size;
+  // }
 }

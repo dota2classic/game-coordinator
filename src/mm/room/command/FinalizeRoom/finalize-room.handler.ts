@@ -45,7 +45,7 @@ export class FinalizeRoomHandler
           command.roomId,
           command.mode,
           [...radiant, ...dire],
-          room.balance.averageMMR,
+          // room.balance.averageMMR,
           room.version,
         ),
       );

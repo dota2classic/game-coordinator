@@ -7,14 +7,14 @@ export class PartyInRoom {
     public readonly id: string,
     public readonly players: PlayerInQueueEntity[],
   ) {}
-
-  public get totalMMR() {
-    return this.players.reduce((a, b) => a + b.mmr, 0);
-  }
-
-  public get averageMMR() {
-    return this.totalMMR / this.players.length;
-  }
+  //
+  // public get totalMMR() {
+  //   return this.players.reduce((a, b) => a + b.mmr, 0);
+  // }
+  //
+  // public get averageMMR() {
+  //   return this.totalMMR / this.players.length;
+  // }
 }
 export class CreateRoomCommand {
   constructor(

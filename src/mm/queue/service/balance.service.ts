@@ -49,14 +49,13 @@ export class BalanceService {
 
   public static getTotalScore(players: PlayerInQueueEntity[]): number {
     const scoreSum = players.reduce(
-      (a, b) =>
-        a +
-        BalanceService.getScore(
-          b.mmr,
-          b.recentWinrate,
-          b.recentKDA,
-          b.gamesPlayed,
-        ),
+      (a, b) => a + b.balanceScore,
+      // BalanceService.getScore(
+      //   b.mmr,
+      //   b.recentWinrate,
+      //   b.recentKDA,
+      //   b.gamesPlayed,
+      // ),
       0,
     );
 
