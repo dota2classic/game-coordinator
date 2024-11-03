@@ -19,7 +19,7 @@ export class RoomSaga {
   checkRoom = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(GameFoundEvent),
-      map(e => new CreateRoomCommand(e.balance, e.version)),
+      map((e: GameFoundEvent) => new CreateRoomCommand(e.balance, e.version)),
     );
   };
 
@@ -35,7 +35,10 @@ export class RoomSaga {
   readyStateReceived = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(ReadyStateReceivedEvent),
-      map(t => new SetReadyCheckCommand(t.playerID, t.roomID, t.state)),
+      map(
+        (t: ReadyStateReceivedEvent) =>
+          new SetReadyCheckCommand(t.playerID, t.roomID, t.state),
+      ),
     );
   };
 

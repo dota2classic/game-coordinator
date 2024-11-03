@@ -6,6 +6,8 @@ import { BalanceException } from "mm/queue/exception/BalanceException";
 import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
 import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
 import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
+import { BanStatus } from "../../../gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
+import { Dota2Version } from "../../../gateway/gateway/shared-types/dota2version";
 
 describe("BalanceService", () => {
   let module: TestingModule;
@@ -24,19 +26,19 @@ describe("BalanceService", () => {
   });
 
   it("should result in score same as mmr if no games played", () => {
-    expect(BalanceService.getScore(3000, 0, 0)).toEqual(3000);
+    expect(BalanceService.getScore(3000, 0, 0, 0)).toEqual(3000);
   });
 
   it("should result in score lower than mmr if winrate is lower than desired", () => {
-    expect(BalanceService.getScore(3000, 15, 0.3)).toBeLessThan(3000);
+    expect(BalanceService.getScore(3000, 15, 0.3, 19)).toBeLessThan(3000);
   });
 
   it("should result in score higher than mmr if winrate is higher than desired", () => {
-    expect(BalanceService.getScore(3000, 15, 0.8)).toBeGreaterThan(3000);
+    expect(BalanceService.getScore(3000, 15, 0.8, 10)).toBeGreaterThan(3000);
   });
 
   it("should not have abs score and mmr diff more than 1000", () => {
-    const score = BalanceService.getScore(3000, 1, 20);
+    const score = BalanceService.getScore(3000, 1, 20, 10);
     expect(score).toBeGreaterThanOrEqual(3000);
     expect(score).toBeLessThanOrEqual(4000);
   });
@@ -65,8 +67,18 @@ describe("BalanceService", () => {
       return new QueueEntryModel(
         "id" + index,
         MatchmakingMode.RANKED,
-        [new PlayerInQueueEntity(randomUser(), 1000, 0.5, 1000, undefined, 0)],
+        [
+          new PlayerInQueueEntity(
+            randomUser(),
+            1000,
+            0.5,
+            1000,
+            undefined,
+            BanStatus.NOT_BANNED,
+          ),
+        ],
         43443,
+        Dota2Version.Dota_684,
       );
     });
     expect(() => {
@@ -80,10 +92,25 @@ describe("BalanceService", () => {
         "big mmr party",
         MatchmakingMode.RANKED,
         [
-          new PlayerInQueueEntity(randomUser(), 4500, 0.7, 100, undefined, 0),
-          new PlayerInQueueEntity(randomUser(), 3900, 0.6, 100, undefined, 0),
+          new PlayerInQueueEntity(
+            randomUser(),
+            4500,
+            0.7,
+            100,
+            undefined,
+            BanStatus.NOT_BANNED,
+          ),
+          new PlayerInQueueEntity(
+            randomUser(),
+            3900,
+            0.6,
+            100,
+            undefined,
+            BanStatus.NOT_BANNED,
+          ),
         ],
         10000,
+        Dota2Version.Dota_684,
       ),
       ...new Array(8)
         .fill(null)
@@ -99,10 +126,11 @@ describe("BalanceService", () => {
                   0.5,
                   1000,
                   undefined,
-                  0,
+                  BanStatus.NOT_BANNED,
                 ),
               ],
               3434,
+              Dota2Version.Dota_684,
             ),
         ),
     ];

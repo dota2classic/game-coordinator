@@ -32,7 +32,10 @@ export class QueueSaga {
   playerEnterQueue = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(PlayerEnterQueueResolvedEvent),
-      map(e => new EnterQueueCommand(e.partyId, e.players, e.mode, e.version)),
+      map(
+        (e: PlayerEnterQueueResolvedEvent) =>
+          new EnterQueueCommand(e.partyId, e.players, e.mode, e.version),
+      ),
     );
   };
 
@@ -40,7 +43,10 @@ export class QueueSaga {
   playerLeaveQueue = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(PlayerLeaveQueueResolvedEvent),
-      map(e => new LeaveQueueCommand(e.mode, e.version, e.partyId)),
+      map(
+        (e: PlayerLeaveQueueResolvedEvent) =>
+          new LeaveQueueCommand(e.mode, e.version, e.partyId),
+      ),
     );
   };
 
@@ -52,7 +58,7 @@ export class QueueSaga {
   partyUpdated = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(PartyUpdatedEvent),
-      mergeMap(e =>
+      mergeMap((e: PartyUpdatedEvent) =>
         MatchmakingModes.flatMap(t => [
           new LeaveQueueCommand(t, Dota2Version.Dota_681, e.partyId),
           new LeaveQueueCommand(t, Dota2Version.Dota_684, e.partyId),

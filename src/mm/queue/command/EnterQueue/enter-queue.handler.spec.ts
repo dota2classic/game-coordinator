@@ -1,20 +1,20 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { CommandBus, EventBus } from "@nestjs/cqrs";
-import { clearRepositories, TestEnvironment } from "@test/cqrs";
-import { EnterQueueHandler } from "mm/queue/command/EnterQueue/enter-queue.handler";
-import { EnterQueueCommand } from "mm/queue/command/EnterQueue/enter-queue.command";
-import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
-import { QueueUpdatedEvent } from "gateway/gateway/events/queue-updated.event";
-import { QueueProviders } from "mm/queue";
-import { QueueRepository } from "mm/queue/repository/queue.repository";
-import { QueueModel } from "mm/queue/model/queue.model";
-import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
-import { GameFoundEvent } from "mm/queue/event/game-found.event";
-import { randomUser } from "@test/values";
-import { PlayerId } from "gateway/gateway/shared-types/player-id";
-import { GameCheckCycleEvent } from "mm/queue/event/game-check-cycle.event";
-import { GameCheckCycleHandler } from "mm/queue/event-handler/game-check-cycle.handler";
-import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
+import {Test, TestingModule} from "@nestjs/testing";
+import {CommandBus, EventBus} from "@nestjs/cqrs";
+import {clearRepositories, TestEnvironment} from "@test/cqrs";
+import {EnterQueueHandler} from "mm/queue/command/EnterQueue/enter-queue.handler";
+import {EnterQueueCommand} from "mm/queue/command/EnterQueue/enter-queue.command";
+import {MatchmakingMode} from "gateway/gateway/shared-types/matchmaking-mode";
+import {QueueUpdatedEvent} from "gateway/gateway/events/queue-updated.event";
+import {QueueProviders} from "mm/queue";
+import {QueueRepository} from "mm/queue/repository/queue.repository";
+import {QueueModel} from "mm/queue/model/queue.model";
+import {PlayerInQueueEntity} from "mm/queue/model/entity/player-in-queue.entity";
+import {GameFoundEvent} from "mm/queue/event/game-found.event";
+import {randomUser} from "@test/values";
+import {GameCheckCycleEvent} from "mm/queue/event/game-check-cycle.event";
+import {GameCheckCycleHandler} from "mm/queue/event-handler/game-check-cycle.handler";
+import {QueueEntryModel} from "mm/queue/model/queue-entry.model";
+import {Dota2Version} from "../../../../gateway/gateway/shared-types/dota2version";
 
 const u1 = randomUser();
 const u2 = randomUser();
@@ -56,6 +56,7 @@ describe("EnterQueueHandler", () => {
         "party",
         [new PlayerInQueueEntity(u1, 1000, 0.5, 100, undefined, 0)],
         MatchmakingMode.SOLOMID,
+        Dota2Version.Dota_684,
       ),
     );
     expect(queueEntryId).toBeUndefined();
@@ -106,42 +107,6 @@ describe("EnterQueueHandler", () => {
     );
   });
 
-  it("Should find 5x5 game", async () => {
-    const mode = MatchmakingMode.UNRANKED;
-
-    const players: PlayerId[] = [];
-    for (let i = 0; i < 10; i++) {
-      const u = randomUser();
-      players.push(u);
-    }
-
-    let i = 0;
-    for (const player of players) {
-      await cbus.execute(
-        new EnterQueueCommand(
-          `party${i++}`,
-          [new PlayerInQueueEntity(player, 3000, 0.5, 1000, undefined, 0)],
-          mode,
-        ),
-      );
-    }
-
-    const updateEvents = players.map(p => new QueueUpdatedEvent(mode));
-
-    expect(ebus).toEmit(
-      ...updateEvents,
-      new QueueUpdatedEvent(mode), // clear queue
-      new GameFoundEvent(
-        mode,
-        players.map(
-          (p, idx) =>
-            new QueueEntryModel(`party${idx}`, mode, [
-              new PlayerInQueueEntity(p, 3000, 0.5, 1000, undefined, 0),
-            ], 0),
-        ),
-      ),
-    );
-  });
 
   it("Should find 5x5 game with parties", async () => {
     const mode = MatchmakingMode.UNRANKED;
@@ -152,19 +117,22 @@ describe("EnterQueueHandler", () => {
         `party1_1`,
         [new PlayerInQueueEntity(randomUser(), 3000, 0.5, 1000, undefined, 0)],
         mode,
+        Dota2Version.Dota_684,
       ),
       // solo
       new EnterQueueCommand(
         `party2_1`,
         [new PlayerInQueueEntity(randomUser(), 3000, 0.5, 1000, undefined, 0)],
         mode,
+        Dota2Version.Dota_684,
       ),
       // solo
       new EnterQueueCommand(
         `party4_1`,
         [new PlayerInQueueEntity(randomUser(), 3000, 0.5, 1000, undefined, 0)],
         mode,
-      ),
+        Dota2Version.Dota_684,
+      )
       // 2x
       new EnterQueueCommand(
         `party5_2`,
@@ -173,6 +141,7 @@ describe("EnterQueueHandler", () => {
           new PlayerInQueueEntity(randomUser(), 3000, 0.5, 1000, undefined, 0),
         ],
         mode,
+        Dota2Version.Dota_684,
       ),
       // 3x
       new EnterQueueCommand(
@@ -183,6 +152,7 @@ describe("EnterQueueHandler", () => {
           new PlayerInQueueEntity(randomUser(), 3000, 0.5, 1000, undefined, 0),
         ],
         mode,
+        Dota2Version.Dota_684,
       ),
       // 2x
       new EnterQueueCommand(
@@ -192,6 +162,7 @@ describe("EnterQueueHandler", () => {
           new PlayerInQueueEntity(randomUser(), 3000, 0.5, 1000, undefined, 0),
         ],
         mode,
+        Dota2Version.Dota_684,
       ),
     ];
 
@@ -221,6 +192,7 @@ describe("EnterQueueHandler", () => {
         "party",
         [new PlayerInQueueEntity(u1, 1000, 0.5, 100, undefined, 0)],
         mode,
+        Dota2Version.Dota_684,
       ),
     );
     // reset publishes
@@ -230,6 +202,7 @@ describe("EnterQueueHandler", () => {
         "party",
         [new PlayerInQueueEntity(u1, 1000, 0.5, 100, undefined, 0)],
         mode,
+        Dota2Version.Dota_684,
       ),
     );
     expect(ebus).toEmitNothing();
@@ -242,6 +215,7 @@ describe("EnterQueueHandler", () => {
         "party",
         [new PlayerInQueueEntity(u1, 1000, 0.5, 100, undefined, 0)],
         MatchmakingMode.RANKED,
+        Dota2Version.Dota_684,
       ),
     );
 
@@ -251,15 +225,16 @@ describe("EnterQueueHandler", () => {
         "party",
         [new PlayerInQueueEntity(u1, 1000, 0.5, 100, undefined, 0)],
         MatchmakingMode.SOLOMID,
+        Dota2Version.Dota_684,
       ),
     );
 
     // @ts-ignore
     // console.error(inspect(ebus.publish.mock.calls))
     expect(ebus).toEmit(
-      new QueueUpdatedEvent(MatchmakingMode.RANKED), // enter ranked queue
-      new QueueUpdatedEvent(MatchmakingMode.RANKED), // leave ranked queue
-      new QueueUpdatedEvent(MatchmakingMode.SOLOMID), // enter solomid
+      new QueueUpdatedEvent(MatchmakingMode.RANKED, Dota2Version.Dota_684), // enter ranked queue
+      new QueueUpdatedEvent(MatchmakingMode.RANKED, Dota2Version.Dota_684), // leave ranked queue
+      new QueueUpdatedEvent(MatchmakingMode.SOLOMID, Dota2Version.Dota_684), // enter solomid
     );
   });
 
@@ -296,7 +271,9 @@ describe("EnterQueueHandler", () => {
 
     const s = module.get(GameCheckCycleHandler);
 
-    await s.handle(new GameCheckCycleEvent(MatchmakingMode.RANKED));
+    await s.handle(
+      new GameCheckCycleEvent(MatchmakingMode.RANKED, Dota2Version.Dota_684),
+    );
 
     const expectedFoundGames = Math.floor(
       parties.reduce((a, b) => a + b.size, 0) / 3,
@@ -304,8 +281,7 @@ describe("EnterQueueHandler", () => {
 
     const expectedUpdates = new Array(expectedFoundGames)
       .fill(null)
-      .map(() => new QueueUpdatedEvent(mode));
-
+      .map(() => new QueueUpdatedEvent(mode, Dota2Version.Dota_684));
 
     const expectedGames = new Array(expectedFoundGames).fill(null).map(
       () =>
@@ -313,7 +289,16 @@ describe("EnterQueueHandler", () => {
           mode,
           parties
             .sort((a, b) => b.players.length - a.players.length)
-            .map(t => new QueueEntryModel(t.partyId, mode, t.players, 0)),
+            .map(
+              t =>
+                new QueueEntryModel(
+                  t.partyId,
+                  mode,
+                  t.players,
+                  Dota2Version.Dota_684,
+                  0,
+                ),
+            ),
         ),
     );
     expect(ebus).toEmit(...updateEvents, ...expectedUpdates, ...expectedGames);

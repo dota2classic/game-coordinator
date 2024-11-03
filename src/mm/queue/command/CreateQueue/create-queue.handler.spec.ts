@@ -8,6 +8,7 @@ import { QueueCreatedEvent } from "gateway/gateway/events/queue-created.event";
 import { QueueModel } from "mm/queue/model/queue.model";
 import { clearRepositories, TestEnvironment } from "@test/cqrs";
 import { QueueProviders } from "mm/queue";
+import { Dota2Version } from "../../../../gateway/gateway/shared-types/dota2version";
 
 describe("CreateQueueHandler", () => {
   let handler: CreateQueueHandler;
@@ -34,17 +35,17 @@ describe("CreateQueueHandler", () => {
 
   it("new queue", async () => {
     const mode = MatchmakingMode.SOLOMID;
-    await cbus.execute(new CreateQueueCommand(mode));
-    expect(ebus).toEmit(new QueueCreatedEvent(mode));
+    await cbus.execute(new CreateQueueCommand(mode, Dota2Version.Dota_684));
+    expect(ebus).toEmit(new QueueCreatedEvent(mode, Dota2Version.Dota_684));
   });
 
   it("existing queue should not publish event", async () => {
     const mode = MatchmakingMode.SOLOMID;
 
-    const q = new QueueModel(mode);
-    await rep.save(mode, q);
+    const q = new QueueModel(mode, Dota2Version.Dota_684);
+    await rep.save(q.compId, q);
 
-    await cbus.execute(new CreateQueueCommand(mode));
+    await cbus.execute(new CreateQueueCommand(mode, Dota2Version.Dota_684));
     expect(ebus).toEmitNothing();
   });
 });
