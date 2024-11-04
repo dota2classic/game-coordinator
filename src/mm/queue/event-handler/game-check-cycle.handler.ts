@@ -66,7 +66,9 @@ export class GameCheckCycleHandler
         q.removeAll(game.entries);
         q.commit();
 
-        this.ebus.publish(new GameFoundEvent(balance, event.version));
+        this.ebus.publish(
+          new GameFoundEvent(balance, event.version, game.mode),
+        );
       } catch (e) {
         // console.log("Bot stuff")
       }
@@ -112,12 +114,13 @@ export class GameCheckCycleHandler
           game,
           event.mode === MatchmakingMode.RANKED,
         );
-        balance.mode = event.mode;
 
         q.removeAll(game);
         q.commit();
 
-        this.ebus.publish(new GameFoundEvent(balance, event.version));
+        this.ebus.publish(
+          new GameFoundEvent(balance, event.version, event.mode),
+        );
 
         await new Promise(r => setTimeout(r, 1000));
       } catch (e) {

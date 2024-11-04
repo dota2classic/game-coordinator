@@ -184,7 +184,6 @@ export class BalanceService {
             list.reduce((a, b) => a + b.score, 0),
           ),
       ),
-      MatchmakingMode.RANKED,
     );
   }
 
@@ -193,7 +192,6 @@ export class BalanceService {
 
     return new RoomBalance(
       [[parties[0]], [parties[1]]].map(list => new TeamEntry(list, 0)),
-      MatchmakingMode.SOLOMID,
     );
   }
 
@@ -226,10 +224,7 @@ export class BalanceService {
     if (rSize > teamSize || dSize > teamSize)
       throw new BalanceException("Can't even balance bot game hah");
 
-    return new RoomBalance(
-      [new TeamEntry(r, 0), new TeamEntry(d, 0)],
-      roomBalanceMode,
-    );
+    return new RoomBalance([new TeamEntry(r, 0), new TeamEntry(d, 0)]);
   }
 
   genericBalance(
@@ -239,9 +234,7 @@ export class BalanceService {
     const teamSize = Math.round(RoomSizes[mode] / 2);
     switch (mode) {
       case MatchmakingMode.UNRANKED:
-        const balance = BalanceService.rankedBalance(teamSize, entries, false);
-        balance.mode = mode;
-        return balance;
+        return BalanceService.rankedBalance(teamSize, entries, false);
       case MatchmakingMode.BOTS:
         return this.botsBalance(teamSize, entries);
       case MatchmakingMode.SOLOMID:

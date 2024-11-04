@@ -1,5 +1,4 @@
 import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
-import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
 
 export class TeamEntry {
   public readonly averageScore: number;
@@ -15,7 +14,7 @@ export class TeamEntry {
 }
 
 export class RoomBalance {
-  constructor(public readonly teams: TeamEntry[], public mode: MatchmakingMode) {}
+  constructor(public readonly teams: TeamEntry[]) {}
 
   // public get totalMMR() {
   //   return this.teams

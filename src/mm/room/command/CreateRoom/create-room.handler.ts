@@ -17,9 +17,9 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
     private readonly balanceService: BalanceService,
   ) {}
 
-  async execute({ balance, version }: CreateRoomCommand) {
+  async execute({ balance, version, mode }: CreateRoomCommand) {
     const room = new RoomModel(
-      balance.mode,
+      mode,
       balance.teams.flatMap(t => t.parties),
       balance,
       version,

@@ -136,7 +136,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
       q.removeAll(game.entries);
       q.commit();
 
-      this.ebus.publish(new GameFoundEvent(balance, q.version));
+      this.ebus.publish(new GameFoundEvent(balance, q.version, game.mode));
     } catch (e) {}
   }
 }

@@ -15,6 +15,8 @@ import {GameCheckCycleEvent} from "mm/queue/event/game-check-cycle.event";
 import {GameCheckCycleHandler} from "mm/queue/event-handler/game-check-cycle.handler";
 import {QueueEntryModel} from "mm/queue/model/queue-entry.model";
 import {Dota2Version} from "../../../../gateway/gateway/shared-types/dota2version";
+import {BanStatus} from "../../../../gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
+import {RoomBalance, TeamEntry} from "../../../room/model/entity/room-balance";
 
 const u1 = randomUser();
 const u2 = randomUser();
@@ -83,27 +85,29 @@ describe("EnterQueueHandler", () => {
       new EnterQueueCommand(
         "party",
         [
-          new PlayerInQueueEntity(u1, 1000, 0.5, 100, undefined, 0),
-          new PlayerInQueueEntity(u2, 1000, 0.5, 100, undefined, 0),
+          new PlayerInQueueEntity(u1, 1000, BanStatus.NOT_BANNED),
+          new PlayerInQueueEntity(u2, 1000, BanStatus.NOT_BANNED),
         ],
         mode,
+        Dota2Version.Dota_684
       ),
     );
 
     expect(ebus).toEmit(
-      new QueueUpdatedEvent(mode), // add first
-      new QueueUpdatedEvent(mode), // clear
-      new GameFoundEvent(mode, [
+      new QueueUpdatedEvent(mode,Dota2Version.Dota_684, ), // add first
+      new QueueUpdatedEvent(mode,Dota2Version.Dota_684, ), // clear
+      new GameFoundEvent(new RoomBalance([new TeamEntry([
         new QueueEntryModel(
           "party",
           mode,
           [
-            new PlayerInQueueEntity(u1, 1000, 0.5, 100, undefined, 0),
-            new PlayerInQueueEntity(u2, 1000, 0.5, 100, undefined, 0),
+            new PlayerInQueueEntity(u1, 1000, BanStatus.NOT_BANNED),
+            new PlayerInQueueEntity(u2, 1000, BanStatus.NOT_BANNED),
           ],
           0,
+          Dota2Version.Dota_684,
         ),
-      ]),
+      ])],mode), Dota2Version.Dota_684),
     );
   });
 

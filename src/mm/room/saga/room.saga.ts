@@ -19,7 +19,10 @@ export class RoomSaga {
   checkRoom = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(GameFoundEvent),
-      map((e: GameFoundEvent) => new CreateRoomCommand(e.balance, e.version)),
+      map(
+        (e: GameFoundEvent) =>
+          new CreateRoomCommand(e.balance, e.version, e.mode),
+      ),
     );
   };
 
@@ -54,7 +57,7 @@ export class RoomSaga {
   badRoomFinalized = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(BadRoomFinalizedEvent),
-      mergeMap(t =>
+      mergeMap((t: BadRoomFinalizedEvent) =>
         t.goodParties.map(
           t => new EnterQueueCommand(t.partyID, t.players, t.mode, t.version),
         ),

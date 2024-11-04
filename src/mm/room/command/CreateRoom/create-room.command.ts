@@ -1,6 +1,7 @@
 import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
 import { RoomBalance } from "mm/room/model/entity/room-balance";
 import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
+import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
 
 export class PartyInRoom {
   constructor(
@@ -20,5 +21,6 @@ export class CreateRoomCommand {
   constructor(
     public readonly balance: RoomBalance,
     public readonly version: Dota2Version,
+    public readonly mode: MatchmakingMode
   ) {}
 }

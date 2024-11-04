@@ -3,6 +3,7 @@ import { PlayerId } from "gateway/gateway/shared-types/player-id";
 import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
 import { RoomBalance } from "mm/room/model/entity/room-balance";
 import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
+import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
 
 export class PlayerInParty {
   constructor(
@@ -22,6 +23,7 @@ export class FoundGameParty {
 export class GameFoundEvent {
   constructor(
     public readonly balance: RoomBalance,
-    public readonly version: Dota2Version
+    public readonly version: Dota2Version,
+    public readonly mode: MatchmakingMode,
   ) {}
 }
