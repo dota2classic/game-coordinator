@@ -19,8 +19,8 @@ export class QueueService {
     private readonly ebus: EventBus,
   ) {}
 
-  // @Cron("0 */7 * * * *")
-  @Cron("* */10 * * * *")
+  // Every 10 seconds try find bots game
+  @Cron("*/10 * * * * *")
   async checkBotGame() {
     this.ebus.publish(
       new GameCheckCycleEvent(MatchmakingMode.BOTS, Dota2Version.Dota_681),
@@ -117,7 +117,31 @@ export class QueueService {
 
     return new QueueGameEntity(q.mode, slice);
   }
+
+  /**
+   * Group all players in queue and find them a goddamn game
+   * @param q
+   * @private
+   */
   private findBotsGame(q: QueueModel): QueueGameEntity | undefined {
+    if (q.size === 0) return undefined;
+
+    // ok, how do we balance bot games?
+    const sorted = [...q.entries].sort((a, b) => b.size - a.size);
+
+    let slice: QueueEntryModel[] = [];
+    let pc = 0;
+    for (let i = 0; i < sorted.length; i++) {
+      if (pc + sorted[i].size > 10) continue;
+
+      slice.push(sorted[i]);
+      pc += sorted[i].size;
+    }
+
+    return new QueueGameEntity(q.mode, slice);
+  }
+
+  private findBotsGame2(q: QueueModel): QueueGameEntity | undefined {
     if (q.size < 2) return undefined;
 
     // ok, how do we balance bot games?
