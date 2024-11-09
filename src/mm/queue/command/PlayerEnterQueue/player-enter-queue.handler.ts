@@ -28,6 +28,7 @@ export class PlayerEnterQueueHandler
           GetPlayerInfoQuery,
           GetPlayerInfoQueryResult
         >(new GetPlayerInfoQuery(t, command.version));
+
         return {
           playerId: t,
           balanceScore: BalanceService.getScore(mmr.mmr, mmr.recentWinrate, mmr.recentKDA, mmr.gamesPlayed),
@@ -35,6 +36,10 @@ export class PlayerEnterQueueHandler
         } satisfies PlayerInQueueEntity;
       }),
     );
+
+
+    this.logger.verbose(`PlayerEnterQueueResolved ${JSON.stringify(formattedEntries)}`)
+
 
     this.ebus.publish(
       new PlayerEnterQueueResolvedEvent(
