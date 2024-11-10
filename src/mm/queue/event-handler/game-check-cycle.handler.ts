@@ -10,10 +10,12 @@ import {
 import { findAllMatchingCombinations } from "util/combinations";
 import { BalanceService } from "mm/queue/service/balance.service";
 import { QueueModel } from "mm/queue/model/queue.model";
+import { Logger } from "@nestjs/common";
 
 @EventsHandler(GameCheckCycleEvent)
 export class GameCheckCycleHandler
   implements IEventHandler<GameCheckCycleEvent> {
+  private logger = new Logger(GameCheckCycleHandler.name);
   private processMap: Partial<
     {
       [key in MatchmakingMode]: boolean;
@@ -105,6 +107,8 @@ export class GameCheckCycleHandler
       t => t.size,
     );
 
+    this.logger.log(`Total ${games.length} possible combinations`);
+
     for (let i = 0; i < games.length; i++) {
       const game = games[i];
 
@@ -115,6 +119,9 @@ export class GameCheckCycleHandler
           event.mode === MatchmakingMode.RANKED,
         );
 
+        this.logger.log("So here is the balance for us");
+        this.logger.log(JSON.stringify(balance));
+
         q.removeAll(game);
         q.commit();
 
@@ -123,8 +130,9 @@ export class GameCheckCycleHandler
         );
 
         await new Promise(r => setTimeout(r, 1000));
+        break;
       } catch (e) {
-        console.log("How can it fail right away");
+        this.logger.warn("How can it fail right away");
       }
     }
 
