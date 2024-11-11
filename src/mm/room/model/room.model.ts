@@ -61,7 +61,7 @@ export class RoomModel extends AggregateRoot {
     this.players.forEach(t => {
       if (this.readyCheckMap.get(t.playerId.value) === ReadyState.PENDING) {
         this.readyCheckMap.set(t.playerId.value, ReadyState.TIMEOUT);
-        this.apply(new PlayerDeclinedGameEvent(t.playerId));
+        this.apply(new PlayerDeclinedGameEvent(t.playerId, this.mode));
       }
     });
     this.completeReadyCheck();
@@ -105,7 +105,7 @@ export class RoomModel extends AggregateRoot {
           }
         });
 
-        this.apply(new PlayerDeclinedGameEvent(playerId));
+        this.apply(new PlayerDeclinedGameEvent(playerId, this.mode));
         this.completeReadyCheck();
       }
     }
