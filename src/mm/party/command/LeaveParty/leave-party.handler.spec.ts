@@ -23,8 +23,8 @@ describe("LeavePartyHandler", () => {
       ],
     }).compile();
 
-    cbus = module.get<CommandBus>(CommandBus);
-    ebus = module.get<EventBus>(EventBus);
+    cbus = module.get(CommandBus);
+    ebus = module.get(EventBus);
 
     cbus.register([LeavePartyHandler]);
   });

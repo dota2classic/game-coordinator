@@ -9,6 +9,7 @@ import { PartyRepository } from "mm/party/repository/party.repository";
 import { PlayerLeaveQueueResolvedEvent } from "mm/queue/event/player-leave-queue-resolved.event";
 import { PlayerLeaveQueueCommand } from "gateway/gateway/commands/player-leave-queue.command";
 import { randomUser } from "@test/values";
+import { Dota2Version } from "../../../../gateway/gateway/shared-types/dota2version";
 
 describe("PlayerLeaveQueueHandler", () => {
   let ebus: EventBus;
@@ -21,10 +22,10 @@ describe("PlayerLeaveQueueHandler", () => {
       providers: [...QueueProviders, ...TestEnvironment()],
     }).compile();
 
-    cbus = module.get<CommandBus>(CommandBus);
-    ebus = module.get<EventBus>(EventBus);
+    cbus = module.get(CommandBus);
+    ebus = module.get(EventBus);
     const qbus = module.get<EventBus>(EventBus);
-    rep = module.get<PartyRepository>(PartyRepository);
+    rep = module.get(PartyRepository);
 
     cbus.register([PlayerLeaveQueueHandler]);
   });
@@ -35,11 +36,11 @@ describe("PlayerLeaveQueueHandler", () => {
 
   it("should emit leave queue", async () => {
     const u = randomUser();
-    await cbus.execute(new PlayerLeaveQueueCommand(u, MatchmakingMode.SOLOMID));
+    await cbus.execute(new PlayerLeaveQueueCommand(u, MatchmakingMode.SOLOMID, Dota2Version.Dota_684));
     const party = (await rep.all())[0];
     expect(ebus).toEmit(
       new PartyCreatedEvent(party.id, u, [u]),
-      new PlayerLeaveQueueResolvedEvent(party.id, MatchmakingMode.SOLOMID),
+      new PlayerLeaveQueueResolvedEvent(party.id, MatchmakingMode.SOLOMID, Dota2Version.Dota_684),
     );
   });
 });

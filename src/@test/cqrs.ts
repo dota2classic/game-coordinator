@@ -15,6 +15,9 @@ const ebusProvider: Provider = {
   provide: EventBus,
   useFactory: () => ({
     publish: jest.fn(),
+    publishAll(arr: any[]){
+      arr.forEach(this.publish)
+    }
   }),
 };
 

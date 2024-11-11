@@ -18,7 +18,7 @@ describe("QueueService", () => {
       providers: [...QueueProviders, ...TestEnvironment()],
     }).compile();
 
-    qs = module.get<QueueService>(QueueService);
+    qs = module.get(QueueService);
   });
 
   it("should not find unranked game where not enough players", async () => {
@@ -31,18 +31,14 @@ describe("QueueService", () => {
       new QueueEntryModel(
         "1",
         MatchmakingMode.SOLOMID,
+        Dota2Version.Dota_684,
         [
           new PlayerInQueueEntity(
             randomUser(),
-            1000,
-            0.5,
-            100,
-            undefined,
-            BanStatus.NOT_BANNED,
+            100
           ),
         ],
         0,
-        Dota2Version.Dota_684,
       ),
     );
     expect(qs.findGame(qModel)).toBeUndefined();
@@ -57,36 +53,28 @@ describe("QueueService", () => {
       new QueueEntryModel(
         "1",
         MatchmakingMode.SOLOMID,
+        Dota2Version.Dota_684,
         [
           new PlayerInQueueEntity(
             randomUser(),
-            1000,
-            0.5,
-            100,
-            undefined,
-            BanStatus.NOT_BANNED,
+            100
           ),
         ],
         0,
-        Dota2Version.Dota_684,
       ),
     );
     qModel.addEntry(
       new QueueEntryModel(
         "2",
         MatchmakingMode.SOLOMID,
+        Dota2Version.Dota_684,
         [
           new PlayerInQueueEntity(
             randomUser(),
-            1000,
-            0.5,
-            100,
-            undefined,
-            BanStatus.NOT_BANNED,
+            100
           ),
         ],
         0,
-        Dota2Version.Dota_684,
       ),
     );
     expect(qs.findGame(qModel)).toBeDefined();
@@ -101,26 +89,18 @@ describe("QueueService", () => {
       new QueueEntryModel(
         "1",
         MatchmakingMode.SOLOMID,
+        Dota2Version.Dota_684,
         [
           new PlayerInQueueEntity(
             randomUser(),
-            1000,
-            0.5,
-            100,
-            undefined,
-            BanStatus.NOT_BANNED,
+            100
           ),
           new PlayerInQueueEntity(
             randomUser(),
-            1000,
-            0.5,
-            100,
-            undefined,
-            BanStatus.NOT_BANNED,
+            100
           ),
         ],
         0,
-        Dota2Version.Dota_684,
       ),
     );
     expect(qs.findGame(qModel)).toBeDefined();
@@ -135,34 +115,22 @@ describe("QueueService", () => {
       new QueueEntryModel(
         "1",
         MatchmakingMode.SOLOMID,
+        Dota2Version.Dota_684,
         [
           new PlayerInQueueEntity(
             randomUser(),
-            1000,
-            0.5,
-            100,
-            undefined,
-            BanStatus.NOT_BANNED,
+            100
           ),
           new PlayerInQueueEntity(
             randomUser(),
-            1000,
-            0.5,
-            100,
-            undefined,
-            BanStatus.NOT_BANNED,
+            100
           ),
           new PlayerInQueueEntity(
             randomUser(),
-            1000,
-            0.5,
-            100,
-            undefined,
-            BanStatus.NOT_BANNED,
+            100
           ),
         ],
         0,
-        Dota2Version.Dota_684,
       ),
     );
     expect(qs.findGame(qModel)).toBeUndefined();

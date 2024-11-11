@@ -9,8 +9,12 @@ import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
 export class QueueModel extends AggregateRoot {
   public readonly entries: QueueEntryModel[] = [];
 
+  public static id(mode: MatchmakingMode, version: Dota2Version) {
+    return `${mode}_${version}`
+  }
+
   public get compId() {
-    return `${this.mode}_${this.version}`;
+    return QueueModel.id(this.mode, this.version);
   }
 
   constructor(

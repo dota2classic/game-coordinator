@@ -1,17 +1,17 @@
 import { EventBus, IEvent } from "@nestjs/cqrs";
-import { deepStrictEqual } from "assert";
 import { inspect } from "util";
-import Mock = jest.Mock;
+import { expect, jest } from "@jest/globals";
+
 
 const toEmit = (
   bus: EventBus,
   ...events: IEvent[]
-): jest.CustomMatcherResult => {
+) => {
   if (events === undefined) {
     events = [];
   }
 
-  const p = bus.publish as Mock;
+  const p = bus.publish as jest.Mock;
 
   // console.log(p.mock.calls)
   for (let i = 0; i < events.length; i++) {
@@ -30,7 +30,7 @@ const toEmit = (
         pass: false
       }
     }
-    let actual = p.mock.calls[i][0];
+    const actual = p.mock.calls[i][0];
 
     try {
       // expect(actual).toEqual(expected)
@@ -47,7 +47,7 @@ const toEmit = (
     }
   }
 
-  let actual = p.mock.calls.length;
+  const actual = p.mock.calls.length;
 
   expect(actual).toEqual(events.length || 0);
 

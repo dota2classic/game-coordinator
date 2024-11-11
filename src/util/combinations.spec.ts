@@ -82,9 +82,9 @@ describe(`combinations`, () => {
       return new QueueEntryModel(
         `party${index}_${players.length}`,
         mode,
+        Dota2Version.Dota_684,
         players,
-        BalanceService.getTotalScore(players),
-        Dota2Version.Dota_684
+        BalanceService.getTotalScore(players)
       );
     });
 
@@ -108,9 +108,6 @@ describe(`combinations`, () => {
     //   "In queue: ",
     //   arr.reduce((a, b) => a + b.size, 0),
     // );
-    if (games.length === 0) {
-      console.log("No games found");
-    }
     // games
     //   .map(t => BalanceService.rankedBalance(teamSize, t))
     //   .forEach(b => {

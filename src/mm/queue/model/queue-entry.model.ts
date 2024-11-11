@@ -6,6 +6,7 @@ import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
 export type QueueEntryId = string;
 
 export class QueueEntryModel {
+
   public get id(): QueueEntryId {
     return `${this.mode}${this.partyID}`;
   }
@@ -13,14 +14,16 @@ export class QueueEntryModel {
   constructor(
     public readonly partyID: PartyId,
     public readonly mode: MatchmakingMode,
-    public readonly players: PlayerInQueueEntity[],
-    public readonly score: number,
     public readonly version: Dota2Version,
-    public DeviationScore: number = 0
-  ) {
+    public readonly players: PlayerInQueueEntity[],
+    public waitingScore: number = 0,
+  ) {}
+
+  public get score(): number {
+    return this.players.reduce((a, b) => a + b.balanceScore, 0);
   }
 
-  public get averageScore(){
+  public get averageScore() {
     return this.score / this.size;
   }
 

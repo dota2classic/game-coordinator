@@ -88,10 +88,6 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
       return;
     }
 
-    // if (this.checkForNewbies(partyId, mode, players, version)) {
-    //   return;
-    // }
-
     const allQueues = await this.queueRepository.all();
 
     // remove from other queues
@@ -103,7 +99,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
       });
 
     const score = BalanceService.getTotalScore(players);
-    const entry = new QueueEntryModel(partyId, mode, players, score, version);
+    const entry = new QueueEntryModel(partyId, mode, version, players, score);
 
     q.addEntry(entry);
     q.commit();
@@ -118,17 +114,15 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     // we go for cycle based queue
     if (q.mode === MatchmakingMode.RANKED) return;
     if (q.mode === MatchmakingMode.UNRANKED) return;
-    // todo uncomment
-    // if (q.mode === MatchmakingMode.BOTS && q.size < RoomSizes[q.mode]) return;
-    // if not enough players, return immediately
+
+
     if (q.size < RoomSizes[q.mode]) return;
-    // if (q.mode !== MatchmakingMode.BOTS && q.size < RoomSizes[q.mode]) return;
 
     const game = this.queueService.findGame(q);
 
     if (!game) return;
     try {
-      const balance = this.balanceService.genericBalance(
+      const balance = BalanceService.genericBalance(
         game.mode,
         game.entries,
       );
@@ -137,6 +131,8 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
       q.commit();
 
       this.ebus.publish(new GameFoundEvent(balance, q.version, game.mode));
-    } catch (e) {}
+    } catch (e) {
+      console.log(e)
+    }
   }
 }

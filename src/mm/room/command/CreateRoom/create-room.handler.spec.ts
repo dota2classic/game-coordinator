@@ -15,6 +15,9 @@ import { RoomImpossibleEvent } from "gateway/gateway/events/mm/room-impossible.e
 import { RoomCreatedEvent } from "mm/room/event/room-created.event";
 import { randomUser } from "@test/values";
 import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
+import { Dota2Version } from "../../../../gateway/gateway/shared-types/dota2version";
+import { BalanceService } from "../../../queue/service/balance.service";
+import { QueueEntryModel } from "../../../queue/model/queue-entry.model";
 
 describe("CreateRoomHandler", () => {
   let ebus: EventBus;
@@ -25,8 +28,8 @@ describe("CreateRoomHandler", () => {
       providers: [...RoomProviders, ...TestEnvironment()],
     }).compile();
 
-    cbus = module.get<CommandBus>(CommandBus);
-    ebus = module.get<EventBus>(EventBus);
+    cbus = module.get(CommandBus);
+    ebus = module.get(EventBus);
 
     cbus.register([CreateRoomHandler]);
   });
@@ -35,72 +38,29 @@ describe("CreateRoomHandler", () => {
     clearRepositories();
   });
 
-  it("should not create room if it can't be balanced", async () => {
+  it("should create room ", async () => {
     const roomID = await cbus.execute(
       new CreateRoomCommand(
+        BalanceService.soloMidBalance(RoomSizes[MatchmakingMode.SOLOMID], [
+          new QueueEntryModel(
+            "party1",
+            MatchmakingMode.SOLOMID,
+            Dota2Version.Dota_684,
+            [new PlayerInQueueEntity(randomUser(), 100.0)],
+          ),
+          new QueueEntryModel(
+            "party2",
+            MatchmakingMode.SOLOMID,
+            Dota2Version.Dota_684,
+            [new PlayerInQueueEntity(randomUser(), 100.0)],
+          )
+        ]),
+        Dota2Version.Dota_684,
         MatchmakingMode.SOLOMID,
-        RoomSizes[MatchmakingMode.SOLOMID],
-        [
-          new PartyInRoom("partyID", [
-            new PlayerInQueueEntity(
-              randomUser(),
-              1000,
-              0.5,
-              1000,
-              undefined,
-              0,
-            ),
-            new PlayerInQueueEntity(
-              randomUser(),
-              1000,
-              0.5,
-              1000,
-              undefined,
-              0,
-            ),
-          ]),
-        ],
-      ),
-    );
-
-    expect(roomID).toBeUndefined();
-
-    expect(ebus).toEmit(
-      new RoomImpossibleEvent(MatchmakingMode.SOLOMID, ["partyID"]),
-    );
-  });
-
-  it("should create room if it is possible to balance it", async () => {
-    const roomID = await cbus.execute(
-      new CreateRoomCommand(
-        MatchmakingMode.SOLOMID,
-        RoomSizes[MatchmakingMode.SOLOMID],
-        [
-          new PartyInRoom("partyID1", [
-            new PlayerInQueueEntity(
-              randomUser(),
-              1000,
-              0.5,
-              1000,
-              undefined,
-              0,
-            ),
-          ]),
-          new PartyInRoom("partyID2", [
-            new PlayerInQueueEntity(
-              randomUser(),
-              1000,
-              0.5,
-              1000,
-              undefined,
-              0,
-            ),
-          ]),
-        ],
       ),
     );
 
     expect(ebus).toEmit(new RoomCreatedEvent(roomID));
-    expect(roomID).toBeDefined();
+
   });
 });

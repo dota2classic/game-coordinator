@@ -27,12 +27,6 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
     await this.roomRepository.save(room.id, room);
 
     this.ebus.publish(new RoomCreatedEvent(room.id));
-    this.logger.log(JSON.stringify(room.balance));
-
-    this.ebus.publish(
-      new LogEvent(
-        `Создана игра. Состав команд:\n \`${JSON.stringify(room.balance)}\``,
-      ),
-    );
+    return room.id
   }
 }

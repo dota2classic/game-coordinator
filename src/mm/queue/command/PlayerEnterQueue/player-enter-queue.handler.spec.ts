@@ -16,6 +16,7 @@ import {
 } from "gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
 import { BanReason } from "gateway/gateway/shared-types/ban";
 import { Dota2Version } from "../../../../gateway/gateway/shared-types/dota2version";
+import { BalanceService } from "../../service/balance.service";
 
 describe("PlayerEnterQueueHandler", () => {
   let ebus: EventBus;
@@ -42,10 +43,10 @@ describe("PlayerEnterQueueHandler", () => {
       providers: [...QueueProviders, PartyRepository, ...TestEnvironment(), q],
     }).compile();
 
-    cbus = module.get<CommandBus>(CommandBus);
-    ebus = module.get<EventBus>(EventBus);
-    const qbus = module.get<QueryBus>(QueryBus);
-    rep = module.get<PartyRepository>(PartyRepository);
+    cbus = module.get(CommandBus);
+    ebus = module.get(EventBus);
+    const qbus = module.get(QueryBus);
+    rep = module.get(PartyRepository);
 
     cbus.register([PlayerEnterQueueHandler]);
     qbus.register([q]);
@@ -71,12 +72,7 @@ describe("PlayerEnterQueueHandler", () => {
         party.id,
         party.players.map(t => ({
           playerId: t,
-          mmr: 3000,
-          recentWinrate: 0.5,
-          recentKDA: 1.0,
-          gamesPlayed: 100,
-          banStatus: undefined,
-          unrankedGamesLeft: 0,
+          balanceScore: BalanceService.getScore(3000, 0.5, 1.0, 200),
         })),
         MatchmakingMode.SOLOMID,
         Dota2Version.Dota_684,

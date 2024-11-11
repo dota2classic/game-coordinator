@@ -4,11 +4,11 @@ import { inspect } from "util";
 import Mock = jest.Mock;
 
 export const randomUser = () => {
-  return user(`[U:1:${Math.round(Math.random() * 1000000)}]`);
+  return user(`${Math.round(Math.random() * 1000000)}`);
 };
 
-export const user1 = new PlayerId("[U:1:1062901073]");
-export const user2 = new PlayerId("[U:1:116514945]");
+export const user1 = new PlayerId("1062901073");
+export const user2 = new PlayerId("116514945");
 
 export const user = (id: string) => new PlayerId(id);
 

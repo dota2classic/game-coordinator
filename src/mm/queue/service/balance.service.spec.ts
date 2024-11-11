@@ -25,60 +25,52 @@ describe("BalanceService", () => {
     service = module.get(BalanceService);
   });
 
-  it("should result in score same as mmr if no games played", () => {
-    expect(BalanceService.getScore(3000, 0, 0, 0)).toEqual(3000);
+  it("should result in 0 score if no games are played", () => {
+    expect(BalanceService.getScore(3000, 0, 0, 0)).toEqual(0);
   });
 
-  it("should result in score lower than mmr if winrate is lower than desired", () => {
-    expect(BalanceService.getScore(3000, 15, 0.3, 19)).toBeLessThan(3000);
+  it("should make score bigger if winrate is higher", () => {
+    const score1 = BalanceService.getScore(3000, 0.5, 0.3, 19)
+    const score2 = BalanceService.getScore(3000, 0.8, 0.3, 19)
+    expect(score1).toBeLessThan(score2);
   });
 
-  it("should result in score higher than mmr if winrate is higher than desired", () => {
-    expect(BalanceService.getScore(3000, 15, 0.8, 10)).toBeGreaterThan(3000);
+  it("should make score bigger if more games played", () => {
+    const score1 = BalanceService.getScore(3000, 0.5, 0.3, 19)
+    const score2 = BalanceService.getScore(3000, 0.5, 0.3, 25)
+    expect(score1).toBeLessThan(score2);
   });
 
-  it("should not have abs score and mmr diff more than 1000", () => {
-    const score = BalanceService.getScore(3000, 1, 20, 10);
-    expect(score).toBeGreaterThanOrEqual(3000);
-    expect(score).toBeLessThanOrEqual(4000);
+  it("should look realistic", () => {
+    const superNewbie = BalanceService.getScore(2500, 0, 0, 0);
+    const newbie = BalanceService.getScore(2500, 0.3, 0, 3);
+    const avg = BalanceService.getScore(2500, 0.45, 20, 50);
+    const sweaty = BalanceService.getScore(3000, 0.52, 20, 150);
+
+
+    expect(superNewbie).toBeLessThan(newbie)
+    expect(newbie).toBeLessThan(avg)
+    expect(avg).toBeLessThan(sweaty)
+
+    expect(superNewbie * 1.5).toBeLessThan(newbie)
+    expect(newbie * 1.5).toBeLessThan(avg)
+    expect(avg * 1.5).toBeLessThan(sweaty)
   });
 
-  // it("should party score", () => {
-  //   const score = service.getPartyScore({
-  //     players: [
-  //       {
-  //         mmr: 3000,
-  //         gamesPlayed: 20,
-  //         wrLast20Games: 1,
-  //       },
-  //       {
-  //         mmr: 3000,
-  //         gamesPlayed: 20,
-  //         wrLast20Games: 0.25,
-  //       },
-  //     ],
-  //     partyId: "tmp",
-  //   });
-  //   expect(score.totalScore).toBeGreaterThanOrEqual(6000);
-  // });
 
   it("should able to balance an OK game", () => {
     const p = new Array(10).fill(null).map((t, index) => {
       return new QueueEntryModel(
         "id" + index,
         MatchmakingMode.RANKED,
+        Dota2Version.Dota_684,
         [
           new PlayerInQueueEntity(
             randomUser(),
-            1000,
-            0.5,
-            1000,
-            undefined,
-            BanStatus.NOT_BANNED,
+            200
           ),
         ],
         43443,
-        Dota2Version.Dota_684,
       );
     });
     expect(() => {
@@ -91,26 +83,17 @@ describe("BalanceService", () => {
       new QueueEntryModel(
         "big mmr party",
         MatchmakingMode.RANKED,
+        Dota2Version.Dota_684,
         [
           new PlayerInQueueEntity(
             randomUser(),
-            4500,
-            0.7,
-            100,
-            undefined,
-            BanStatus.NOT_BANNED,
+            500
           ),
           new PlayerInQueueEntity(
             randomUser(),
-            3900,
-            0.6,
-            100,
-            undefined,
-            BanStatus.NOT_BANNED,
+            300
           ),
-        ],
-        10000,
-        Dota2Version.Dota_684,
+        ]
       ),
       ...new Array(8)
         .fill(null)
@@ -119,22 +102,17 @@ describe("BalanceService", () => {
             new QueueEntryModel(
               "id" + index,
               MatchmakingMode.RANKED,
+              Dota2Version.Dota_684,
               [
                 new PlayerInQueueEntity(
                   randomUser(),
-                  2000 + Math.round(Math.random() * 1000 - 500),
-                  0.5,
-                  1000,
-                  undefined,
-                  BanStatus.NOT_BANNED,
+                  100
                 ),
-              ],
-              3434,
-              Dota2Version.Dota_684,
+              ]
             ),
         ),
     ];
 
-    expect(() => BalanceService.rankedBalance(5, p)).toThrow(BalanceException);
+    expect(() => BalanceService.rankedBalance(5, p, true)).toThrow(BalanceException);
   });
 });

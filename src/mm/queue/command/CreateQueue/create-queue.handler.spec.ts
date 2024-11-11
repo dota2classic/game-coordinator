@@ -21,10 +21,10 @@ describe("CreateQueueHandler", () => {
       providers: [...QueueProviders, ...TestEnvironment()],
     }).compile();
 
-    handler = module.get<CreateQueueHandler>(CreateQueueHandler);
-    cbus = module.get<CommandBus>(CommandBus);
-    ebus = module.get<EventBus>(EventBus);
-    rep = module.get<QueueRepository>(QueueRepository);
+    handler = module.get(CreateQueueHandler);
+    cbus = module.get(CommandBus);
+    ebus = module.get(EventBus);
+    rep = module.get(QueueRepository);
 
     cbus.register([CreateQueueHandler]);
   });

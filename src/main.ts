@@ -75,7 +75,5 @@ async function bootstrap() {
   prepareModels(publisher);
 
   ebus.publish(new StartEvent());
-
-  await ebus.publish(new LogEvent("hello"));
 }
 bootstrap();

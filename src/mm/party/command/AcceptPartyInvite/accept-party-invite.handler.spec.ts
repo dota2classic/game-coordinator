@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { CommandBus, EventBus } from "@nestjs/cqrs";
+import { CommandBus, EventBus, EventPublisher } from "@nestjs/cqrs";
 import { clearRepositories, TestEnvironment } from "@test/cqrs";
 import { AcceptPartyInviteHandler } from "mm/party/command/AcceptPartyInvite/accept-party-invite.handler";
 import { PartyProviders } from "mm/party";
@@ -12,6 +12,7 @@ import { PartyCreatedEvent } from "mm/party/event/party-created.event";
 import { PartyUpdatedEvent } from "gateway/gateway/events/party/party-updated.event";
 import { PartyInviteResultEvent } from "gateway/gateway/events/party/party-invite-result.event";
 import { PartyDeletedEvent } from "gateway/gateway/events/party/party-deleted.event";
+import { prepareModels } from "../../../../main";
 
 describe("AcceptPartyInviteHandler", () => {
   let ebus: EventBus;
@@ -23,10 +24,14 @@ describe("AcceptPartyInviteHandler", () => {
       providers: [...PartyProviders, ...TestEnvironment()],
     }).compile();
 
-    cbus = module.get<CommandBus>(CommandBus);
-    ebus = module.get<EventBus>(EventBus);
+    cbus = module.get(CommandBus);
+    ebus = module.get(EventBus);
 
     cbus.register([AcceptPartyInviteHandler]);
+
+
+    const publisher = module.get(EventPublisher);
+    prepareModels(publisher);
   });
 
   afterEach(() => {

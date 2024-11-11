@@ -61,7 +61,7 @@ export class GameCheckCycleHandler
         break;
       }
       try {
-        const balance = this.balanceService.genericBalance(
+        const balance = BalanceService.genericBalance(
           game.mode,
           game.entries,
         );
@@ -87,7 +87,7 @@ export class GameCheckCycleHandler
 
     // DESC sorting by deviation score results in prioritizing long waiting players
     const arr = [...q.entries].sort(
-      (a, b) => b.DeviationScore - a.DeviationScore,
+      (a, b) => b.waitingScore - a.waitingScore,
     );
     const games = findAllMatchingCombinations(
       RoomSizes[event.mode],
@@ -138,7 +138,7 @@ export class GameCheckCycleHandler
 
     // we increase this thing
     q.entries.forEach(entry => {
-      entry.DeviationScore++;
+      entry.waitingScore++;
     });
 
     this.processMap[event.mode] = false;

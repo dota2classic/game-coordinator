@@ -12,7 +12,7 @@ import {
 export class BalanceService {
   private static readonly RECENT_WINRATE_CAP: number = 20;
   private static readonly WINRATE_FACTOR: number = 1500;
-  private static readonly MAX_AVERAGE_SCORE_FOR_GAME: number = 1500;
+  private static readonly MAX_AVG_DIFF: number = 100;
   private static readonly MAX_SCORE_DIFFERENCE: number = 500;
   private static readonly MAX_RATING_DIFFERENCE: number = 1000;
   private static readonly DEVIATION_MAX_FACTOR = 500;
@@ -60,7 +60,7 @@ export class BalanceService {
   public static rankedBalance(
     teamSize: number,
     parties: QueueEntryModel[],
-    mmrDiffStrict: boolean = true,
+    mmrDiffStrict = true,
   ): RoomBalance {
     let radiantScore = 0;
     let direScore = 0;
@@ -74,41 +74,6 @@ export class BalanceService {
     const preparedParties = parties.sort(
       (a, b) => b.averageScore - a.averageScore,
     );
-
-    // const lowestParty = preparedParties[preparedParties.length - 1];
-    // const highestParty = preparedParties[0];
-
-    // const lowestPartyScore =
-    //   lowestParty.averageScore +
-    //   BalanceService.calculateScoreDeviation(lowestParty.DeviationScore);
-    //
-    // const highestPartyScore =
-    //   highestParty.averageScore -
-    //   BalanceService.calculateScoreDeviation(highestParty.DeviationScore);
-    //
-    // const playersSorted = preparedParties
-    //   .flatMap(t => t.players)
-    //   .sort((a, b) => b.mmr - a.mmr);
-
-    // const highestMmr = playersSorted[0].mmr;
-    // const lowestMmr = playersSorted[playersSorted.length - 1].mmr;
-
-    // if (
-    //   mmrDiffStrict &&
-    //   Math.abs(highestPartyScore - lowestPartyScore) >
-    //     BalanceService.MAX_SCORE_DIFFERENCE
-    // ) {
-    //   throw new BalanceException(
-    //     `Parties mmr too scattered ${lowestPartyScore} - ${highestPartyScore}`,
-    //   );
-    // }
-
-    // todo: when mmr scatters more and online increase, uncomment
-    // if(Math.abs(highestMmr - lowestMmr) > BalanceService.MAX_RATING_DIFFERENCE){
-    //   throw new BalanceException(
-    //     `Single player mmr too scattered ${highestMmr} - ${lowestMmr}`,
-    //   );
-    // }
 
     preparedParties.forEach(it => {
       if (
@@ -146,20 +111,14 @@ export class BalanceService {
     const rAvrg = radiantScore / teamSize;
     const dAvrg = direScore / teamSize;
 
-    const hrs = new Date().getHours();
-    const isNight = hrs > 22 || hrs < 9;
-
     if (
       mmrDiffStrict &&
-      Math.abs(rAvrg - dAvrg) >=
-        (isNight
-          ? 2 * BalanceService.MAX_AVERAGE_SCORE_FOR_GAME
-          : BalanceService.MAX_AVERAGE_SCORE_FOR_GAME)
+      Math.abs(rAvrg - dAvrg) >= BalanceService.MAX_AVG_DIFF
     ) {
       throw new BalanceException(
         `Radiant ${rAvrg} Dire ${dAvrg}. Diff: ${Math.abs(
           rAvrg - dAvrg,
-        )}, limit: ${BalanceService.MAX_AVERAGE_SCORE_FOR_GAME}`,
+        )}, limit: ${BalanceService.MAX_AVG_DIFF}`,
       );
     }
 
@@ -174,17 +133,35 @@ export class BalanceService {
     );
   }
 
-  public soloMidBalance(teamSize: number, parties: QueueEntryModel[]) {
-    if (parties.length !== 2) throw new BalanceException();
+  public static soloMidBalance(teamSize: number, entries: QueueEntryModel[]) {
+    const isPartySolomid =
+      entries.length === 1 && entries[0].players.length === 2;
 
+    if (isPartySolomid) {
+      const entry = entries[0];
+      return new RoomBalance([
+        new TeamEntry([
+          new QueueEntryModel(entry.partyID, entry.mode, entry.version, [
+            entry.players[0],
+          ]),
+        ]),
+        new TeamEntry([
+          new QueueEntryModel(entry.partyID, entry.mode, entry.version, [
+            entry.players[1],
+          ]),
+        ]),
+      ]);
+    }
+
+    if (entries.length !== 2) throw new BalanceException();
     return new RoomBalance(
-      [[parties[0]], [parties[1]]].map(list => new TeamEntry(list, 0)),
+      [[entries[0]], [entries[1]]].map(list => new TeamEntry(list, 0)),
     );
   }
 
-  botsBalance(
+  public static botsBalance(
     teamSize: number,
-    parties: QueueEntryModel[],
+    entries: QueueEntryModel[],
     roomBalanceMode: MatchmakingMode = MatchmakingMode.BOTS,
   ): RoomBalance {
     const r: QueueEntryModel[] = [];
@@ -193,7 +170,7 @@ export class BalanceService {
     let rSize = 0,
       dSize = 0;
 
-    const sorted = [...parties].sort(
+    const sorted = [...entries].sort(
       (a, b) => b.players.length - a.players.length,
     );
 
@@ -214,7 +191,7 @@ export class BalanceService {
     return new RoomBalance([new TeamEntry(r, 0), new TeamEntry(d, 0)]);
   }
 
-  genericBalance(
+  public static genericBalance(
     mode: MatchmakingMode,
     entries: QueueEntryModel[],
   ): RoomBalance {
