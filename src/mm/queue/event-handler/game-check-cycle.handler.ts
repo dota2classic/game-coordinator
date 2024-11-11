@@ -107,7 +107,7 @@ export class GameCheckCycleHandler
       t => t.size,
     );
 
-    this.logger.log(`Total ${games.length} possible combinations`);
+    // this.logger.log(`Total ${games.length} possible combinations`);
 
     for (let i = 0; i < games.length; i++) {
       const game = games[i];
