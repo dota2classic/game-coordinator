@@ -6,6 +6,7 @@ import { PartySaga } from "mm/party/saga/party.saga";
 import { AcceptPartyInviteHandler } from "mm/party/command/AcceptPartyInvite/accept-party-invite.handler";
 import { TimeoutPartyInviteHandler } from "mm/party/command/TimeoutPartyInvite/timeout-party-invite.handler";
 import { GetPartyHandler } from "mm/party/query/GetParty/get-party.handler";
+import { GetPartyInvitationsHandler } from "./query/GetPartyInvitations/get-party-invitations.handler";
 
 const CommandHandlers = [
   LeavePartyHandler,
@@ -20,5 +21,6 @@ export const PartyProviders = [
   ...CommandHandlers,
   ...Repositories,
   PartySaga,
-  GetPartyHandler
+  GetPartyHandler,
+  GetPartyInvitationsHandler
 ];

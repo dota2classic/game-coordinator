@@ -10,6 +10,8 @@ import { AppModule } from "app.module";
 import { REDIS_HOST, REDIS_PASSWORD } from "@shared/env";
 import { PartyInvitationModel } from "mm/party/model/party-invitation.model";
 import { LogEvent } from "gateway/gateway/events/log.event";
+import { inspect } from "util";
+import { Subscriber } from "rxjs";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
@@ -40,15 +42,13 @@ async function bootstrap() {
   const clogger = new Logger("CommandLogger");
   const qlogger = new Logger("QueryBus");
 
-  // ebus._subscribe(
-  //   new Subscriber<any>(e => {
-  //     qlogger.log(
-  //       `${inspect(e)}`,
-  //       // e.__proto__.constructor.name,
-  //     );
-  //   }),
-  // );
-  // //
+  ebus.subscribe((e => {
+      qlogger.log(
+        `${inspect(e)}`
+      );
+    }),
+  );
+  //
 
   // ebus.pipe(ofType<{}, {}>(GameFoundEvent, RoomReadyEvent))._subscribe(
   //   new Subscriber<any>(e => {

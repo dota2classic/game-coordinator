@@ -20,11 +20,16 @@ export class AcceptPartyInviteHandler
     const invite = await this.iRep.get(command.inviteId);
     if (!invite) return;
 
+    await this.iRep.delete(invite.id);
+
     const party = await this.pRep.get(invite.partyId);
     // no party no joining kappa.
+    this.logger.log(party);
     if (!party) return;
 
     const currentParty = await this.pRep.findExistingParty(invite.invited);
+
+    this.logger.log(currentParty);
 
     if (currentParty) {
       currentParty.remove(invite.invited);
@@ -53,7 +58,5 @@ export class AcceptPartyInviteHandler
         invite.inviter,
       ),
     );
-
-    await this.iRep.delete(invite.id);
   }
 }

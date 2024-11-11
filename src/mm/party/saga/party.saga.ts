@@ -18,7 +18,7 @@ export class PartySaga {
   acceptInvite = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(PartyInviteAcceptedEvent),
-      map(e => new AcceptPartyInviteCommand(e.inviteId, e.accept)),
+      map((e: PartyInviteAcceptedEvent) => new AcceptPartyInviteCommand(e.inviteId, e.accept)),
     );
   };
 
