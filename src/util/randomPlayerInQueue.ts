@@ -2,7 +2,7 @@ import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entit
 import { randomUser } from "@test/values";
 import { BalanceService } from "../mm/queue/service/balance.service";
 
-export const randomPiq = (maxMmr: number = 5000) =>
+export const randomPiq = () =>
   new PlayerInQueueEntity(
     randomUser(),
     BalanceService.getScore(

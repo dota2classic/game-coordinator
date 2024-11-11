@@ -1,14 +1,7 @@
-import {
-  findAllCombinations,
-  findAllMatchingCombinations,
-  findFirstCombination,
-} from "util/combinations";
+import { findAllCombinations, findAllMatchingCombinations, findFirstCombination } from "util/combinations";
 import { range } from "util/range";
 import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
-import {
-  MatchmakingMode,
-  RoomSizes,
-} from "gateway/gateway/shared-types/matchmaking-mode";
+import { MatchmakingMode, RoomSizes } from "gateway/gateway/shared-types/matchmaking-mode";
 import { BalanceService } from "mm/queue/service/balance.service";
 import { randomPiq } from "util/randomPlayerInQueue";
 import { Dota2Version } from "../gateway/gateway/shared-types/dota2version";
@@ -83,8 +76,7 @@ describe(`combinations`, () => {
         `party${index}_${players.length}`,
         mode,
         Dota2Version.Dota_684,
-        players,
-        BalanceService.getTotalScore(players)
+        players
       );
     });
 
@@ -104,21 +96,7 @@ describe(`combinations`, () => {
       t => t.size,
     );
 
-    // console.log(
-    //   "In queue: ",
-    //   arr.reduce((a, b) => a + b.size, 0),
-    // );
-    // games
-    //   .map(t => BalanceService.rankedBalance(teamSize, t))
-    //   .forEach(b => {
-    //     console.log(
-    //       JSON.stringify({
-    //         ...b,
-    //         average: b.averageMMR,
-    //         total: b.totalMMR,
-    //         median: b.mmrMedian,
-    //       }),
-    //     );
-    //   });
+    expect(games).toHaveLength(4)
+
   });
 });

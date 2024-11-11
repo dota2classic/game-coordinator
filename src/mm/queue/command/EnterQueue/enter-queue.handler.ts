@@ -92,14 +92,13 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
 
     // remove from other queues
     allQueues
-      .filter(q => q.mode !== mode && q.version !== version)
+      .filter(q => q.mode !== mode || q.version !== version)
       .forEach(q => {
         q.removeEntry(partyId);
         q.commit();
       });
 
-    const score = BalanceService.getTotalScore(players);
-    const entry = new QueueEntryModel(partyId, mode, version, players, score);
+    const entry = new QueueEntryModel(partyId, mode, version, players);
 
     q.addEntry(entry);
     q.commit();

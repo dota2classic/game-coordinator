@@ -57,9 +57,9 @@ export class QueueService {
   }
 
   public findGame(q: QueueModel): QueueGameEntity | undefined {
-    // if (q.mode === MatchmakingMode.RANKED) {
-    //   return this.findRankedGame(q);
-    // }
+    if (q.mode === MatchmakingMode.UNRANKED) {
+      return this.findRankedGame(q);
+    }
 
     if (q.mode === MatchmakingMode.SOLOMID) {
       return this.findSoloMidGame(q);
@@ -129,7 +129,7 @@ export class QueueService {
     // ok, how do we balance bot games?
     const sorted = [...q.entries].sort((a, b) => b.size - a.size);
 
-    let slice: QueueEntryModel[] = [];
+    const slice: QueueEntryModel[] = [];
     let pc = 0;
     for (let i = 0; i < sorted.length; i++) {
       if (pc + sorted[i].size > 10) continue;
@@ -147,7 +147,7 @@ export class QueueService {
     // ok, how do we balance bot games?
     const sorted = [...q.entries].sort((a, b) => b.size - a.size);
 
-    let slice: QueueEntryModel[] = [];
+    const slice: QueueEntryModel[] = [];
     let pc = 0;
     for (let i = 0; i < sorted.length; i++) {
       slice.push(sorted[i]);

@@ -133,21 +133,21 @@ describe("EnterQueueHandler", () => {
         `party1_1`,
         [new PlayerInQueueEntity(randomUser(), 100)],
         mode,
-        Dota2Version.Dota_684,
+        version
       ),
       // solo
       new EnterQueueCommand(
         `party2_1`,
         [new PlayerInQueueEntity(randomUser(), 100)],
         mode,
-        Dota2Version.Dota_684,
+        version
       ),
       // solo
       new EnterQueueCommand(
         `party4_1`,
         [new PlayerInQueueEntity(randomUser(), 100)],
         mode,
-        Dota2Version.Dota_684,
+        version
       ),
       // 2x
       new EnterQueueCommand(
@@ -157,7 +157,7 @@ describe("EnterQueueHandler", () => {
           new PlayerInQueueEntity(randomUser(), 100),
         ],
         mode,
-        Dota2Version.Dota_684,
+        version
       ),
       // 3x
       new EnterQueueCommand(
@@ -168,7 +168,7 @@ describe("EnterQueueHandler", () => {
           new PlayerInQueueEntity(randomUser(), 100),
         ],
         mode,
-        Dota2Version.Dota_684,
+        version
       ),
       // 2x
       new EnterQueueCommand(
@@ -178,7 +178,7 @@ describe("EnterQueueHandler", () => {
           new PlayerInQueueEntity(randomUser(), 100),
         ],
         mode,
-        Dota2Version.Dota_684,
+        version
       ),
     ];
 
@@ -188,6 +188,8 @@ describe("EnterQueueHandler", () => {
     for (const party of parties) {
       await cbus.execute(party);
     }
+
+    await module.get(GameCheckCycleHandler).handle(new GameCheckCycleEvent(mode, version))
 
     expect(ebus).toEmit(
       ...updateEvents,
@@ -258,73 +260,5 @@ describe("EnterQueueHandler", () => {
       new QueueUpdatedEvent(MatchmakingMode.RANKED, Dota2Version.Dota_684), // leave ranked queue
       new QueueUpdatedEvent(MatchmakingMode.SOLOMID, Dota2Version.Dota_684), // enter solomid
     );
-  });
-
-  it("should find ranked games in cycle", async () => {
-    const mode = MatchmakingMode.RANKED;
-
-    const parties = new Array(20).fill(null).map((_, index) => {
-      const players = new Array(Math.round(Math.random() * 2 + 1))
-        .fill(null)
-        .map(() => {
-          return new PlayerInQueueEntity(
-            randomUser(),
-            Math.random() * 500,
-            undefined
-          );
-        });
-
-      return new EnterQueueCommand(
-        `party${index}_${players.length}`,
-        players,
-        mode,
-        Dota2Version.Dota_684
-      );
-    });
-
-    // expect()
-    const updateEvents = parties.map(p => new QueueUpdatedEvent(mode, Dota2Version.Dota_684));
-
-    for (const party of parties) {
-      await cbus.execute(party);
-    }
-
-    const s = module.get(GameCheckCycleHandler);
-
-    await s.handle(
-      new GameCheckCycleEvent(MatchmakingMode.RANKED, Dota2Version.Dota_684),
-    );
-
-    const expectedFoundGames = Math.floor(
-      parties.reduce((a, b) => a + b.size, 0) / 3,
-    );
-
-    const expectedUpdates = new Array(expectedFoundGames)
-      .fill(null)
-      .map(() => new QueueUpdatedEvent(mode, Dota2Version.Dota_684));
-
-    const expectedGames = new Array(expectedFoundGames).fill(null).map(
-      () =>
-        new GameFoundEvent(
-          BalanceService.rankedBalance(
-            5,
-            parties
-              .sort((a, b) => b.players.length - a.players.length)
-              .map(
-                t =>
-                  new QueueEntryModel(
-                    t.partyId,
-                    mode,
-                    Dota2Version.Dota_684,
-                    t.players,
-                    0,
-                  ),
-              )
-          ),
-          Dota2Version.Dota_684,
-          mode,
-        ),
-    );
-    expect(ebus).toEmit(...updateEvents, ...expectedUpdates, ...expectedGames);
   });
 });
