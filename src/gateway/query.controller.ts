@@ -9,6 +9,10 @@ import { GetUserQueueQueryResult } from "gateway/gateway/queries/GetUserQueue/ge
 import { GetUserQueueQuery } from "./gateway/queries/GetUserQueue/get-user-queue.query";
 import { GetPartyQueryResult } from "gateway/gateway/queries/GetParty/get-party-query.result";
 import { GetPartyQuery } from "./gateway/queries/GetParty/get-party.query";
+import {
+  GetPartyInvitationsQueryResult
+} from "./gateway/queries/GetPartyInvitations/get-party-invitations-query.result";
+import { GetPartyInvitationsQuery } from "./gateway/queries/GetPartyInvitations/get-party-invitations.query";
 
 @Controller()
 export class QueryController {
@@ -39,4 +43,11 @@ export class QueryController {
   async GetPartyQuery(query: GetPartyQuery): Promise<GetPartyQueryResult> {
     return this.qbus.execute(construct(GetPartyQuery, query));
   }
+
+  @MessagePattern(GetPartyInvitationsQuery.name)
+  async GetPartyInvitations(query: GetPartyInvitationsQuery): Promise<GetPartyInvitationsQueryResult> {
+    return this.qbus.execute(construct(GetPartyInvitationsQuery, query));
+  }
+
+
 }
