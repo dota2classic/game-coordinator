@@ -72,7 +72,8 @@ describe("PlayerEnterQueueHandler", () => {
         party.id,
         party.players.map(t => ({
           playerId: t,
-          balanceScore: BalanceService.getScore(3000, 0.5, 1.0, 200),
+          balanceScore: BalanceService.getScore(3000, 0.5, 2.1, 10),
+          banStatus: new BanStatus(false, 0, BanReason.GAME_DECLINE),
         })),
         MatchmakingMode.SOLOMID,
         Dota2Version.Dota_684,

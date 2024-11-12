@@ -87,7 +87,7 @@ describe(`combinations`, () => {
       arr,
       entries => {
         try {
-          BalanceService.rankedBalance(teamSize, entries);
+          BalanceService.rankedBalance(teamSize, entries, false);
           return true;
         } catch (e) {
           return false;

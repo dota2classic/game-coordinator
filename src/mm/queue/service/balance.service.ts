@@ -25,13 +25,34 @@ export class BalanceService {
     return 1;
   }
 
+  static EXPERIENCE_FACTOR = 2.0;
+  static MMR_FACTOR = 1.0;
+  static TARGET_WINRATE = 0.5;
+
   public static getScore(
     mmr: number,
     wrLast20Games: number,
     kdaLast20Games: number,
     gamesPlayed: number,
   ): number {
-    return Math.sqrt(mmr) * Math.pow(wrLast20Games, 2) * Math.sqrt(gamesPlayed);
+    // B2 * ((MIN(D2, 90) + 10) / 100)* (C2 + 0.5)
+
+    const EDUCATION_THRESHOLD = 10
+
+    // Education factor: the less games you have, the less score you will end up with
+    const educationFactor = (Math.min(gamesPlayed, EDUCATION_THRESHOLD - 1) + 1) / EDUCATION_THRESHOLD;
+
+    // Experience factor: if you have a lot of games, its diminishing returns, so we use log
+    const experienceFactor = Math.log(Math.max(EDUCATION_THRESHOLD, gamesPlayed))
+
+    const mmrScore = mmr * BalanceService.MMR_FACTOR;
+
+    const winrateFactor = wrLast20Games + BalanceService.TARGET_WINRATE;
+
+
+    // console.log(educationFactor, experienceFactor, mmrScore, winrateFactor)
+
+    return mmrScore * educationFactor * experienceFactor * winrateFactor;
   }
 
   public static getTotalScore(players: PlayerInQueueEntity[]): number {
@@ -54,82 +75,6 @@ export class BalanceService {
       (Math.min(BalanceService.DEVIATION_MAX_SCORE, dScore) /
         BalanceService.DEVIATION_MAX_SCORE) *
       BalanceService.DEVIATION_MAX_FACTOR
-    );
-  }
-
-  public static rankedBalance(
-    teamSize: number,
-    parties: QueueEntryModel[],
-    mmrDiffStrict = true,
-  ): RoomBalance {
-    let radiantScore = 0;
-    let direScore = 0;
-
-    const radiantParties: QueueEntryModel[] = [];
-    const direParties: QueueEntryModel[] = [];
-
-    let radiantPlayerCount = 0;
-    let direPlayerCount = 0;
-
-    const preparedParties = parties.sort(
-      (a, b) => b.averageScore - a.averageScore,
-    );
-
-    preparedParties.forEach(it => {
-      if (
-        // if radiant less mmr and
-        (radiantScore <= direScore && radiantPlayerCount < teamSize) ||
-        direPlayerCount === teamSize
-      ) {
-        radiantParties.push(it);
-        radiantPlayerCount += it.players.length;
-        radiantScore += it.score;
-      } else if (
-        (direScore <= radiantScore && direPlayerCount < teamSize) ||
-        radiantPlayerCount === teamSize
-      ) {
-        direParties.push(it);
-        direPlayerCount += it.players.length;
-        direScore += it.score;
-      } else if (radiantPlayerCount < teamSize) {
-        radiantParties.push(it);
-        radiantPlayerCount += it.players.length;
-        radiantScore += it.score;
-      } else if (direPlayerCount < teamSize) {
-        direParties.push(it);
-        direPlayerCount += it.players.length;
-        direScore += it.score;
-      }
-    });
-
-    if (radiantPlayerCount !== teamSize || direPlayerCount !== teamSize) {
-      throw new BalanceException(
-        `Final size dont fit ${radiantPlayerCount} ${direPlayerCount}`,
-      );
-    }
-
-    const rAvrg = radiantScore / teamSize;
-    const dAvrg = direScore / teamSize;
-
-    if (
-      mmrDiffStrict &&
-      Math.abs(rAvrg - dAvrg) >= BalanceService.MAX_AVG_DIFF
-    ) {
-      throw new BalanceException(
-        `Radiant ${rAvrg} Dire ${dAvrg}. Diff: ${Math.abs(
-          rAvrg - dAvrg,
-        )}, limit: ${BalanceService.MAX_AVG_DIFF}`,
-      );
-    }
-
-    return new RoomBalance(
-      [radiantParties, direParties].map(
-        list =>
-          new TeamEntry(
-            list,
-            list.reduce((a, b) => a + b.score, 0),
-          ),
-      ),
     );
   }
 
@@ -206,5 +151,79 @@ export class BalanceService {
       default:
         return this.botsBalance(teamSize, entries, mode);
     }
+  }
+
+  public static rankedBalance(
+    teamSize: number,
+    parties: QueueEntryModel[],
+    mmrDiffStrict = true,
+  ): RoomBalance {
+    let radiantScore = 0;
+    let direScore = 0;
+
+    const radiantParties: QueueEntryModel[] = [];
+    const direParties: QueueEntryModel[] = [];
+
+    let radiantPlayerCount = 0;
+    let direPlayerCount = 0;
+
+    const preparedParties = parties.sort((a, b) => b.score - a.score);
+
+    preparedParties.forEach((it, idx) => {
+      if (
+        // if radiant less mmr and
+        (radiantScore <= direScore && radiantPlayerCount < teamSize) ||
+        direPlayerCount === teamSize
+      ) {
+        radiantParties.push(it);
+        radiantPlayerCount += it.players.length;
+        radiantScore += it.score;
+      } else if (
+        (direScore <= radiantScore && direPlayerCount < teamSize) ||
+        radiantPlayerCount === teamSize
+      ) {
+        direParties.push(it);
+        direPlayerCount += it.players.length;
+        direScore += it.score;
+      } else if (radiantPlayerCount < teamSize) {
+        radiantParties.push(it);
+        radiantPlayerCount += it.players.length;
+        radiantScore += it.score;
+      } else if (direPlayerCount < teamSize) {
+        direParties.push(it);
+        direPlayerCount += it.players.length;
+        direScore += it.score;
+      }
+    });
+
+    if (radiantPlayerCount !== teamSize || direPlayerCount !== teamSize) {
+      throw new BalanceException(
+        `Final size dont fit ${radiantPlayerCount} ${direPlayerCount}`,
+      );
+    }
+
+    const rAvrg = radiantScore / teamSize;
+    const dAvrg = direScore / teamSize;
+
+    if (
+      mmrDiffStrict &&
+      Math.abs(rAvrg - dAvrg) >= BalanceService.MAX_AVG_DIFF
+    ) {
+      throw new BalanceException(
+        `Radiant ${rAvrg} Dire ${dAvrg}. Diff: ${Math.abs(
+          rAvrg - dAvrg,
+        )}, limit: ${BalanceService.MAX_AVG_DIFF}`,
+      );
+    }
+
+    return new RoomBalance(
+      [radiantParties, direParties].map(
+        list =>
+          new TeamEntry(
+            list,
+            list.reduce((a, b) => a + b.score, 0),
+          ),
+      ),
+    );
   }
 }

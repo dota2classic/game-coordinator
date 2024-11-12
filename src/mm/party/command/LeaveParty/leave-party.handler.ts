@@ -7,6 +7,7 @@ import {
 import { Logger } from "@nestjs/common";
 import { LeavePartyCommand } from "mm/party/command/LeaveParty/leave-party.command";
 import { PartyRepository } from "mm/party/repository/party.repository";
+import { PartyModel } from "../../model/party.model";
 
 @CommandHandler(LeavePartyCommand)
 export class LeavePartyHandler implements ICommandHandler<LeavePartyCommand> {
@@ -19,9 +20,9 @@ export class LeavePartyHandler implements ICommandHandler<LeavePartyCommand> {
   ) {}
 
   async execute(command: LeavePartyCommand) {
-    const existing = await this.partyRepository.findExistingParty(
+    const existing = (await this.partyRepository.findExistingParty(
       command.playerId,
-    );
+    )) as PartyModel | undefined;
     if (!existing) {
       // if no party, do nothing
       return;
@@ -29,12 +30,17 @@ export class LeavePartyHandler implements ICommandHandler<LeavePartyCommand> {
 
 
     // Not only we need to update previous party
-    existing.remove(command.playerId);
+    const affectedPlayers = existing.remove(command.playerId);
     existing.commit();
 
-    // But also update his new(single) party
-    const p = await this.partyRepository.getPartyOf(command.playerId)
-    p.updated()
-    p.commit()
+
+    for (let affectedPlayer of affectedPlayers) {
+      // But also update his new(single) party
+      const p = await this.partyRepository.getPartyOf(affectedPlayer)
+      p.updated()
+      p.commit()
+    }
+
+
   }
 }

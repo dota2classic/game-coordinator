@@ -111,11 +111,19 @@ describe("EnterQueueHandler", () => {
               version,
               [
                 new PlayerInQueueEntity(u1, 1000, BanStatus.NOT_BANNED),
-                new PlayerInQueueEntity(u2, 1000, BanStatus.NOT_BANNED),
-              ],
-              0,
+              ]
             ),
           ]),
+          new TeamEntry([
+            new QueueEntryModel(
+              "party",
+              mode,
+              version,
+              [
+                new PlayerInQueueEntity(u2, 1000, BanStatus.NOT_BANNED),
+              ]
+            ),
+          ])
         ]),
         version,
         mode,

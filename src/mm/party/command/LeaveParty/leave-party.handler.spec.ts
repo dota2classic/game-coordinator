@@ -57,10 +57,21 @@ describe("LeavePartyHandler", () => {
     p.add(u2);
     await cbus.execute(new LeavePartyCommand(u2));
 
+    const newPartyOfu2 = Array.from(rep["cache"].values()).find(
+      t => t.leader.value === u2.value,
+    );
+
     expect(ebus).toEmit(
+      // GetParty of u
       new PartyCreatedEvent(p.id, p.leader, [u]),
+      // Party.add()
       new PartyUpdatedEvent(p.id, p.leader, [u, u2]),
+      // Leave from party1
       new PartyUpdatedEvent(p.id, p.leader, [u]),
+      // PartyCreated of u2(single)
+      new PartyCreatedEvent(newPartyOfu2.id, u2, [u2]),
+      // Party updated of u2
+      new PartyUpdatedEvent(newPartyOfu2.id, u2, [u2]),
     );
   });
 
@@ -72,10 +83,21 @@ describe("LeavePartyHandler", () => {
     p.add(u2);
     await cbus.execute(new LeavePartyCommand(u));
 
+    const newPartyOfu2 = Array.from(rep["cache"].values()).find(
+      t => t.leader.value === u2.value,
+    );
+
     expect(ebus).toEmit(
-      new PartyCreatedEvent(p.id, p.leader, [u]),
-      new PartyUpdatedEvent(p.id, p.leader, [u, u2]),
-      new PartyUpdatedEvent(p.id, p.leader, [u]),
+      // Create party
+      new PartyCreatedEvent(p.id, u, [u]),
+      // Add u2
+      new PartyUpdatedEvent(p.id, u, [u, u2]),
+      // Leftover party of u
+      new PartyUpdatedEvent(p.id, u, [u]),
+      // Create party of removed players
+      new PartyCreatedEvent(newPartyOfu2.id, u2, [u2]),
+      // And Update
+      new PartyUpdatedEvent(newPartyOfu2.id, u2, [u2]),
     );
   });
 });
