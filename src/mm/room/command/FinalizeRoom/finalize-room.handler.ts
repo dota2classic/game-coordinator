@@ -32,12 +32,17 @@ export class FinalizeRoomHandler
     // ok here we basically publish event of room-ready
 
     if (command.state.accepted === command.state.total) {
+      const shuffledTeams =
+        Math.random() > 0.5
+          ? [room.balance.teams[1], room.balance.teams[0]]
+          : room.balance.teams;
+
       const radiant = FinalizeRoomHandler.createTeam(
-        room.balance.teams[0],
+        shuffledTeams[0],
         DotaTeam.RADIANT,
       );
       const dire = FinalizeRoomHandler.createTeam(
-        room.balance.teams[1],
+        shuffledTeams[1],
         DotaTeam.DIRE,
       );
       this.ebus.publish(
@@ -45,7 +50,6 @@ export class FinalizeRoomHandler
           command.roomId,
           command.mode,
           [...radiant, ...dire],
-          // room.balance.averageMMR,
           room.version,
         ),
       );
