@@ -114,24 +114,21 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     if (q.mode === MatchmakingMode.RANKED) return;
     if (q.mode === MatchmakingMode.UNRANKED) return;
 
-
-    if (q.size < RoomSizes[q.mode]) return;
+    // Fix found
+    if (q.size < RoomSizes[q.mode] && q.mode !== MatchmakingMode.BOTS) return;
 
     const game = this.queueService.findGame(q);
 
     if (!game) return;
     try {
-      const balance = BalanceService.genericBalance(
-        game.mode,
-        game.entries,
-      );
+      const balance = BalanceService.genericBalance(game.mode, game.entries);
 
       q.removeAll(game.entries);
       q.commit();
 
       this.ebus.publish(new GameFoundEvent(balance, q.version, game.mode));
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
   }
 }
