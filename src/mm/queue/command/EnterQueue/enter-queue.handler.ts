@@ -113,9 +113,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     // we go for cycle based queue
     if (q.mode === MatchmakingMode.RANKED) return;
     if (q.mode === MatchmakingMode.UNRANKED) return;
-
-    // Fix found
-    if (q.size < RoomSizes[q.mode] && q.mode !== MatchmakingMode.BOTS) return;
+    if (q.mode === MatchmakingMode.BOTS) return;
 
     const game = this.queueService.findGame(q);
 
