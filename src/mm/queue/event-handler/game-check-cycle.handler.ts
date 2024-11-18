@@ -61,10 +61,7 @@ export class GameCheckCycleHandler
         break;
       }
       try {
-        const balance = BalanceService.genericBalance(
-          game.mode,
-          game.entries,
-        );
+        const balance = BalanceService.genericBalance(game.mode, game.entries);
         q.removeAll(game.entries);
         q.commit();
 
@@ -81,66 +78,72 @@ export class GameCheckCycleHandler
     // async yeah
     if (this.processMap[event.mode]) return;
 
-    this.processMap[event.mode] = true;
 
-    const teamSize = Math.round(RoomSizes[event.mode] / 2);
 
-    // DESC sorting by deviation score results in prioritizing long waiting players
-    const arr = [...q.entries].sort(
-      (a, b) => b.waitingScore - a.waitingScore,
-    );
-    const games = findAllMatchingCombinations(
-      RoomSizes[event.mode],
-      arr,
-      entries => {
+    try {
+      this.processMap[event.mode] = true;
+      const teamSize = Math.round(RoomSizes[event.mode] / 2);
+
+      // DESC sorting by deviation score results in prioritizing long waiting players
+      const arr = [...q.entries].sort(
+        (a, b) => b.waitingScore - a.waitingScore,
+      );
+      const games = findAllMatchingCombinations(
+        RoomSizes[event.mode],
+        arr,
+        entries => {
+          try {
+            BalanceService.rankedBalance(
+              teamSize,
+              entries,
+              event.mode === MatchmakingMode.RANKED,
+            );
+            return true;
+          } catch (e) {
+            return false;
+          }
+        },
+        t => t.size,
+      );
+
+      // this.logger.log(`Total ${games.length} possible combinations`);
+
+      for (let i = 0; i < games.length; i++) {
+        const game = games[i];
+
         try {
-          BalanceService.rankedBalance(
+          const balance = BalanceService.rankedBalance(
             teamSize,
-            entries,
+            game,
             event.mode === MatchmakingMode.RANKED,
           );
-          return true;
+
+          this.logger.log("So here is the balance for us");
+          this.logger.log(JSON.stringify(balance));
+
+          q.removeAll(game);
+          q.commit();
+
+          this.ebus.publish(
+            new GameFoundEvent(balance, event.version, event.mode),
+          );
+
+          await new Promise(r => setTimeout(r, 1000));
+          break;
         } catch (e) {
-          return false;
+          this.logger.warn("How can it fail right away");
         }
-      },
-      t => t.size,
-    );
-
-    // this.logger.log(`Total ${games.length} possible combinations`);
-
-    for (let i = 0; i < games.length; i++) {
-      const game = games[i];
-
-      try {
-        const balance = BalanceService.rankedBalance(
-          teamSize,
-          game,
-          event.mode === MatchmakingMode.RANKED,
-        );
-
-        this.logger.log("So here is the balance for us");
-        this.logger.log(JSON.stringify(balance));
-
-        q.removeAll(game);
-        q.commit();
-
-        this.ebus.publish(
-          new GameFoundEvent(balance, event.version, event.mode),
-        );
-
-        await new Promise(r => setTimeout(r, 1000));
-        break;
-      } catch (e) {
-        this.logger.warn("How can it fail right away");
       }
+
+      // we increase this thing
+      q.entries.forEach(entry => {
+        entry.waitingScore++;
+      });
+    } catch (e) {
+      this.logger.error("We failed to process queue?")
+      this.logger.error(e)
+    } finally {
+      this.processMap[event.mode] = false;
     }
-
-    // we increase this thing
-    q.entries.forEach(entry => {
-      entry.waitingScore++;
-    });
-
-    this.processMap[event.mode] = false;
   }
 }
