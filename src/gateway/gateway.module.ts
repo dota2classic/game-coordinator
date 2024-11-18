@@ -10,7 +10,14 @@ import { GetPlayerInfoQuery } from "gateway/gateway/queries/GetPlayerInfo/get-pl
 import { outerQuery } from "gateway/gateway/util/outerQuery";
 import { GetPlayerInfoQueryResult } from "gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
 import { QueryCache } from "rcache";
-
+import { GetSessionByUserQuery } from "./gateway/queries/GetSessionByUser/get-session-by-user.query";
+export function qCache<T, B>() {
+  return new QueryCache<T, B>({
+    url: REDIS_URL(),
+    password: REDIS_PASSWORD(),
+    ttl: 10,
+  });
+}
 @Module({
   imports: [
     CqrsModule,
@@ -34,11 +41,12 @@ import { QueryCache } from "rcache";
     outerQuery(
       GetPlayerInfoQuery,
       "RedisQueue",
-      new QueryCache<GetPlayerInfoQuery, GetPlayerInfoQueryResult>({
-        url: REDIS_URL(),
-        password: REDIS_PASSWORD(),
-        ttl: 300,
-      }), // 5 min caching
+      qCache()
+    ),
+    outerQuery(
+      GetSessionByUserQuery,
+      "RedisQueue",
+      qCache()
     ),
   ],
 })

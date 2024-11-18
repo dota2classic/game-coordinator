@@ -75,8 +75,9 @@ export class PlayerEnterQueueHandler
         ),
       );
     } catch (e) {
+      this.logger.log(e)
       this.logger.error(
-        `Party ${p.id} with ${p.players.length} can't enter queue! Somebody is in game`,
+        `Party ${p.id} with ${p.players.length} players can't enter queue! Somebody is in game`,
       );
     }
   }
