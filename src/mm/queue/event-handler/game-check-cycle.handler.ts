@@ -55,7 +55,11 @@ export class GameCheckCycleHandler
 
     if (event.mode !== MatchmakingMode.BOTS) return;
     // should work right
-    while (true) {
+    await this.findBotGame(event, q);
+  }
+
+  private async findBotGame(event: GameCheckCycleEvent, q: QueueModel) {
+    for (let i = 0; i < 100; i++) {
       const game = this.qService.findGame(q);
       if (!game) {
         break;
@@ -70,15 +74,20 @@ export class GameCheckCycleHandler
         );
       } catch (e) {
         // console.log("Bot stuff")
+        this.logger.warn("Error in findBotGame:");
+        this.logger.warn(e);
       }
     }
   }
 
   private async checkRanked(event: GameCheckCycleEvent, q: QueueModel) {
     // async yeah
-    if (this.processMap[event.mode]) return;
-
-
+    if (this.processMap[event.mode]) {
+      this.logger.warn(
+        `Skipping check for mode ${q.mode}: Already in progress`,
+      );
+      return;
+    }
 
     try {
       this.processMap[event.mode] = true;
@@ -140,8 +149,8 @@ export class GameCheckCycleHandler
         entry.waitingScore++;
       });
     } catch (e) {
-      this.logger.error("We failed to process queue?")
-      this.logger.error(e)
+      this.logger.error("We failed to process queue?");
+      this.logger.error(e);
     } finally {
       this.processMap[event.mode] = false;
     }
