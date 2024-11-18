@@ -1,5 +1,11 @@
 import { NestFactory } from "@nestjs/core";
-import { CommandBus, EventBus, EventPublisher, QueryBus } from "@nestjs/cqrs";
+import {
+  CommandBus,
+  EventBus,
+  EventPublisher,
+  ofType,
+  QueryBus,
+} from "@nestjs/cqrs";
 import { QueueModel } from "mm/queue/model/queue.model";
 import { PartyModel } from "./mm/party/model/party.model";
 import { PlayerModel } from "./mm/player/model/player.model";
@@ -9,9 +15,12 @@ import { Logger } from "@nestjs/common";
 import { AppModule } from "app.module";
 import { REDIS_HOST, REDIS_PASSWORD } from "@shared/env";
 import { PartyInvitationModel } from "mm/party/model/party-invitation.model";
-import { LogEvent } from "gateway/gateway/events/log.event";
 import { inspect } from "util";
-import { Subscriber } from "rxjs";
+import { GameFoundEvent } from "./mm/queue/event/game-found.event";
+import { RoomReadyEvent } from "./gateway/gateway/events/room-ready.event";
+import { RoomReadyCheckCompleteEvent } from "./gateway/gateway/events/room-ready-check-complete.event";
+import { RoomReadyCheckTimeoutEvent } from "./mm/room/event/room-ready-check-timeout.event";
+import { ReadyStateUpdatedEvent } from "./gateway/gateway/events/ready-state-updated.event";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
@@ -42,12 +51,19 @@ async function bootstrap() {
   const clogger = new Logger("CommandLogger");
   const qlogger = new Logger("QueryBus");
 
-  ebus.subscribe((e => {
-      qlogger.log(
-        `${inspect(e)}`
-      );
-    }),
-  );
+  ebus
+    .pipe(
+      ofType<any, any>(
+        GameFoundEvent,
+        RoomReadyEvent,
+        RoomReadyCheckCompleteEvent,
+        RoomReadyCheckTimeoutEvent,
+        ReadyStateUpdatedEvent,
+      ),
+    )
+    .subscribe(e => {
+      if (e.constructor.name) qlogger.log(`${inspect(e)}`);
+    });
   //
 
   // ebus.pipe(ofType<{}, {}>(GameFoundEvent, RoomReadyEvent))._subscribe(

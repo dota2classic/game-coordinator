@@ -37,6 +37,8 @@ export class PlayerEnterQueueHandler
       }),
     );
 
+    // TODO: check if we are in game here, if we are - don't queue!
+
 
     this.logger.verbose(`PlayerEnterQueueResolved ${JSON.stringify(formattedEntries)}`)
 
