@@ -1,3 +1,1 @@
-export class StartEvent {
-
-}
+export class StartEvent {}

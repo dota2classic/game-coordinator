@@ -1,4 +1,3 @@
 export class RoomReadyCheckCommand {
-  constructor(public readonly roomID: string) {
-  }
+  constructor(public readonly roomID: string) {}
 }

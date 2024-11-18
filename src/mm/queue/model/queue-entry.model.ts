@@ -6,7 +6,6 @@ import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
 export type QueueEntryId = string;
 
 export class QueueEntryModel {
-
   public get id(): QueueEntryId {
     return `${this.mode}${this.partyID}`;
   }

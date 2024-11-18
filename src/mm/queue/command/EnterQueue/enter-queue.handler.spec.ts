@@ -85,7 +85,7 @@ describe("EnterQueueHandler", () => {
 
   it("Should find game", async () => {
     const mode = MatchmakingMode.SOLOMID;
-    const version = Dota2Version.Dota_684
+    const version = Dota2Version.Dota_684;
 
     await cbus.execute(
       new EnterQueueCommand(
@@ -105,25 +105,15 @@ describe("EnterQueueHandler", () => {
       new GameFoundEvent(
         new RoomBalance([
           new TeamEntry([
-            new QueueEntryModel(
-              "party",
-              mode,
-              version,
-              [
-                new PlayerInQueueEntity(u1, 1000, BanStatus.NOT_BANNED),
-              ]
-            ),
+            new QueueEntryModel("party", mode, version, [
+              new PlayerInQueueEntity(u1, 1000, BanStatus.NOT_BANNED),
+            ]),
           ]),
           new TeamEntry([
-            new QueueEntryModel(
-              "party",
-              mode,
-              version,
-              [
-                new PlayerInQueueEntity(u2, 1000, BanStatus.NOT_BANNED),
-              ]
-            ),
-          ])
+            new QueueEntryModel("party", mode, version, [
+              new PlayerInQueueEntity(u2, 1000, BanStatus.NOT_BANNED),
+            ]),
+          ]),
         ]),
         version,
         mode,
@@ -141,21 +131,21 @@ describe("EnterQueueHandler", () => {
         `party1_1`,
         [new PlayerInQueueEntity(randomUser(), 100)],
         mode,
-        version
+        version,
       ),
       // solo
       new EnterQueueCommand(
         `party2_1`,
         [new PlayerInQueueEntity(randomUser(), 100)],
         mode,
-        version
+        version,
       ),
       // solo
       new EnterQueueCommand(
         `party4_1`,
         [new PlayerInQueueEntity(randomUser(), 100)],
         mode,
-        version
+        version,
       ),
       // 2x
       new EnterQueueCommand(
@@ -165,7 +155,7 @@ describe("EnterQueueHandler", () => {
           new PlayerInQueueEntity(randomUser(), 100),
         ],
         mode,
-        version
+        version,
       ),
       // 3x
       new EnterQueueCommand(
@@ -176,7 +166,7 @@ describe("EnterQueueHandler", () => {
           new PlayerInQueueEntity(randomUser(), 100),
         ],
         mode,
-        version
+        version,
       ),
       // 2x
       new EnterQueueCommand(
@@ -186,18 +176,22 @@ describe("EnterQueueHandler", () => {
           new PlayerInQueueEntity(randomUser(), 100),
         ],
         mode,
-        version
+        version,
       ),
     ];
 
     // expect()
-    const updateEvents = parties.map(p => new QueueUpdatedEvent(mode, version));
+    const updateEvents = parties.map(
+      (p) => new QueueUpdatedEvent(mode, version),
+    );
 
     for (const party of parties) {
       await cbus.execute(party);
     }
 
-    await module.get(GameCheckCycleHandler).handle(new GameCheckCycleEvent(mode, version))
+    await module
+      .get(GameCheckCycleHandler)
+      .handle(new GameCheckCycleEvent(mode, version));
 
     expect(ebus).toEmit(
       ...updateEvents,
@@ -208,7 +202,8 @@ describe("EnterQueueHandler", () => {
           parties
             .sort((a, b) => b.players.length - a.players.length)
             .map(
-              t => new QueueEntryModel(t.partyId, mode, version, t.players, 0),
+              (t) =>
+                new QueueEntryModel(t.partyId, mode, version, t.players, 0),
             ),
           false,
         ),

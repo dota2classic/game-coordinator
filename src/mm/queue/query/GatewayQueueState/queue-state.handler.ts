@@ -21,9 +21,9 @@ export class QueueStateHandler
     if (!q) return new GetQueueStateQueryResult(command.mode, []);
     return new GetQueueStateQueryResult(
       command.mode,
-      q.entries.map(t => ({
+      q.entries.map((t) => ({
         partyID: t.partyID,
-        players: t.players.map(t => t.playerId),
+        players: t.players.map((t) => t.playerId),
       })),
     );
   }

@@ -26,7 +26,7 @@ describe("PlayerEnterQueueHandler", () => {
 
   const q = mockQuery<GetPlayerInfoQuery, GetPlayerInfoQueryResult>(
     GetPlayerInfoQuery,
-    t =>
+    (t) =>
       new GetPlayerInfoQueryResult(
         t.playerId,
         t.version,
@@ -70,7 +70,7 @@ describe("PlayerEnterQueueHandler", () => {
       new PartyCreatedEvent(party.id, u, [u]),
       new PlayerEnterQueueResolvedEvent(
         party.id,
-        party.players.map(t => ({
+        party.players.map((t) => ({
           playerId: t,
           balanceScore: BalanceService.getScore(3000, 0.5, 2.1, 10),
           banStatus: new BanStatus(false, 0, BanReason.GAME_DECLINE),

@@ -61,7 +61,7 @@ async function bootstrap() {
         ReadyStateUpdatedEvent,
       ),
     )
-    .subscribe(e => {
+    .subscribe((e) => {
       if (e.constructor.name) qlogger.log(`${inspect(e)}`);
     });
   //

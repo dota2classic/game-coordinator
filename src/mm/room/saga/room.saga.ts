@@ -30,7 +30,7 @@ export class RoomSaga {
   readyCheck = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(RoomCreatedEvent),
-      map(t => new RoomReadyCheckCommand(t.id)),
+      map((t) => new RoomReadyCheckCommand(t.id)),
     );
   };
 
@@ -49,7 +49,7 @@ export class RoomSaga {
   readyCheckComplete = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(RoomReadyCheckCompleteEvent),
-      map(t => new FinalizeRoomCommand(t.id, t.mode, t.state)),
+      map((t) => new FinalizeRoomCommand(t.id, t.mode, t.state)),
     );
   };
 
@@ -59,7 +59,7 @@ export class RoomSaga {
       ofType(BadRoomFinalizedEvent),
       mergeMap((t: BadRoomFinalizedEvent) =>
         t.goodParties.map(
-          t => new EnterQueueCommand(t.partyID, t.players, t.mode, t.version),
+          (t) => new EnterQueueCommand(t.partyID, t.players, t.mode, t.version),
         ),
       ),
     );

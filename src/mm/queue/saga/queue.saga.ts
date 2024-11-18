@@ -20,7 +20,7 @@ export class QueueSaga {
     return events$.pipe(
       ofType(StartEvent),
       mergeMap(() =>
-        MatchmakingModes.flatMap(it => [
+        MatchmakingModes.flatMap((it) => [
           new CreateQueueCommand(it, Dota2Version.Dota_681),
           new CreateQueueCommand(it, Dota2Version.Dota_684),
         ]),
@@ -59,7 +59,7 @@ export class QueueSaga {
     return events$.pipe(
       ofType(PartyUpdatedEvent),
       mergeMap((e: PartyUpdatedEvent) =>
-        MatchmakingModes.flatMap(t => [
+        MatchmakingModes.flatMap((t) => [
           new LeaveQueueCommand(t, Dota2Version.Dota_681, e.partyId),
           new LeaveQueueCommand(t, Dota2Version.Dota_684, e.partyId),
         ]),
@@ -75,8 +75,8 @@ export class QueueSaga {
   partyDeleted = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(PartyDeletedEvent),
-      mergeMap(e =>
-        MatchmakingModes.flatMap(t => [
+      mergeMap((e) =>
+        MatchmakingModes.flatMap((t) => [
           new LeaveQueueCommand(t, Dota2Version.Dota_681, e.id),
           new LeaveQueueCommand(t, Dota2Version.Dota_684, e.id),
         ]),

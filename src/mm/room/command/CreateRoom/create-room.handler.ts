@@ -20,13 +20,13 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
   async execute({ balance, version, mode }: CreateRoomCommand) {
     const room = new RoomModel(
       mode,
-      balance.teams.flatMap(t => t.parties),
+      balance.teams.flatMap((t) => t.parties),
       balance,
       version,
     );
     await this.roomRepository.save(room.id, room);
 
     this.ebus.publish(new RoomCreatedEvent(room.id));
-    return room.id
+    return room.id;
   }
 }

@@ -12,14 +12,16 @@ export class PartyRepository extends RuntimeRepository<PartyModel, "id"> {
   }
 
   async findExistingParty(pid: PlayerId) {
-    return [...this.cache.values()].find(it =>
-      it.players.find(z => z.value === pid.value),
+    return [...this.cache.values()].find((it) =>
+      it.players.find((z) => z.value === pid.value),
     );
   }
 
   async getPartyOf(id?: PlayerId) {
     const parties = await this.all();
-    const party = parties.find(it => it.players.find(z => z.value == id.value));
+    const party = parties.find((it) =>
+      it.players.find((z) => z.value == id.value),
+    );
 
     if (!party) {
       const p = new PartyModel(uuid(), id, [id]);

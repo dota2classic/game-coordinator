@@ -24,7 +24,7 @@ export class GetPartyInvitationsHandler
     return new GetPartyInvitationsQueryResult(
       command.playerId,
       invs.map(
-        inv =>
+        (inv) =>
           new PartyInviteCreatedEvent(
             inv.id,
             inv.partyId,

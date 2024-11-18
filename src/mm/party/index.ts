@@ -22,5 +22,5 @@ export const PartyProviders = [
   ...Repositories,
   PartySaga,
   GetPartyHandler,
-  GetPartyInvitationsHandler
+  GetPartyInvitationsHandler,
 ];

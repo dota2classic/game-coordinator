@@ -10,7 +10,7 @@ export function findAllCombinations<T>(
   iterateCombinations(
     sourceArray,
     comboLength,
-    z => {
+    (z) => {
       combos.push(z);
       return true;
     },
@@ -80,7 +80,7 @@ export function findFirstCombination<T>(
   iterateCombinations(
     source,
     groupSize,
-    c => {
+    (c) => {
       const isGood = predicate(c);
 
       if (isGood) {
@@ -116,8 +116,8 @@ export function findAllMatchingCombinations<T>(
 
     foundMatches.push(found);
 
-    found.forEach(t => {
-      const found = sourceArrayCopy.findIndex(z => z === t);
+    found.forEach((t) => {
+      const found = sourceArrayCopy.findIndex((z) => z === t);
 
       if (found === -1) throw "Something wrong";
       sourceArrayCopy.splice(found, 1);

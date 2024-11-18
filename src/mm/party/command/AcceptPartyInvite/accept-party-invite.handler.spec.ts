@@ -29,7 +29,6 @@ describe("AcceptPartyInviteHandler", () => {
 
     cbus.register([AcceptPartyInviteHandler]);
 
-
     const publisher = module.get(EventPublisher);
     prepareModels(publisher);
   });

@@ -28,19 +28,15 @@ export class LeavePartyHandler implements ICommandHandler<LeavePartyCommand> {
       return;
     }
 
-
     // Not only we need to update previous party
     const affectedPlayers = existing.remove(command.playerId);
     existing.commit();
 
-
     for (let affectedPlayer of affectedPlayers) {
       // But also update his new(single) party
-      const p = await this.partyRepository.getPartyOf(affectedPlayer)
-      p.updated()
-      p.commit()
+      const p = await this.partyRepository.getPartyOf(affectedPlayer);
+      p.updated();
+      p.commit();
     }
-
-
   }
 }

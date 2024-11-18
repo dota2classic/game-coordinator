@@ -21,8 +21,8 @@ export class FinalizeRoomHandler
   ) {}
 
   private static createTeam(team: TeamEntry, dt: DotaTeam): MatchPlayer[] {
-    return team.parties.flatMap(qem =>
-      qem.players.map(t => new MatchPlayer(t.playerId, dt, qem.partyID)),
+    return team.parties.flatMap((qem) =>
+      qem.players.map((t) => new MatchPlayer(t.playerId, dt, qem.partyID)),
     );
   }
 
@@ -57,7 +57,7 @@ export class FinalizeRoomHandler
       this.ebus.publish(
         new RoomNotReadyEvent(
           room.id,
-          room.players.map(t => t.playerId),
+          room.players.map((t) => t.playerId),
         ),
       );
     }

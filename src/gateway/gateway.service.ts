@@ -66,7 +66,6 @@ export class GatewayService implements OnApplicationBootstrap {
     ];
     this.ebus
       .pipe(ofType(...publicEvents))
-      .subscribe(t => this.redisEventQueue.emit(t.constructor.name, t));
+      .subscribe((t) => this.redisEventQueue.emit(t.constructor.name, t));
   }
 }
-

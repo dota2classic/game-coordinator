@@ -38,26 +38,26 @@ describe(`combinations`, () => {
 
   it("should find first right combo", () => {
     expect(
-      findFirstCombination(2, [1, 2, 3], combo => {
+      findFirstCombination(2, [1, 2, 3], (combo) => {
         return combo.reduce((a, b) => a + b, 0) > 4;
       }),
     ).toEqual([2, 3]);
 
     expect(
-      findFirstCombination(2, [1, 2, 3], combo => {
+      findFirstCombination(2, [1, 2, 3], (combo) => {
         return combo.reduce((a, b) => a + b, 0) > 3;
       }),
     ).toEqual([1, 3]);
 
     expect(
-      findFirstCombination(2, [1, 2, 3], combo => {
+      findFirstCombination(2, [1, 2, 3], (combo) => {
         return combo.reduce((a, b) => a + b, 0) > 2;
       }),
     ).toEqual([1, 2]);
   });
 
   it("should respect unit size", () => {
-    const results = findAllCombinations(2, [1, 2, 3], t =>
+    const results = findAllCombinations(2, [1, 2, 3], (t) =>
       t % 2 === 0 ? 2 : 1,
     );
     expect(results.length).toEqual(2);
@@ -92,7 +92,7 @@ describe(`combinations`, () => {
     const games = findAllMatchingCombinations(
       RoomSizes[mode],
       arr,
-      entries => {
+      (entries) => {
         try {
           BalanceService.rankedBalance(teamSize, entries, false);
           return true;
@@ -100,7 +100,7 @@ describe(`combinations`, () => {
           return false;
         }
       },
-      t => t.size,
+      (t) => t.size,
     );
 
     expect(games.length).toBeGreaterThanOrEqual(4);
@@ -108,6 +108,13 @@ describe(`combinations`, () => {
 
   it("should respect array order", () => {
     const results = findAllCombinations(2, [1, 2, 3, 4]);
-    expect(results).toEqual([[1, 2], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]]);
+    expect(results).toEqual([
+      [1, 2],
+      [1, 3],
+      [1, 4],
+      [2, 3],
+      [2, 4],
+      [3, 4],
+    ]);
   });
 });

@@ -37,18 +37,21 @@ export class BalanceService {
   ): number {
     // B2 * ((MIN(D2, 90) + 10) / 100)* (C2 + 0.5)
 
-    const EDUCATION_THRESHOLD = 10
+    const EDUCATION_THRESHOLD = 10;
 
     // Education factor: the less games you have, the less score you will end up with
-    const educationFactor = (Math.min(gamesPlayed, EDUCATION_THRESHOLD - 1) + 1) / EDUCATION_THRESHOLD;
+    const educationFactor =
+      (Math.min(gamesPlayed, EDUCATION_THRESHOLD - 1) + 1) /
+      EDUCATION_THRESHOLD;
 
     // Experience factor: if you have a lot of games, its diminishing returns, so we use log
-    const experienceFactor = Math.log(Math.max(EDUCATION_THRESHOLD, gamesPlayed))
+    const experienceFactor = Math.log(
+      Math.max(EDUCATION_THRESHOLD, gamesPlayed),
+    );
 
     const mmrScore = mmr * BalanceService.MMR_FACTOR;
 
     const winrateFactor = wrLast20Games + BalanceService.TARGET_WINRATE;
-
 
     // console.log(educationFactor, experienceFactor, mmrScore, winrateFactor)
 
@@ -100,7 +103,7 @@ export class BalanceService {
 
     if (entries.length !== 2) throw new BalanceException();
     return new RoomBalance(
-      [[entries[0]], [entries[1]]].map(list => new TeamEntry(list, 0)),
+      [[entries[0]], [entries[1]]].map((list) => new TeamEntry(list, 0)),
     );
   }
 
@@ -218,7 +221,7 @@ export class BalanceService {
 
     return new RoomBalance(
       [radiantParties, direParties].map(
-        list =>
+        (list) =>
           new TeamEntry(
             list,
             list.reduce((a, b) => a + b.score, 0),

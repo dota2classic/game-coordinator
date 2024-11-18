@@ -100,7 +100,7 @@ export class GameCheckCycleHandler
       const games = findAllMatchingCombinations(
         RoomSizes[event.mode],
         arr,
-        entries => {
+        (entries) => {
           try {
             BalanceService.rankedBalance(
               teamSize,
@@ -112,7 +112,7 @@ export class GameCheckCycleHandler
             return false;
           }
         },
-        t => t.size,
+        (t) => t.size,
       );
 
       // this.logger.log(`Total ${games.length} possible combinations`);
@@ -137,7 +137,7 @@ export class GameCheckCycleHandler
             new GameFoundEvent(balance, event.version, event.mode),
           );
 
-          await new Promise(r => setTimeout(r, 1000));
+          await new Promise((r) => setTimeout(r, 1000));
           break;
         } catch (e) {
           this.logger.warn("How can it fail right away");
@@ -145,7 +145,7 @@ export class GameCheckCycleHandler
       }
 
       // we increase this thing
-      q.entries.forEach(entry => {
+      q.entries.forEach((entry) => {
         entry.waitingScore++;
       });
     } catch (e) {

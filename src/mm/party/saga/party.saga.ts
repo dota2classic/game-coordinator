@@ -18,7 +18,10 @@ export class PartySaga {
   acceptInvite = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(PartyInviteAcceptedEvent),
-      map((e: PartyInviteAcceptedEvent) => new AcceptPartyInviteCommand(e.inviteId, e.accept)),
+      map(
+        (e: PartyInviteAcceptedEvent) =>
+          new AcceptPartyInviteCommand(e.inviteId, e.accept),
+      ),
     );
   };
 
@@ -27,7 +30,7 @@ export class PartySaga {
     return events$.pipe(
       ofType(PartyInviteCreatedEvent),
       delay(PARTY_INVITE_LIFETIME),
-      map(e => new TimeoutPartyInviteCommand(e.id)),
+      map((e) => new TimeoutPartyInviteCommand(e.id)),
     );
   };
 
@@ -35,7 +38,7 @@ export class PartySaga {
   inviteRequested = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(PartyInviteRequestedEvent),
-      map(e => new InviteToPartyCommand(e.requestedBy, e.receiver)),
+      map((e) => new InviteToPartyCommand(e.requestedBy, e.receiver)),
     );
   };
 
@@ -43,7 +46,7 @@ export class PartySaga {
   leaveParty = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(PartyLeaveRequestedEvent),
-      map(e => new LeavePartyCommand(e.playerId)),
+      map((e) => new LeavePartyCommand(e.playerId)),
     );
   };
 }

@@ -21,6 +21,6 @@ export class CreateRoomCommand {
   constructor(
     public readonly balance: RoomBalance,
     public readonly version: Dota2Version,
-    public readonly mode: MatchmakingMode
+    public readonly mode: MatchmakingMode,
   ) {}
 }

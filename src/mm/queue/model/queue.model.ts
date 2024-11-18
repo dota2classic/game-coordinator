@@ -10,7 +10,7 @@ export class QueueModel extends AggregateRoot {
   public readonly entries: QueueEntryModel[] = [];
 
   public static id(mode: MatchmakingMode, version: Dota2Version) {
-    return `${mode}_${version}`
+    return `${mode}_${version}`;
   }
 
   public get compId() {
@@ -33,22 +33,22 @@ export class QueueModel extends AggregateRoot {
   }
 
   public addEntry(entry: QueueEntryModel) {
-    if (!this.entries.find(it => it.id === entry.id)) {
+    if (!this.entries.find((it) => it.id === entry.id)) {
       this.entries.push(entry);
       this.apply(new QueueUpdatedEvent(this.mode, this.version));
     }
   }
 
   public removeAll(entries: QueueEntryModel[]) {
-    entries.forEach(it => {
-      const index = this.entries.findIndex(t => t.id === it.id);
+    entries.forEach((it) => {
+      const index = this.entries.findIndex((t) => t.id === it.id);
       if (index !== -1) this.entries.splice(index, 1);
     });
     this.apply(new QueueUpdatedEvent(this.mode, this.version));
   }
 
   public removeEntry(partyId: PartyId) {
-    const index = this.entries.findIndex(t => t.partyID === partyId);
+    const index = this.entries.findIndex((t) => t.partyID === partyId);
     if (index !== -1) {
       this.entries.splice(index, 1);
       this.publish(new QueueUpdatedEvent(this.mode, this.version));

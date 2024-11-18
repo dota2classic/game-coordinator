@@ -1,5 +1,3 @@
 export class RankedPlayerInfoEntity {
-
-  constructor(public readonly mmr: number) {
-  }
+  constructor(public readonly mmr: number) {}
 }

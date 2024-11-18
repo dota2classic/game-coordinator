@@ -36,11 +36,21 @@ describe("PlayerLeaveQueueHandler", () => {
 
   it("should emit leave queue", async () => {
     const u = randomUser();
-    await cbus.execute(new PlayerLeaveQueueCommand(u, MatchmakingMode.SOLOMID, Dota2Version.Dota_684));
+    await cbus.execute(
+      new PlayerLeaveQueueCommand(
+        u,
+        MatchmakingMode.SOLOMID,
+        Dota2Version.Dota_684,
+      ),
+    );
     const party = (await rep.all())[0];
     expect(ebus).toEmit(
       new PartyCreatedEvent(party.id, u, [u]),
-      new PlayerLeaveQueueResolvedEvent(party.id, MatchmakingMode.SOLOMID, Dota2Version.Dota_684),
+      new PlayerLeaveQueueResolvedEvent(
+        party.id,
+        MatchmakingMode.SOLOMID,
+        Dota2Version.Dota_684,
+      ),
     );
   });
 });

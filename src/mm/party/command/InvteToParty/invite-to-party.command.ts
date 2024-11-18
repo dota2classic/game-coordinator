@@ -1,4 +1,4 @@
-import {PlayerId} from 'gateway/gateway/shared-types/player-id';
+import { PlayerId } from "gateway/gateway/shared-types/player-id";
 
 export class InviteToPartyCommand {
   constructor(

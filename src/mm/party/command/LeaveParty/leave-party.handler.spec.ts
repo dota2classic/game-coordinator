@@ -58,7 +58,7 @@ describe("LeavePartyHandler", () => {
     await cbus.execute(new LeavePartyCommand(u2));
 
     const newPartyOfu2 = Array.from(rep["cache"].values()).find(
-      t => t.leader.value === u2.value,
+      (t) => t.leader.value === u2.value,
     );
 
     expect(ebus).toEmit(
@@ -84,7 +84,7 @@ describe("LeavePartyHandler", () => {
     await cbus.execute(new LeavePartyCommand(u));
 
     const newPartyOfu2 = Array.from(rep["cache"].values()).find(
-      t => t.leader.value === u2.value,
+      (t) => t.leader.value === u2.value,
     );
 
     expect(ebus).toEmit(

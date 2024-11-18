@@ -28,8 +28,8 @@ describe("BalanceService", () => {
   });
 
   it("should result in a low score if no games are played", () => {
-    const newbieScore = BalanceService.getScore(2500, 0.5, 0, 0)
-    const decentScore = BalanceService.getScore(2500, 0.5, 0, 50)
+    const newbieScore = BalanceService.getScore(2500, 0.5, 0, 0);
+    const decentScore = BalanceService.getScore(2500, 0.5, 0, 50);
 
     expect(decentScore / Math.max(1, newbieScore)).toBeGreaterThan(10);
   });
@@ -1938,13 +1938,13 @@ describe("BalanceService", () => {
     ];
 
     const entries = raw.map(
-      r =>
+      (r) =>
         new QueueEntryModel(
           r.partyId,
           MatchmakingMode.UNRANKED,
           Dota2Version.Dota_684,
           r.players.map(
-            it =>
+            (it) =>
               new PlayerInQueueEntity(
                 it.playerId,
                 BalanceService.getScore(
@@ -1961,7 +1961,7 @@ describe("BalanceService", () => {
     const games = findAllMatchingCombinations(
       10,
       entries,
-      entries => {
+      (entries) => {
         try {
           BalanceService.rankedBalance(5, entries, false);
           console.log("Hooray?");
@@ -1971,7 +1971,7 @@ describe("BalanceService", () => {
           return false;
         }
       },
-      t => t.size,
+      (t) => t.size,
     );
 
     expect(games).toHaveLength(1);
@@ -1980,28 +1980,25 @@ describe("BalanceService", () => {
 
     const balance = BalanceService.rankedBalance(5, game, false);
 
-    const teams = balance.teams.map(it => it.parties.map(it => it.partyID));
+    const teams = balance.teams.map((it) => it.parties.map((it) => it.partyID));
 
-
-    console.log(teams)
+    console.log(teams);
 
     // MMR diff
 
     // Big party should not be with RX
     expect(
       teams.findIndex(
-        team =>
-          team.includes("Itachi + Lenny + TBR") &&
-          (team.includes("RX")),
+        (team) => team.includes("Itachi + Lenny + TBR") && team.includes("RX"),
       ),
     ).toEqual(-1);
 
     // There totally should not be 3 newbies on one team
     expect(
-      teams.findIndex(team => team.filter(t => t.includes('Newbie')).length > 2)
-    ).toEqual(-1)
-
-
+      teams.findIndex(
+        (team) => team.filter((t) => t.includes("Newbie")).length > 2,
+      ),
+    ).toEqual(-1);
 
     // expect()
   });

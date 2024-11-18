@@ -22,12 +22,13 @@ export class RoomModel extends AggregateRoot {
   private readyCheckComplete = false;
 
   public get players() {
-    return this.entries.flatMap(t => t.players);
+    return this.entries.flatMap((t) => t.players);
   }
 
   private get acceptedCount() {
-    return [...this.readyCheckMap.values()].filter(t => t === ReadyState.READY)
-      .length;
+    return [...this.readyCheckMap.values()].filter(
+      (t) => t === ReadyState.READY,
+    ).length;
   }
 
   constructor(
@@ -40,7 +41,7 @@ export class RoomModel extends AggregateRoot {
   }
 
   startReadyCheck() {
-    this.players.forEach(t =>
+    this.players.forEach((t) =>
       this.readyCheckMap.set(t.playerId.value, ReadyState.PENDING),
     );
     this.readyCheckComplete = false;
@@ -58,7 +59,7 @@ export class RoomModel extends AggregateRoot {
 
   readyCheckTimeout() {
     if (this.readyCheckComplete) return;
-    this.players.forEach(t => {
+    this.players.forEach((t) => {
       if (this.readyCheckMap.get(t.playerId.value) === ReadyState.PENDING) {
         this.readyCheckMap.set(t.playerId.value, ReadyState.TIMEOUT);
         this.apply(new PlayerDeclinedGameEvent(t.playerId, this.mode));
@@ -78,7 +79,7 @@ export class RoomModel extends AggregateRoot {
     // no-no, nothing here.
     if (this.readyCheckComplete) return;
 
-    if (this.players.find(t => t.playerId.value === playerId.value)) {
+    if (this.players.find((t) => t.playerId.value === playerId.value)) {
       // one vote for one guy
       if (this.readyCheckMap.get(playerId.value) !== ReadyState.PENDING) return;
 
@@ -99,7 +100,7 @@ export class RoomModel extends AggregateRoot {
         // if it's explicit decline, we do so:
         // everybody except explicit decline we set as ready
         // and finish ready check.
-        [...this.readyCheckMap.keys()].forEach(t => {
+        [...this.readyCheckMap.keys()].forEach((t) => {
           if (t !== playerId.value) {
             this.readyCheckMap.set(t, ReadyState.READY);
           }
@@ -123,7 +124,7 @@ export class RoomModel extends AggregateRoot {
   }
 
   getAcceptedParties() {
-    return this.entries.filter(t => {
+    return this.entries.filter((t) => {
       // if all from this party accepted, we re count them as good
       return t.players.reduce((total, b) => {
         return (

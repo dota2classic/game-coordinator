@@ -36,13 +36,13 @@ export class PartyModel extends AggregateRoot {
         return [];
 
       // if we are leader, we remove everyone except for leader.
-      const removed = this.players.filter(t => t.value !== player.value);
-      this.players = this.players.filter(t => t.value === player.value);
+      const removed = this.players.filter((t) => t.value !== player.value);
+      this.players = this.players.filter((t) => t.value === player.value);
       this.updated();
       return removed;
     }
 
-    const index = this.players.findIndex(t => t.value === player.value);
+    const index = this.players.findIndex((t) => t.value === player.value);
     if (index !== -1) {
       this.players.splice(index, 1);
       this.updated();
@@ -52,7 +52,7 @@ export class PartyModel extends AggregateRoot {
 
   public add(player: PlayerId) {
     // make sure no duplicates
-    const index = this.players.findIndex(t => t.value === player.value);
+    const index = this.players.findIndex((t) => t.value === player.value);
     if (index !== -1) return;
 
     this.players.push(player);

@@ -1,5 +1,5 @@
-import {PlayerId} from "gateway/gateway/shared-types/player-id";
-import {EventBus} from "@nestjs/cqrs";
+import { PlayerId } from "gateway/gateway/shared-types/player-id";
+import { EventBus } from "@nestjs/cqrs";
 import { inspect } from "util";
 import Mock = jest.Mock;
 

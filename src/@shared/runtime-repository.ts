@@ -1,6 +1,6 @@
-import { Logger } from '@nestjs/common';
-import { inspect } from 'util';
-import { AggregateRoot, EventPublisher } from '@nestjs/cqrs';
+import { Logger } from "@nestjs/common";
+import { inspect } from "util";
+import { AggregateRoot, EventPublisher } from "@nestjs/cqrs";
 
 type Id = string | number;
 
@@ -12,7 +12,7 @@ export abstract class RuntimeRepository<
   protected cache = new Map<Key, T>();
 
   protected constructor(protected readonly publisher: EventPublisher) {
-    RuntimeRepository.list.push(this)
+    RuntimeRepository.list.push(this);
   }
 
   get = async (id: Key): Promise<T | null> => {
@@ -39,10 +39,9 @@ export abstract class RuntimeRepository<
     new Logger(RuntimeRepository.name).log(inspect([...this.cache.values()]));
   };
 
-
   private static list: RuntimeRepository<any, any>[] = [];
 
-  private static clearAll(){
-    this.list.forEach(it => it.cache.clear())
+  private static clearAll() {
+    this.list.forEach((it) => it.cache.clear());
   }
 }

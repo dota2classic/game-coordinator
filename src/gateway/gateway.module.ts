@@ -38,16 +38,8 @@ export function qCache<T, B>() {
   controllers: [QueryController, CommandController],
   providers: [
     GatewayService,
-    outerQuery(
-      GetPlayerInfoQuery,
-      "RedisQueue",
-      qCache()
-    ),
-    outerQuery(
-      GetSessionByUserQuery,
-      "RedisQueue",
-      qCache()
-    ),
+    outerQuery(GetPlayerInfoQuery, "RedisQueue", qCache()),
+    outerQuery(GetSessionByUserQuery, "RedisQueue", qCache()),
   ],
 })
 export class GatewayModule {}

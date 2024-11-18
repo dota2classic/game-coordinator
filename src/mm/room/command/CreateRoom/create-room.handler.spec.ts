@@ -53,7 +53,7 @@ describe("CreateRoomHandler", () => {
             MatchmakingMode.SOLOMID,
             Dota2Version.Dota_684,
             [new PlayerInQueueEntity(randomUser(), 100.0)],
-          )
+          ),
         ]),
         Dota2Version.Dota_684,
         MatchmakingMode.SOLOMID,
@@ -61,6 +61,5 @@ describe("CreateRoomHandler", () => {
     );
 
     expect(ebus).toEmit(new RoomCreatedEvent(roomID));
-
   });
 });

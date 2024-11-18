@@ -15,9 +15,9 @@ const ebusProvider: Provider = {
   provide: EventBus,
   useFactory: () => ({
     publish: jest.fn(),
-    publishAll(arr: any[]){
-      arr.forEach(this.publish)
-    }
+    publishAll(arr: any[]) {
+      arr.forEach(this.publish);
+    },
   }),
 };
 
@@ -65,8 +65,7 @@ export function mockQuery<T, B>(type: Type<T>, callback: (t: T) => B) {
 
   QueryHandler(type)(context[ClassName]);
 
-
-  return context[ClassName]
+  return context[ClassName];
   // return {
   //   provide: `${type.name}Handler`,
   //   useClass: context[ClassName],
@@ -78,7 +77,7 @@ export function waitFor<T = any>(ebus: EventBus, event: Type<T>): Promise<T> {
     setTimeout(() => {
       reject(`Event ${event.name} won't come :(`);
     }, 500);
-    const unsub = ebus.pipe(ofType(event)).subscribe(e => {
+    const unsub = ebus.pipe(ofType(event)).subscribe((e) => {
       unsub.unsubscribe();
       resolve(e);
     });

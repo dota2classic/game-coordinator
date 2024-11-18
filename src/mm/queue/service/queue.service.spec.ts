@@ -32,12 +32,7 @@ describe("QueueService", () => {
         "1",
         MatchmakingMode.SOLOMID,
         Dota2Version.Dota_684,
-        [
-          new PlayerInQueueEntity(
-            randomUser(),
-            100
-          ),
-        ],
+        [new PlayerInQueueEntity(randomUser(), 100)],
         0,
       ),
     );
@@ -54,12 +49,7 @@ describe("QueueService", () => {
         "1",
         MatchmakingMode.SOLOMID,
         Dota2Version.Dota_684,
-        [
-          new PlayerInQueueEntity(
-            randomUser(),
-            100
-          ),
-        ],
+        [new PlayerInQueueEntity(randomUser(), 100)],
         0,
       ),
     );
@@ -68,12 +58,7 @@ describe("QueueService", () => {
         "2",
         MatchmakingMode.SOLOMID,
         Dota2Version.Dota_684,
-        [
-          new PlayerInQueueEntity(
-            randomUser(),
-            100
-          ),
-        ],
+        [new PlayerInQueueEntity(randomUser(), 100)],
         0,
       ),
     );
@@ -91,14 +76,8 @@ describe("QueueService", () => {
         MatchmakingMode.SOLOMID,
         Dota2Version.Dota_684,
         [
-          new PlayerInQueueEntity(
-            randomUser(),
-            100
-          ),
-          new PlayerInQueueEntity(
-            randomUser(),
-            100
-          ),
+          new PlayerInQueueEntity(randomUser(), 100),
+          new PlayerInQueueEntity(randomUser(), 100),
         ],
         0,
       ),
@@ -117,18 +96,9 @@ describe("QueueService", () => {
         MatchmakingMode.SOLOMID,
         Dota2Version.Dota_684,
         [
-          new PlayerInQueueEntity(
-            randomUser(),
-            100
-          ),
-          new PlayerInQueueEntity(
-            randomUser(),
-            100
-          ),
-          new PlayerInQueueEntity(
-            randomUser(),
-            100
-          ),
+          new PlayerInQueueEntity(randomUser(), 100),
+          new PlayerInQueueEntity(randomUser(), 100),
+          new PlayerInQueueEntity(randomUser(), 100),
         ],
         0,
       ),

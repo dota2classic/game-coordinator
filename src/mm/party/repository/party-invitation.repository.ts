@@ -13,9 +13,11 @@ export class PartyInvitationRepository extends RuntimeRepository<
     super(publisher);
   }
 
-  public getByReceiver = async (receiver: PlayerId): Promise<PartyInvitationModel[]> => {
-    return this.all().then(invitations =>
-      invitations.filter(inv => inv.invited.value === receiver.value),
+  public getByReceiver = async (
+    receiver: PlayerId,
+  ): Promise<PartyInvitationModel[]> => {
+    return this.all().then((invitations) =>
+      invitations.filter((inv) => inv.invited.value === receiver.value),
     );
   };
 }

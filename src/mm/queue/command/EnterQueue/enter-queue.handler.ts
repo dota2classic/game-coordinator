@@ -35,14 +35,16 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
   ) {
     // here we check for ban status
 
-    const bannedPlayers = players.filter(player => player.banStatus?.isBanned);
+    const bannedPlayers = players.filter(
+      (player) => player.banStatus?.isBanned,
+    );
     if (bannedPlayers.length > 0 && mode !== MatchmakingMode.BOTS) {
       // if there are banned players in party, we can't let them in
       this.ebus.publish(
         new EnterQueueDeclinedEvent(
           partyId,
-          players.map(t => t.playerId),
-          bannedPlayers.map(t => t.playerId),
+          players.map((t) => t.playerId),
+          bannedPlayers.map((t) => t.playerId),
           mode,
           version,
         ),
@@ -92,8 +94,8 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
 
     // remove from other queues
     allQueues
-      .filter(q => q.mode !== mode || q.version !== version)
-      .forEach(q => {
+      .filter((q) => q.mode !== mode || q.version !== version)
+      .forEach((q) => {
         q.removeEntry(partyId);
         q.commit();
       });
