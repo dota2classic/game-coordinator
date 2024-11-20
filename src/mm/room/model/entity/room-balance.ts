@@ -15,32 +15,4 @@ export class TeamEntry {
 
 export class RoomBalance {
   constructor(public readonly teams: TeamEntry[]) {}
-
-  // public get totalMMR() {
-  //   return this.teams
-  //     .flatMap(t => t.parties.flatMap(t => t.totalMMR))
-  //     .reduce((a, b) => a + b, 0);
-  // }
-
-  // public get averageMMR() {
-  //   return (
-  //     this.totalMMR /
-  //     this.teams
-  //       .map(t => t.parties.reduce((a, b) => a + b.size, 0))
-  //       .reduce((a, b) => a + b, 0)
-  //   );
-  // }
-
-  // public get mmrMedian() {
-  //   const allMMrs = this.teams
-  //     .flatMap(t => t.parties)
-  //     .flatMap(t => t.players)
-  //     .map(t => t.mmr)
-  //     .sort((a, b) => b - a);
-  //
-  //   const mid = Math.ceil(allMMrs.length / 2);
-  //
-  //
-  //   return allMMrs.length % 2 == 0 ? (allMMrs[mid] + allMMrs[mid - 1]) / 2 : allMMrs[mid - 1];
-  // }
 }

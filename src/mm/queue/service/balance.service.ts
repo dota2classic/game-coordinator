@@ -139,23 +139,6 @@ export class BalanceService {
     return new RoomBalance([new TeamEntry(r, 0), new TeamEntry(d, 0)]);
   }
 
-  public static genericBalance(
-    mode: MatchmakingMode,
-    entries: QueueEntryModel[],
-  ): RoomBalance {
-    const teamSize = Math.round(RoomSizes[mode] / 2);
-    switch (mode) {
-      case MatchmakingMode.UNRANKED:
-        return BalanceService.rankedBalance(teamSize, entries, false);
-      case MatchmakingMode.BOTS:
-        return this.botsBalance(teamSize, entries);
-      case MatchmakingMode.SOLOMID:
-        return this.soloMidBalance(teamSize, entries);
-      default:
-        return this.botsBalance(teamSize, entries, mode);
-    }
-  }
-
   public static rankedBalance(
     teamSize: number,
     parties: QueueEntryModel[],

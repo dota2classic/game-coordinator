@@ -1982,7 +1982,7 @@ describe("BalanceService", () => {
 
     const teams = balance.teams.map((it) => it.parties.map((it) => it.partyID));
 
-    console.log(teams);
+    // console.log(teams);
 
     // MMR diff
 

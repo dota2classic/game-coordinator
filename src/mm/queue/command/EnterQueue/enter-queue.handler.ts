@@ -15,6 +15,7 @@ import { PartyId } from "gateway/gateway/shared-types/party-id";
 import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
 import { BalanceService } from "mm/queue/service/balance.service";
 import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
+import formatGameMode from "../../../../gateway/gateway/util/formatGameMode";
 
 @CommandHandler(EnterQueueCommand)
 export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
@@ -117,18 +118,21 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     if (q.mode === MatchmakingMode.UNRANKED) return;
     if (q.mode === MatchmakingMode.BOTS) return;
 
-    const game = this.queueService.findGame(q);
 
-    if (!game) return;
-    try {
-      const balance = BalanceService.genericBalance(game.mode, game.entries);
+    this.logger.warn(`Tried to enter queue ${formatGameMode(q.mode)}! This is not supported yet.`)
 
-      q.removeAll(game.entries);
-      q.commit();
-
-      this.ebus.publish(new GameFoundEvent(balance, q.version, game.mode));
-    } catch (e) {
-      console.log(e);
-    }
+    // const game = this.queueService.findGame(q);
+    //
+    // if (!game) return;
+    // try {
+    //   const balance = BalanceService.genericBalance(game.mode, game.entries);
+    //
+    //   q.removeAll(game.entries);
+    //   q.commit();
+    //
+    //   this.ebus.publish(new GameFoundEvent(balance, q.version, game.mode));
+    // } catch (e) {
+    //   console.log(e);
+    // }
   }
 }

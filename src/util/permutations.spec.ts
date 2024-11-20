@@ -258,7 +258,6 @@ describe("efficient permutations", () => {
       return avgDiff < 600;
     });
 
-    console.log(i);
     expect(res).toBeDefined();
   });
 
@@ -288,9 +287,7 @@ describe("efficient permutations", () => {
       return avgDiff < 0.001;
     });
 
-    console.log(i);
     expect(res).toBeDefined();
-    console.log(diff(res[0], res[1]));
   });
 
   it("should respect time limit", () => {
@@ -303,6 +300,5 @@ describe("efficient permutations", () => {
 
     expect(performance.now() - start).toBeLessThan(1100) // Some room for error
     expect(res).toBeDefined();
-    console.log(diff(res[0], res[1]));
   });
 });

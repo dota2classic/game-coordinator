@@ -7,6 +7,8 @@ import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
 import { BalanceService } from "mm/queue/service/balance.service";
 import { QueueModel } from "mm/queue/model/queue.model";
 import { Logger } from "@nestjs/common";
+import { RoomBalance } from "../../room/model/entity/room-balance";
+import formatGameMode from "../../../gateway/gateway/util/formatGameMode";
 
 @EventsHandler(GameCheckCycleEvent)
 export class GameCheckCycleHandler
@@ -30,66 +32,28 @@ export class GameCheckCycleHandler
     const q = await this.rep.get(QueueRepository.id(event.mode, event.version));
     if (!q) return;
 
-    if (event.mode === MatchmakingMode.RANKED) {
-      await this.checkRanked(event, q);
-
-      return;
-    }
-
-    if (event.mode === MatchmakingMode.UNRANKED) {
-      await this.checkRanked(event, q);
-
-      return;
-    }
-
-    if (event.mode === MatchmakingMode.HIGHROOM) {
-      await this.checkRanked(event, q);
-
-      return;
-    }
-
-    if (event.mode !== MatchmakingMode.BOTS) return;
-    // should work right
-    await this.findBotGame(event, q);
-  }
-
-  private async findBotGame(event: GameCheckCycleEvent, q: QueueModel) {
-    for (let i = 0; i < 100; i++) {
-      const game = this.qService.findGame(q);
-      if (!game) {
-        break;
-      }
-      try {
-        const balance = BalanceService.genericBalance(game.mode, game.entries);
-        q.removeAll(game.entries);
-        q.commit();
-
-        this.ebus.publish(
-          new GameFoundEvent(balance, event.version, game.mode),
-        );
-      } catch (e) {
-        // console.log("Bot stuff")
-        this.logger.warn("Error in findBotGame:");
-        this.logger.warn(e);
-      }
+    if (event.mode === MatchmakingMode.BOTS) {
+      const balance = this.qService.findBotsGame(q);
+      this.makeGame(balance, q);
+    } else {
+      const balance = this.qService.findBalancedGame(q);
+      this.makeGame(balance, q);
     }
   }
 
-  private async checkRanked(event: GameCheckCycleEvent, q: QueueModel) {
-    // async yeah
-    if (this.processMap[event.mode]) {
-      this.logger.warn(
-        `Skipping check for mode ${q.mode}: Already in progress`,
-      );
-      return;
-    }
 
-    this.processMap[event.mode] = true;
+  private makeGame(balance: RoomBalance | undefined, q: QueueModel) {
+    if (!balance) return;
 
-    q.entries.forEach((entry) => {
-      entry.waitingScore++;
-    });
+    const [leftTeam, rightTeam] = balance.teams;
+    this.logger.log(`We have a game in mode ${formatGameMode(q.mode)}`);
+    q.removeAll([...leftTeam.parties, ...rightTeam.parties]);
+    q.commit();
 
-    this.processMap[event.mode] = false;
+    this.logger.log(
+      `Removed ${leftTeam.parties.length + rightTeam.parties.length} parties from queue`,
+    );
+
+    this.ebus.publish(new GameFoundEvent(balance, q.version, q.mode));
   }
 }

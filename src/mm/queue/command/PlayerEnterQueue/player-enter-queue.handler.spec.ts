@@ -17,6 +17,10 @@ import {
 import { BanReason } from "gateway/gateway/shared-types/ban";
 import { Dota2Version } from "../../../../gateway/gateway/shared-types/dota2version";
 import { BalanceService } from "../../service/balance.service";
+import { GetSessionByUserQuery } from "../../../../gateway/gateway/queries/GetSessionByUser/get-session-by-user.query";
+import {
+  GetSessionByUserQueryResult
+} from "../../../../gateway/gateway/queries/GetSessionByUser/get-session-by-user-query.result";
 
 describe("PlayerEnterQueueHandler", () => {
   let ebus: EventBus;
@@ -24,7 +28,7 @@ describe("PlayerEnterQueueHandler", () => {
   let cbus: CommandBus;
   let module: TestingModule;
 
-  const q = mockQuery<GetPlayerInfoQuery, GetPlayerInfoQueryResult>(
+  const GetPlayerInfoQueryHandlerMock = mockQuery<GetPlayerInfoQuery, GetPlayerInfoQueryResult>(
     GetPlayerInfoQuery,
     (t) =>
       new GetPlayerInfoQueryResult(
@@ -37,10 +41,15 @@ describe("PlayerEnterQueueHandler", () => {
         new BanStatus(false, 0, BanReason.GAME_DECLINE),
       ),
   );
+  const GetSessionByUserQueryHandlerMock = mockQuery<GetSessionByUserQuery, GetSessionByUserQueryResult>(
+    GetSessionByUserQuery,
+    (t) =>
+      new GetSessionByUserQueryResult(undefined),
+  );
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      providers: [...QueueProviders, PartyRepository, ...TestEnvironment(), q],
+      providers: [...QueueProviders, PartyRepository, ...TestEnvironment(), GetPlayerInfoQueryHandlerMock, GetSessionByUserQueryHandlerMock],
     }).compile();
 
     cbus = module.get(CommandBus);
@@ -49,7 +58,7 @@ describe("PlayerEnterQueueHandler", () => {
     rep = module.get(PartyRepository);
 
     cbus.register([PlayerEnterQueueHandler]);
-    qbus.register([q]);
+    qbus.register([GetPlayerInfoQueryHandlerMock, GetSessionByUserQueryHandlerMock]);
   });
 
   afterEach(() => {
