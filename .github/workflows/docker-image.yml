@@ -35,6 +35,7 @@ jobs:
         with:
           cmd: test # will run `yarn test` command
   build_image:
+    needs: [build]
     name: Build image
     runs-on: ubuntu-latest
 
