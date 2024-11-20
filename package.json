@@ -39,6 +39,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.8.1",
     "rxjs-async-map": "^0.3.0-preview.0",
+    "seedrandom": "^3.0.5",
     "uuid": "^8.3.0"
   },
   "devDependencies": {
@@ -50,6 +51,7 @@
     "@types/express-serve-static-core": "^4.17.21",
     "@types/jest": "26.0.10",
     "@types/node": "^22.5.1",
+    "@types/seedrandom": "^3.0.8",
     "@types/supertest": "^2.0.8",
     "@typescript-eslint/eslint-plugin": "^8.13.0",
     "@typescript-eslint/parser": "^8.13.0",

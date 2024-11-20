@@ -229,4 +229,39 @@ export class BalanceService {
       ),
     );
   }
+
+  public static fillBalance(teamSize: number, parties: QueueEntryModel[]) {
+    const radiantParties: QueueEntryModel[] = [];
+    const direParties: QueueEntryModel[] = [];
+
+    let radiantPlayerCount = 0;
+    let direPlayerCount = 0;
+
+    parties.forEach((party) => {
+      if (radiantPlayerCount < teamSize) {
+        radiantParties.push(party);
+        radiantPlayerCount += party.size;
+      } else {
+        direParties.push(party);
+        direPlayerCount += party.size;
+      }
+    });
+
+
+    if (radiantPlayerCount !== teamSize || direPlayerCount !== teamSize) {
+      throw new BalanceException(
+        `Final size dont fit ${radiantPlayerCount} ${direPlayerCount}`,
+      );
+    }
+
+    return new RoomBalance(
+      [radiantParties, direParties].map(
+        (list) =>
+          new TeamEntry(
+            list,
+            list.reduce((a, b) => a + b.score, 0),
+          ),
+      ),
+    );
+  }
 }

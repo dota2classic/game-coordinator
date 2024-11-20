@@ -3,24 +3,19 @@ import { GameCheckCycleEvent } from "mm/queue/event/game-check-cycle.event";
 import { QueueRepository } from "mm/queue/repository/queue.repository";
 import { QueueService } from "mm/queue/service/queue.service";
 import { GameFoundEvent } from "mm/queue/event/game-found.event";
-import {
-  MatchmakingMode,
-  RoomSizes,
-} from "gateway/gateway/shared-types/matchmaking-mode";
-import { findAllMatchingCombinations } from "util/combinations";
+import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
 import { BalanceService } from "mm/queue/service/balance.service";
 import { QueueModel } from "mm/queue/model/queue.model";
 import { Logger } from "@nestjs/common";
 
 @EventsHandler(GameCheckCycleEvent)
 export class GameCheckCycleHandler
-  implements IEventHandler<GameCheckCycleEvent> {
+  implements IEventHandler<GameCheckCycleEvent>
+{
   private logger = new Logger(GameCheckCycleHandler.name);
-  private processMap: Partial<
-    {
-      [key in MatchmakingMode]: boolean;
-    }
-  > = {};
+  private processMap: Partial<{
+    [key in MatchmakingMode]: boolean;
+  }> = {};
 
   constructor(
     private readonly rep: QueueRepository,
@@ -89,70 +84,12 @@ export class GameCheckCycleHandler
       return;
     }
 
-    try {
-      this.processMap[event.mode] = true;
-      const teamSize = Math.round(RoomSizes[event.mode] / 2);
+    this.processMap[event.mode] = true;
 
-      // DESC sorting by deviation score results in prioritizing long waiting players
-      const arr = [...q.entries].sort(
-        (a, b) => b.waitingScore - a.waitingScore,
-      );
-      const games = findAllMatchingCombinations(
-        RoomSizes[event.mode],
-        arr,
-        (entries) => {
-          try {
-            BalanceService.rankedBalance(
-              teamSize,
-              entries,
-              event.mode === MatchmakingMode.RANKED,
-            );
-            return true;
-          } catch (e) {
-            return false;
-          }
-        },
-        (t) => t.size,
-      );
+    q.entries.forEach((entry) => {
+      entry.waitingScore++;
+    });
 
-      // this.logger.log(`Total ${games.length} possible combinations`);
-
-      for (let i = 0; i < games.length; i++) {
-        const game = games[i];
-
-        try {
-          const balance = BalanceService.rankedBalance(
-            teamSize,
-            game,
-            event.mode === MatchmakingMode.RANKED,
-          );
-
-          this.logger.log("So here is the balance for us");
-          this.logger.log(JSON.stringify(balance));
-
-          q.removeAll(game);
-          q.commit();
-
-          this.ebus.publish(
-            new GameFoundEvent(balance, event.version, event.mode),
-          );
-
-          await new Promise((r) => setTimeout(r, 1000));
-          break;
-        } catch (e) {
-          this.logger.warn("How can it fail right away");
-        }
-      }
-
-      // we increase this thing
-      q.entries.forEach((entry) => {
-        entry.waitingScore++;
-      });
-    } catch (e) {
-      this.logger.error("We failed to process queue?");
-      this.logger.error(e);
-    } finally {
-      this.processMap[event.mode] = false;
-    }
+    this.processMap[event.mode] = false;
   }
 }

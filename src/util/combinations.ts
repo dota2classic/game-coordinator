@@ -20,7 +20,7 @@ export function findAllCombinations<T>(
   return combos;
 }
 
-function iterateCombinations<T>(
+export function iterateCombinations<T>(
   sourceArray: T[],
   comboLength: number,
   callback: (combo: T[]) => boolean,

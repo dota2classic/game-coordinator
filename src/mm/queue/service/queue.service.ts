@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { QueueModel } from "mm/queue/model/queue.model";
 import {
   MatchmakingMode,
@@ -11,6 +11,7 @@ import { Cron } from "@nestjs/schedule";
 import { EventBus } from "@nestjs/cqrs";
 import { GameCheckCycleEvent } from "mm/queue/event/game-check-cycle.event";
 import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
+import { findAllMatchingCombinations } from "../../../util/combinations";
 
 @Injectable()
 export class QueueService {
@@ -18,6 +19,8 @@ export class QueueService {
     private readonly balanceService: BalanceService,
     private readonly ebus: EventBus,
   ) {}
+
+  private logger = new Logger(QueueService.name);
 
   // Every 10 seconds try find bots game
   @Cron("*/10 * * * * *")
@@ -57,7 +60,7 @@ export class QueueService {
   }
 
   public findGame(q: QueueModel): QueueGameEntity | undefined {
-    if (q.mode === MatchmakingMode.UNRANKED) {
+    if (q.mode === MatchmakingMode.RANKED) {
       return this.findRankedGame(q);
     }
 
@@ -81,7 +84,7 @@ export class QueueService {
   private findUnrankedGame(q: QueueModel): QueueGameEntity | undefined {
     if (q.size < RoomSizes[q.mode]) return undefined;
 
-    return QueueService.balancedGameSearch(q);
+    // return this.balancedGame(q);
   }
 
   private findSoloMidGame(q: QueueModel): QueueGameEntity | undefined {
@@ -157,5 +160,50 @@ export class QueueService {
     }
 
     return new QueueGameEntity(q.mode, slice);
+  }
+
+  public balancedGame(
+    q: QueueModel,
+    roomSize: number = 10,
+    strict: boolean = false,
+  ) {
+    const teamSize = Math.round(roomSize / 2);
+
+    // DESC sorting by deviation score results in prioritizing long waiting players
+    const arr = [...q.entries].sort((a, b) => b.waitingScore - a.waitingScore);
+    const games = findAllMatchingCombinations(
+      roomSize,
+      arr,
+      (entries) => {
+        try {
+          BalanceService.rankedBalance(teamSize, entries, strict);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      },
+      (t) => t.size,
+    );
+    this.logger.log(`Total possible games: ${games}`);
+
+    for (let i = 0; i < games.length; i++) {
+      const game = games[i];
+
+      this.logger.log(`Queue: iteration #${i}`);
+
+      try {
+        const balance = BalanceService.rankedBalance(teamSize, game, strict);
+
+        this.logger.log("So here is the balance for us");
+        this.logger.log(JSON.stringify(balance));
+
+        q.removeAll(game);
+        q.commit();
+
+        return balance;
+      } catch (e) {
+        this.logger.warn("How can it fail right away");
+      }
+    }
   }
 }
