@@ -32,9 +32,6 @@ export class QueueService {
   @Cron("*/10 * * * * *")
   async checkBotGame() {
     this.ebus.publish(
-      new GameCheckCycleEvent(MatchmakingMode.BOTS, Dota2Version.Dota_681),
-    );
-    this.ebus.publish(
       new GameCheckCycleEvent(MatchmakingMode.BOTS, Dota2Version.Dota_684),
     );
   }
