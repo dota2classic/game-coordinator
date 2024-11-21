@@ -43,26 +43,26 @@ export class QueueService {
   // @Cron(CronExpression.EVERY_MINUTE)
   @Cron("*/20 * * * * *")
   async checkRankedGame() {
-    this.ebus.publish(
-      new GameCheckCycleEvent(MatchmakingMode.UNRANKED, Dota2Version.Dota_681),
-    );
+    // this.ebus.publish(
+    //   new GameCheckCycleEvent(MatchmakingMode.UNRANKED, Dota2Version.Dota_681),
+    // );
     this.ebus.publish(
       new GameCheckCycleEvent(MatchmakingMode.UNRANKED, Dota2Version.Dota_684),
     );
+    //
+    // this.ebus.publish(
+    //   new GameCheckCycleEvent(MatchmakingMode.RANKED, Dota2Version.Dota_681),
+    // );
+    // this.ebus.publish(
+    //   new GameCheckCycleEvent(MatchmakingMode.RANKED, Dota2Version.Dota_684),
+    // );
 
-    this.ebus.publish(
-      new GameCheckCycleEvent(MatchmakingMode.RANKED, Dota2Version.Dota_681),
-    );
-    this.ebus.publish(
-      new GameCheckCycleEvent(MatchmakingMode.RANKED, Dota2Version.Dota_684),
-    );
-
-    this.ebus.publish(
-      new GameCheckCycleEvent(MatchmakingMode.HIGHROOM, Dota2Version.Dota_681),
-    );
-    this.ebus.publish(
-      new GameCheckCycleEvent(MatchmakingMode.HIGHROOM, Dota2Version.Dota_684),
-    );
+    // this.ebus.publish(
+    //   new GameCheckCycleEvent(MatchmakingMode.HIGHROOM, Dota2Version.Dota_681),
+    // );
+    // this.ebus.publish(
+    //   new GameCheckCycleEvent(MatchmakingMode.HIGHROOM, Dota2Version.Dota_684),
+    // );
   }
 
   /**
@@ -123,7 +123,10 @@ export class QueueService {
 
     // Let's first filter off this case
     const totalPlayersInQ = pool.reduce((a, b) => a + b.size, 0);
-    if (totalPlayersInQ < 10) return;
+    if (totalPlayersInQ < 10) {
+      this.logger.warn("Less than 10 players in queue, skip matchmaking")
+      return;
+    }
 
     // TODO: consider player left queue while searching is going on
 

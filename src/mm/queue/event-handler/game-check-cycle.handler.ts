@@ -28,9 +28,12 @@ export class GameCheckCycleHandler
 
   async handle(event: GameCheckCycleEvent) {
     // ok here we
-
+    this.logger.warn(`GameCheckCycle: ${formatGameMode(event.mode)} ${event.version}`)
     const q = await this.rep.get(QueueRepository.id(event.mode, event.version));
-    if (!q) return;
+    if (!q) {
+      this.logger.warn(`Game cycle for non-existing queue: ${formatGameMode(event.mode)} ${event.version}`)
+      return;
+    }
 
     if (event.mode === MatchmakingMode.BOTS) {
       const balance = this.qService.findBotsGame(q);
