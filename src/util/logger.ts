@@ -1,0 +1,92 @@
+import * as winston from "winston";
+import * as winstonTransport from "winston-transport";
+import * as fluent from "fluent-logger";
+import { LoggerService } from "@nestjs/common/services/logger.service";
+import { LogLevel } from "@nestjs/common";
+
+const fluentLogger = fluent.createFluentSender("tag_prefix", {
+  host: "localhost",
+  port: 24224,
+  timeout: 3.0,
+  reconnectInterval: 10_000, // 10 secs
+});
+
+export class WinstonWrapper implements LoggerService {
+  private winstonInstance: winston.Logger;
+  constructor() {
+    this.winstonInstance = winston.createLogger({
+      format: winston.format.errors({ stack: true }),
+      transports: [
+        new winston.transports.Console({
+          format: winston.format.combine(
+            winston.format.colorize({ message: true }),
+            winston.format.timestamp({
+              format: "MM-DD HH:mm:ss.SSS",
+            }),
+            winston.format.printf(
+              (info) =>
+                `${info.timestamp} | ${info.level.padEnd(5)} | ${info.message}` +
+                (info.splat !== undefined ? `${info.splat}` : " "),
+            ),
+          ),
+        }),
+        new winstonTransport({
+          log(v, next) {
+            fluentLogger.emit(v, next);
+          },
+        }),
+      ],
+    });
+  }
+
+  private wrap(msg: any, ...optionalParams: any[]) {
+    let message =
+      typeof msg === "string"
+        ? {
+            message: msg,
+          }
+        : { ...msg };
+    if (optionalParams.length > 1) {
+      message = {
+        ...message,
+        ...optionalParams[0],
+        context: optionalParams[1],
+      };
+    } else if (optionalParams.length === 1) {
+      message = {
+        ...message,
+        context: optionalParams[0],
+      };
+    }
+
+    return message;
+  }
+
+  debug(message: any, ...optionalParams: any[]): any {
+    this.winstonInstance.debug(this.wrap(message, ...optionalParams));
+  }
+
+  error(message: any, ...optionalParams: any[]): any {
+    this.winstonInstance.error(this.wrap(message, ...optionalParams));
+  }
+
+  fatal(message: any, ...optionalParams: any[]): any {
+    this.winstonInstance.emerg(this.wrap(message, ...optionalParams));
+  }
+
+  log(message: any, ...optionalParams: any[]): any {
+    this.winstonInstance.info(this.wrap(message, ...optionalParams));
+  }
+
+  setLogLevels(levels: LogLevel[]): any {
+    //
+  }
+
+  verbose(message: any, ...optionalParams: any[]): any {
+    this.winstonInstance.verbose(this.wrap(message, ...optionalParams));
+  }
+
+  warn(message: any, ...optionalParams: any[]): any {
+    this.winstonInstance.warn(this.wrap(message, ...optionalParams));
+  }
+}

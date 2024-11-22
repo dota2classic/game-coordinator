@@ -11,16 +11,10 @@ import { PartyModel } from "./mm/party/model/party.model";
 import { PlayerModel } from "./mm/player/model/player.model";
 import { MicroserviceOptions, Transport } from "@nestjs/microservices";
 import { StartEvent } from "mm/start.event";
-import { Logger } from "@nestjs/common";
 import { AppModule } from "app.module";
 import { REDIS_HOST, REDIS_PASSWORD } from "@shared/env";
 import { PartyInvitationModel } from "mm/party/model/party-invitation.model";
-import { inspect } from "util";
-import { GameFoundEvent } from "./mm/queue/event/game-found.event";
-import { RoomReadyEvent } from "./gateway/gateway/events/room-ready.event";
-import { RoomReadyCheckCompleteEvent } from "./gateway/gateway/events/room-ready-check-complete.event";
-import { RoomReadyCheckTimeoutEvent } from "./mm/room/event/room-ready-check-timeout.event";
-import { ReadyStateUpdatedEvent } from "./gateway/gateway/events/ready-state-updated.event";
+import { WinstonWrapper } from "./util/logger";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
@@ -43,49 +37,14 @@ async function bootstrap() {
     },
   );
 
+  app.useLogger(new WinstonWrapper());
+
   const qbus = app.get(QueryBus);
   const ebus = app.get(EventBus);
   const cbus = app.get(CommandBus);
 
-  const elogger = new Logger("EventLogger");
-  const clogger = new Logger("CommandLogger");
-  const qlogger = new Logger("QueryBus");
-
-  ebus
-    .pipe(
-      ofType<any, any>(
-        GameFoundEvent,
-        RoomReadyEvent,
-        RoomReadyCheckCompleteEvent,
-        RoomReadyCheckTimeoutEvent,
-        ReadyStateUpdatedEvent,
-      ),
-    )
-    .subscribe((e) => {
-      if (e.constructor.name) qlogger.log(`${inspect(e)}`);
-    });
-  //
-
-  // qbus.subscribe(
-  //   e => {
-  //     elogger.log(
-  //       `${inspect(e)}`,
-  //       // e.__proto__.constructor.name,
-  //     );
-  //   }
-  // );
-
-  // cbus._subscribe(
-  //   new Subscriber<any>(e => {
-  //     clogger.log(
-  //       `${inspect(e)}`,
-  //       // e.__proto__.constructor.name,
-  //     );
-  //   }),
-  // );
 
   await app.listen();
-  // console.log(`Started matchmaking core`);
 
   const publisher = app.get(EventPublisher);
   prepareModels(publisher);
