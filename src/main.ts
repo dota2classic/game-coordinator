@@ -1,20 +1,15 @@
 import { NestFactory } from "@nestjs/core";
-import {
-  CommandBus,
-  EventBus,
-  EventPublisher,
-  ofType,
-  QueryBus,
-} from "@nestjs/cqrs";
+import { EventBus, EventPublisher } from "@nestjs/cqrs";
 import { QueueModel } from "mm/queue/model/queue.model";
 import { PartyModel } from "./mm/party/model/party.model";
 import { PlayerModel } from "./mm/player/model/player.model";
-import { MicroserviceOptions, Transport } from "@nestjs/microservices";
+import { Transport } from "@nestjs/microservices";
 import { StartEvent } from "mm/start.event";
 import { AppModule } from "app.module";
-import { REDIS_HOST, REDIS_PASSWORD } from "@shared/env";
 import { PartyInvitationModel } from "mm/party/model/party-invitation.model";
 import { WinstonWrapper } from "./util/logger";
+import { ConfigService } from "@nestjs/config";
+import { RedisOptions } from "@nestjs/microservices/interfaces/microservice-configuration.interface";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
@@ -24,31 +19,33 @@ export function prepareModels(publisher: EventPublisher) {
 }
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.REDIS,
-      options: {
-        retryAttempts: Infinity,
-        retryDelay: 3000,
-        password: REDIS_PASSWORD(),
-        host: REDIS_HOST(),
-      },
-    },
-  );
 
-  app.useLogger(new WinstonWrapper());
-
-  const qbus = app.get(QueryBus);
-  const ebus = app.get(EventBus);
-  const cbus = app.get(CommandBus);
-
-
-  await app.listen();
-
-  const publisher = app.get(EventPublisher);
-  prepareModels(publisher);
-
-  ebus.publish(new StartEvent());
+  // const app = await NestFactory.createApplicationContext(AppModule, {
+  //   logger: new WinstonWrapper(),
+  // });
+  //
+  //
+  // // This ugly mess is waiting for NestJS ^11
+  // const config: ConfigService = app.get(ConfigService);
+  //
+  // const microservice = await NestFactory.createMicroservice<RedisOptions>(AppModule,{
+  //   transport: Transport.REDIS,
+  //   options: {
+  //     retryAttempts: Infinity,
+  //     retryDelay: 3000,
+  //     password: config.get("redis.password"),
+  //     host: config.get("redis.host"),
+  //   },
+  // });
+  //
+  // const publisher = app.get(EventPublisher);
+  // prepareModels(publisher);
+  //
+  // await microservice.listen()
+  //
+  // await app.get(EventBus).publish(new StartEvent());
+  //
+  //
+  // await app.close();
 }
 bootstrap();

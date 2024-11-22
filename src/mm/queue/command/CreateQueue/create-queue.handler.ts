@@ -17,6 +17,8 @@ export class CreateQueueHandler implements ICommandHandler<CreateQueueCommand> {
     );
     if (existing) return;
 
+    this.logger.log("Creating queue", { mode, version })
+
     const queue = new QueueModel(mode, version);
     await this.queueRepository.save(QueueRepository.id(mode, version), queue);
 

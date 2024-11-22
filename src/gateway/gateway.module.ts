@@ -2,15 +2,16 @@ import { Module } from "@nestjs/common";
 import { GatewayService } from "gateway/gateway.service";
 import { CqrsModule } from "@nestjs/cqrs";
 import { MmModule } from "mm/mm.module";
-import { ClientsModule, Transport } from "@nestjs/microservices";
-import { REDIS_HOST, REDIS_PASSWORD, REDIS_URL } from "@shared/env";
+import { ClientsModule, MicroserviceOptions, RedisOptions, Transport } from "@nestjs/microservices";
+import { REDIS_PASSWORD, REDIS_URL } from "@shared/env";
 import { QueryController } from "gateway/query.controller";
 import { CommandController } from "gateway/command.controller";
 import { GetPlayerInfoQuery } from "gateway/gateway/queries/GetPlayerInfo/get-player-info.query";
 import { outerQuery } from "gateway/gateway/util/outerQuery";
-import { GetPlayerInfoQueryResult } from "gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
 import { QueryCache } from "rcache";
 import { GetSessionByUserQuery } from "./gateway/queries/GetSessionByUser/get-session-by-user.query";
+import { ConfigService } from "@nestjs/config";
+
 export function qCache<T, B>() {
   return new QueryCache<T, B>({
     url: REDIS_URL(),
@@ -18,20 +19,25 @@ export function qCache<T, B>() {
     ttl: 10,
   });
 }
+
 @Module({
   imports: [
     CqrsModule,
     MmModule,
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
         name: "RedisQueue",
-        transport: Transport.REDIS,
-        options: {
-          host: REDIS_HOST(),
-          password: REDIS_PASSWORD(),
-          retryAttempts: Infinity,
-          retryDelay: 3000,
+        useFactory(config: ConfigService): RedisOptions {
+          return {
+            transport: Transport.REDIS,
+            options: {
+              host: config.get("redis.host"),
+              password: config.get("redis.password"),
+            },
+          };
         },
+        inject: [ConfigService],
+        imports: [],
       },
     ]),
   ],

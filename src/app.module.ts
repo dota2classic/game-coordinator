@@ -1,11 +1,18 @@
 import { Module } from "@nestjs/common";
 import { MmModule } from "mm/mm.module";
 import { GatewayModule } from "gateway/gateway.module";
+import { ConfigModule } from "@nestjs/config";
+import configuration from "./config/configuration";
 
 @Module({
   imports: [
     MmModule,
     GatewayModule,
+
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+    }),
 
     // SentryModule.forRoot({
     //   dsn:
