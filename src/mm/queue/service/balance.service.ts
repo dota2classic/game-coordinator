@@ -22,6 +22,14 @@ export class BalanceService {
   static MMR_FACTOR = 1.0;
   static TARGET_WINRATE = 0.5;
 
+  /**
+   * This is better, but still not good
+   *
+   * @param mmr
+   * @param wrLast20Games
+   * @param kdaLast20Games
+   * @param gamesPlayed
+   */
   public static getScore(
     mmr: number,
     wrLast20Games: number,
@@ -90,37 +98,5 @@ export class BalanceService {
     return new RoomBalance(
       [[entries[0]], [entries[1]]].map((list) => new TeamEntry(list, 0)),
     );
-  }
-
-  public static botsBalance(
-    teamSize: number,
-    entries: QueueEntryModel[],
-    roomBalanceMode: MatchmakingMode = MatchmakingMode.BOTS,
-  ): RoomBalance {
-    const r: QueueEntryModel[] = [];
-    const d: QueueEntryModel[] = [];
-
-    let rSize = 0,
-      dSize = 0;
-
-    const sorted = [...entries].sort(
-      (a, b) => b.players.length - a.players.length,
-    );
-
-    for (let i = 0; i < sorted.length; i++) {
-      const e = sorted[i];
-      if (rSize < dSize && rSize + e.players.length <= teamSize) {
-        r.push(e);
-        rSize += e.players.length;
-      } else {
-        d.push(e);
-        dSize += e.players.length;
-      }
-    }
-
-    if (rSize > teamSize || dSize > teamSize)
-      throw new BalanceException("Can't even balance bot game hah");
-
-    return new RoomBalance([new TeamEntry(r, 0), new TeamEntry(d, 0)]);
   }
 }

@@ -4,8 +4,6 @@ import { EnterQueueCommand } from "mm/queue/command/EnterQueue/enter-queue.comma
 import { QueueRepository } from "mm/queue/repository/queue.repository";
 import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
 import { QueueModel } from "mm/queue/model/queue.model";
-import { QueueService } from "mm/queue/service/queue.service";
-import { GameFoundEvent } from "mm/queue/event/game-found.event";
 import {
   MatchmakingMode,
   RoomSizes,
@@ -13,7 +11,6 @@ import {
 import { EnterQueueDeclinedEvent } from "gateway/gateway/events/mm/enter-queue-declined.event";
 import { PartyId } from "gateway/gateway/shared-types/party-id";
 import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
-import { BalanceService } from "mm/queue/service/balance.service";
 import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
 import formatGameMode from "../../../../gateway/gateway/util/formatGameMode";
 
@@ -23,9 +20,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
 
   constructor(
     private readonly queueRepository: QueueRepository,
-    private readonly ebus: EventBus,
-    private readonly queueService: QueueService,
-    private readonly balanceService: BalanceService,
+    private readonly ebus: EventBus
   ) {}
 
   private checkForBans(
@@ -57,37 +52,13 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     return false;
   }
 
-  // private checkForNewbies(
-  //   partyId: PartyId,
-  //   mode: MatchmakingMode,
-  //   players: PlayerInQueueEntity[],
-  //   version: Dota2Version,
-  // ) {
-  //   if (mode !== MatchmakingMode.RANKED) return false;
-  //   const newPlayers = players.filter(player => player.unrankedGamesLeft > 0);
-  //   if (newPlayers.length > 0) {
-  //     // if there are banned players in party, we can't let them in
-  //     this.ebus.publish(
-  //       new EnterRankedQueueDeclinedEvent(
-  //         partyId,
-  //         players.map(t => t.playerId),
-  //         newPlayers.map(t => t.playerId),
-  //         mode,
-  //         version,
-  //       ),
-  //     );
-  //
-  //     return true;
-  //   }
-  //
-  //   return false;
-  // }
   async execute({ partyId, mode, players, version }: EnterQueueCommand) {
     const q = await this.queueRepository.get(QueueRepository.id(mode, version));
     if (!q) return;
 
     if (this.checkForBans(partyId, mode, players, version)) {
       // if can't go cause of bans we return
+      this.logger.warn("Tried to queue while banned", { players: players.map(it => it.playerId.value)  })
       return;
     }
 

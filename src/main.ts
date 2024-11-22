@@ -20,32 +20,31 @@ export function prepareModels(publisher: EventPublisher) {
 
 async function bootstrap() {
 
-  // const app = await NestFactory.createApplicationContext(AppModule, {
-  //   logger: new WinstonWrapper(),
-  // });
-  //
-  //
-  // // This ugly mess is waiting for NestJS ^11
-  // const config: ConfigService = app.get(ConfigService);
-  //
-  // const microservice = await NestFactory.createMicroservice<RedisOptions>(AppModule,{
-  //   transport: Transport.REDIS,
-  //   options: {
-  //     retryAttempts: Infinity,
-  //     retryDelay: 3000,
-  //     password: config.get("redis.password"),
-  //     host: config.get("redis.host"),
-  //   },
-  // });
-  //
-  // const publisher = app.get(EventPublisher);
-  // prepareModels(publisher);
-  //
-  // await microservice.listen()
-  //
-  // await app.get(EventBus).publish(new StartEvent());
-  //
-  //
-  // await app.close();
+  const app = await NestFactory.createApplicationContext(AppModule, {
+    logger: new WinstonWrapper(),
+  });
+
+
+  // This ugly mess is waiting for NestJS ^11
+  const config: ConfigService = app.get(ConfigService);
+
+  const microservice = await NestFactory.createMicroservice<RedisOptions>(AppModule,{
+    transport: Transport.REDIS,
+    options: {
+      retryAttempts: Infinity,
+      retryDelay: 3000,
+      password: config.get("redis.password"),
+      host: config.get("redis.host"),
+    },
+  });
+
+  const publisher = app.get(EventPublisher);
+  prepareModels(publisher);
+
+  await microservice.listen()
+
+  await app.get(EventBus).publish(new StartEvent());
+
+  await app.close();
 }
 bootstrap();

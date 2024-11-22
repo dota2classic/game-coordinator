@@ -11,7 +11,7 @@ export class LeaveQueueHandler implements ICommandHandler<LeaveQueueCommand> {
 
   async execute({ mode, partyId, version }: LeaveQueueCommand) {
     const q = await this.queueRepository.get(QueueRepository.id(mode, version));
-
+    this.logger.warn("Tried to leave not existing queue", { mode, version })
     if (!q) return;
     q.removeEntry(partyId);
     q.commit();

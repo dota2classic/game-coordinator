@@ -3,7 +3,6 @@ import * as winstonTransport from "winston-transport";
 import * as fluent from "fluent-logger";
 import { LoggerService } from "@nestjs/common/services/logger.service";
 import { LogLevel } from "@nestjs/common";
-import pino from "pino"
 const fluentLogger = fluent.createFluentSender("tag_prefix", {
   host: "localhost",
   port: 24224,
@@ -15,7 +14,6 @@ export class WinstonWrapper implements LoggerService {
   private winstonInstance: winston.Logger;
   constructor() {
     this.winstonInstance = winston.createLogger({
-      format: winston.format.errors({ stack: true }),
       transports: [
         new winston.transports.Console({
           format: winston.format.combine(
@@ -25,12 +23,15 @@ export class WinstonWrapper implements LoggerService {
             winston.format.prettyPrint(),
             winston.format.printf((info) => {
               const { level, timestamp, ...message } = info;
-              // console.log(message);
               return `${timestamp} | ${level.padEnd(5)} | ${JSON.stringify(message)}`;
             }),
           ),
         }),
         new winstonTransport({
+          format: winston.format.combine(
+            winston.format.errors({ stack: true }),
+            winston.format.timestamp()
+          ),
           log(v, next) {
             fluentLogger.emit(v, next);
           },

@@ -12,7 +12,8 @@ import { TeamEntry } from "../../model/entity/room-balance";
 
 @CommandHandler(FinalizeRoomCommand)
 export class FinalizeRoomHandler
-  implements ICommandHandler<FinalizeRoomCommand> {
+  implements ICommandHandler<FinalizeRoomCommand>
+{
   private readonly logger = new Logger(FinalizeRoomHandler.name);
 
   constructor(
@@ -45,15 +46,29 @@ export class FinalizeRoomHandler
         shuffledTeams[1],
         DotaTeam.DIRE,
       );
+
+      this.logger.log("Room ready", {
+        mode: room.mode,
+        version: room.version,
+        room_id: room.id,
+        players: [...radiant, ...dire],
+      });
+
       this.ebus.publish(
         new RoomReadyEvent(
           command.roomId,
-          command.mode,
+          room.mode,
           [...radiant, ...dire],
           room.version,
         ),
       );
     } else {
+      this.logger.log("Room not ready", {
+        room_id: room.id,
+        players: room.players.map((t) => t.playerId),
+        mode: room.mode,
+        version: room.version,
+      });
       this.ebus.publish(
         new RoomNotReadyEvent(
           room.id,

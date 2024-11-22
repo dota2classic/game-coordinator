@@ -16,7 +16,10 @@ export class RoomReadyCheckHandler
 
   async execute(command: RoomReadyCheckCommand) {
     const room = await this.roomRepository.get(command.roomID);
-    if (!room) return;
+    if (!room) {
+      this.logger.warn("Tried to create room ready check for not existing room", { room_id: command.roomID })
+      return;
+    }
 
     // setup timeout
     setTimeout(() => {
