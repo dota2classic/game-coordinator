@@ -15,7 +15,15 @@ export class CreateQueueHandler implements ICommandHandler<CreateQueueCommand> {
     const existing = await this.queueRepository.get(
       QueueRepository.id(mode, version),
     );
-    if (existing) return;
+    if (existing) {
+      this.logger.warn("Trying to create already existing queue", {
+        mode,
+        version
+      })
+      return;
+    }
+
+    this.logger.log("Creating queue", { mode, version })
 
     const queue = new QueueModel(mode, version);
     await this.queueRepository.save(QueueRepository.id(mode, version), queue);

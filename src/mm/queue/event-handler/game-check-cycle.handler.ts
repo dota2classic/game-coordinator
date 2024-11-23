@@ -4,12 +4,13 @@ import { QueueRepository } from "mm/queue/repository/queue.repository";
 import { QueueService } from "mm/queue/service/queue.service";
 import { GameFoundEvent } from "mm/queue/event/game-found.event";
 import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
-import { BalanceService } from "mm/queue/service/balance.service";
 import { QueueModel } from "mm/queue/model/queue.model";
 import { Logger } from "@nestjs/common";
 import { RoomBalance } from "../../room/model/entity/room-balance";
-import formatGameMode from "../../../gateway/gateway/util/formatGameMode";
 
+/**
+ * TODO: Refactor this into a queue system so we don't need processMap
+ */
 @EventsHandler(GameCheckCycleEvent)
 export class GameCheckCycleHandler
   implements IEventHandler<GameCheckCycleEvent>
@@ -23,15 +24,21 @@ export class GameCheckCycleHandler
     private readonly rep: QueueRepository,
     private readonly qService: QueueService,
     private readonly ebus: EventBus,
-    private readonly balanceService: BalanceService,
   ) {}
 
   async handle(event: GameCheckCycleEvent) {
     // ok here we
-    this.logger.warn(`GameCheckCycle: ${formatGameMode(event.mode)} ${event.version}`)
+    this.logger.verbose(`Checking for a game`, {
+      mode: event.mode,
+      version: event.version,
+    });
+
     const q = await this.rep.get(QueueRepository.id(event.mode, event.version));
     if (!q) {
-      this.logger.warn(`Game cycle for non-existing queue: ${formatGameMode(event.mode)} ${event.version}`)
+      this.logger.warn(`Game cycle for non-existing queue`, {
+        mode: event.mode,
+        version: event.version,
+      });
       return;
     }
 
@@ -44,17 +51,28 @@ export class GameCheckCycleHandler
     }
   }
 
-
   private makeGame(balance: RoomBalance | undefined, q: QueueModel) {
-    if (!balance) return;
+    if (!balance) {
+      this.logger.verbose("Can't find balanced game", {
+        mode: q.mode,
+        version: q.version,
+      });
+      return;
+    }
 
     const [leftTeam, rightTeam] = balance.teams;
-    this.logger.log(`We have a game in mode ${formatGameMode(q.mode)}`);
+    this.logger.log(`Game found`, { mode: q.mode, version: q.version });
     q.removeAll([...leftTeam.parties, ...rightTeam.parties]);
     q.commit();
 
     this.logger.log(
       `Removed ${leftTeam.parties.length + rightTeam.parties.length} parties from queue`,
+      {
+        queue_length: q.size,
+        removed: leftTeam.parties.length + rightTeam.parties.length,
+        mode: q.mode,
+        version: q.version,
+      },
     );
 
     this.ebus.publish(new GameFoundEvent(balance, q.version, q.mode));

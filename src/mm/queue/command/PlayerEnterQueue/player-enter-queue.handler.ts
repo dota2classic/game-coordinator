@@ -15,6 +15,8 @@ import { BalanceService } from "../../service/balance.service";
 import { GetSessionByUserQueryResult } from "../../../../gateway/gateway/queries/GetSessionByUser/get-session-by-user-query.result";
 import { GetSessionByUserQuery } from "../../../../gateway/gateway/queries/GetSessionByUser/get-session-by-user.query";
 import { QueueException } from "../../exception/queue.exception";
+import { PlayerId } from "../../../../gateway/gateway/shared-types/player-id";
+import { Dota2Version } from "../../../../gateway/gateway/shared-types/dota2version";
 
 @CommandHandler(PlayerEnterQueueCommand)
 export class PlayerEnterQueueHandler
@@ -28,43 +30,50 @@ export class PlayerEnterQueueHandler
     private readonly qbus: QueryBus,
   ) {}
 
+  private getExtendedInfo(
+    players: PlayerId[],
+    version: Dota2Version,
+  ): Promise<PlayerInQueueEntity[]> {
+    return Promise.all(
+      players.map(async (partyMember) => {
+        const isInGame = await this.qbus.execute<
+          GetSessionByUserQuery,
+          GetSessionByUserQueryResult
+        >(new GetSessionByUserQuery(partyMember));
+
+        if (isInGame.serverUrl) {
+          throw new QueueException("Can't queue while in game!");
+        }
+
+        const mmr = await this.qbus.execute<
+          GetPlayerInfoQuery,
+          GetPlayerInfoQueryResult
+        >(new GetPlayerInfoQuery(partyMember, version));
+
+        return {
+          playerId: partyMember,
+          balanceScore: BalanceService.getScore(
+            mmr.mmr,
+            mmr.recentWinrate,
+            mmr.recentKDA,
+            mmr.gamesPlayed,
+          ),
+          banStatus: mmr.banStatus,
+        } satisfies PlayerInQueueEntity;
+      }),
+    );
+  }
+
   async execute(command: PlayerEnterQueueCommand) {
     const p = await this.partyRepository.getPartyOf(command.playerID);
 
+    const formattedEntries = await this.getExtendedInfo(
+      p.players,
+      command.version,
+    );
+
     try {
-      const formattedEntries: PlayerInQueueEntity[] = await Promise.all(
-        p.players.map(async (partyMember) => {
-          const isInGame = await this.qbus.execute<
-            GetSessionByUserQuery,
-            GetSessionByUserQueryResult
-          >(new GetSessionByUserQuery(partyMember));
-
-          if (isInGame.serverUrl) {
-            throw new QueueException("Can't queue while in game!");
-          }
-
-          const mmr = await this.qbus.execute<
-            GetPlayerInfoQuery,
-            GetPlayerInfoQueryResult
-          >(new GetPlayerInfoQuery(partyMember, command.version));
-
-          return {
-            playerId: partyMember,
-            balanceScore: BalanceService.getScore(
-              mmr.mmr,
-              mmr.recentWinrate,
-              mmr.recentKDA,
-              mmr.gamesPlayed,
-            ),
-            banStatus: mmr.banStatus,
-          } satisfies PlayerInQueueEntity;
-        }),
-      );
-
-
-      this.logger.verbose(
-        `PlayerEnterQueueResolved ${JSON.stringify(formattedEntries)}`,
-      );
+      this.logger.verbose(`PlayerEnterQueueResolved`, formattedEntries);
 
       this.ebus.publish(
         new PlayerEnterQueueResolvedEvent(
@@ -75,7 +84,7 @@ export class PlayerEnterQueueHandler
         ),
       );
     } catch (e) {
-      this.logger.log(e)
+      this.logger.log(e);
       this.logger.error(
         `Party ${p.id} with ${p.players.length} players can't enter queue! Somebody is in game`,
       );

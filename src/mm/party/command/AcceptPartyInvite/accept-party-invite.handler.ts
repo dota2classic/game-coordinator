@@ -7,7 +7,8 @@ import { PartyInviteResultEvent } from "gateway/gateway/events/party/party-invit
 
 @CommandHandler(AcceptPartyInviteCommand)
 export class AcceptPartyInviteHandler
-  implements ICommandHandler<AcceptPartyInviteCommand> {
+  implements ICommandHandler<AcceptPartyInviteCommand>
+{
   private readonly logger = new Logger(AcceptPartyInviteHandler.name);
 
   constructor(
@@ -24,14 +25,28 @@ export class AcceptPartyInviteHandler
 
     const party = await this.pRep.get(invite.partyId);
     // no party no joining kappa.
-    this.logger.log(party);
-    if (!party) return;
+    this.logger.log("Accept party: party to join", {
+      party_id: party.id,
+      inviter: invite.inviter.value,
+      invited: invite.invited.value,
+    });
+    if (!party) {
+      this.logger.warn("Accept party: trying to accept non-existing party", {
+        party_id: invite.partyId,
+        inviter: invite.inviter.value,
+        invited: invite.invited.value,
+      });
+      return;
+    }
 
     const currentParty = await this.pRep.findExistingParty(invite.invited);
 
-    this.logger.log(currentParty);
-
     if (currentParty) {
+      this.logger.log("Accept party: to join", {
+        party_id: currentParty.id,
+        inviter: invite.inviter.value,
+        invited: invite.invited.value,
+      });
       currentParty.remove(invite.invited);
 
       if (currentParty.leader.value === invite.invited.value) {

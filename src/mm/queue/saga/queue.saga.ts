@@ -21,7 +21,6 @@ export class QueueSaga {
       ofType(StartEvent),
       mergeMap(() =>
         MatchmakingModes.flatMap((it) => [
-          new CreateQueueCommand(it, Dota2Version.Dota_681),
           new CreateQueueCommand(it, Dota2Version.Dota_684),
         ]),
       ),

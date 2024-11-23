@@ -5,7 +5,6 @@ import { RoomModel } from "mm/room/model/room.model";
 import { RoomRepository } from "mm/room/repository/room.repository";
 import { RoomCreatedEvent } from "mm/room/event/room-created.event";
 import { BalanceService } from "mm/queue/service/balance.service";
-import { LogEvent } from "gateway/gateway/events/log.event";
 
 @CommandHandler(CreateRoomCommand)
 export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
@@ -26,6 +25,7 @@ export class CreateRoomHandler implements ICommandHandler<CreateRoomCommand> {
     );
     await this.roomRepository.save(room.id, room);
 
+    this.logger.log("Create room", { mode, version, balance });
     this.ebus.publish(new RoomCreatedEvent(room.id));
     return room.id;
   }

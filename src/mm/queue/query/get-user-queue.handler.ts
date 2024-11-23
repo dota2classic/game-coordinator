@@ -6,13 +6,19 @@ import { QueueRepository } from "mm/queue/repository/queue.repository";
 
 @QueryHandler(GetUserQueueQuery)
 export class GetUserQueueHandler
-  implements IQueryHandler<GetUserQueueQuery, GetUserQueueQueryResult> {
+  implements IQueryHandler<GetUserQueueQuery, GetUserQueueQueryResult>
+{
   private readonly logger = new Logger(GetUserQueueHandler.name);
 
   constructor(private readonly qRep: QueueRepository) {}
 
   async execute(command: GetUserQueueQuery): Promise<GetUserQueueQueryResult> {
     const q = await this.qRep.findQueueOf(command.player);
+
+    this.logger.log(`Find queue of player`, {
+      steam_id: command.player.value,
+      found: !!q,
+    });
 
     return new GetUserQueueQueryResult(q?.mode, q?.version);
   }

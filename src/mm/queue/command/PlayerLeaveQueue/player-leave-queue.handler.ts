@@ -6,7 +6,8 @@ import { PlayerLeaveQueueResolvedEvent } from "mm/queue/event/player-leave-queue
 
 @CommandHandler(PlayerLeaveQueueCommand)
 export class PlayerLeaveQueueHandler
-  implements ICommandHandler<PlayerLeaveQueueCommand> {
+  implements ICommandHandler<PlayerLeaveQueueCommand>
+{
   private readonly logger = new Logger(PlayerLeaveQueueHandler.name);
 
   constructor(
@@ -20,6 +21,12 @@ export class PlayerLeaveQueueHandler
       return this.ebus.publish(
         new PlayerLeaveQueueResolvedEvent(p.id, command.mode, command.version),
       );
-    } catch (e) {}
+    } catch (e) {
+      this.logger.error("Error leaving queue", {
+        mode: command.mode,
+        version: command.version,
+        steam_id: command.playerID,
+      });
+    }
   }
 }

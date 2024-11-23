@@ -119,34 +119,48 @@ export class QueueService {
     const pool = [...q.entries];
 
     // Let's first filter off this case
-    const totalPlayersInQ = pool.reduce((a, b) => a + b.size, 0);
+    const totalPlayersInQ = q.size;
     if (totalPlayersInQ < 10) {
-      this.logger.warn("Less than 10 players in queue, skip matchmaking")
+      this.logger.verbose("Less than 10 players in queue, skipping", {
+        mode: q.mode,
+        version: q.version,
+        queue_size: totalPlayersInQ,
+      });
       return;
     }
 
     // TODO: consider player left queue while searching is going on
 
-    this.logger.log(`Starting matchmaker for 5000 ms...`);
+    const timeLimit = 5000;
+
+    this.logger.log(`Starting matchmaking on queue`, {
+      mode: q.mode,
+      version: q.version,
+      timeLimit,
+    });
     const bestMatch = findBestMatchBy(
       pool,
       teamSize,
       scoreAvgDifference,
-      5_000, // Max 5 seconds to find a game
+      timeLimit, // Max 5 seconds to find a game
     );
     if (bestMatch === undefined) {
-      this.logger.warn(
-        `Couldn't find a balanced game with ${totalPlayersInQ} players in queue.`,
-      );
-      this.logger.warn(JSON.stringify(pool));
-      return;
+      this.logger.error(`Couldn't find a balanced game`, {
+        pool,
+        queue_size: totalPlayersInQ,
+        mode: q.mode,
+        version: q.version,
+      });
+      return undefined;
     }
 
     const [left, right] = bestMatch;
 
-    this.logger.log(
-      `Best match has difference of ${scoreAvgDifference(left, right)}`,
-    );
+    this.logger.log(`Found balanced game`, {
+      diff: scoreAvgDifference(left, right),
+      left: left.reduce((a, b) => a + b.score, 0) / 5,
+      right: right.reduce((a, b) => a + b.score, 0) / 5,
+    });
 
     return new RoomBalance([new TeamEntry(left), new TeamEntry(right)]);
   }

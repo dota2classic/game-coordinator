@@ -14,9 +14,14 @@ import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
 import { PlayerDeclinedGameEvent } from "gateway/gateway/events/mm/player-declined-game.event";
 import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
 import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
+import { Logger } from "@nestjs/common";
 
+
+// It works, but needs tests
 export class RoomModel extends AggregateRoot {
   public readonly id: string = uuid();
+
+  private logger = new Logger(RoomModel.name);
 
   private readonly readyCheckMap = new Map<string, ReadyState>();
   private readyCheckComplete = false;
@@ -45,6 +50,10 @@ export class RoomModel extends AggregateRoot {
       this.readyCheckMap.set(t.playerId.value, ReadyState.PENDING),
     );
     this.readyCheckComplete = false;
+    this.logger.log("Ready check start", {
+      room_id: this.id,
+      players: this.players.map(it => it.playerId.value)
+    });
     this.apply(
       new ReadyCheckStartedEvent(
         this.id,
