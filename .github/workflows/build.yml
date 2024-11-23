@@ -1,4 +1,4 @@
-name: Build and run tests in CI
+name: BuildCI
 on:
   push:
     branches: [ "master" ]
