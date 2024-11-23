@@ -61,9 +61,9 @@ export function outerQueryNew<T, B>(
 
   return {
     provide: context[ClassName],
-    useFactory(core: ClientProxy) {
-      return new context[ClassName](core);
+    useFactory(core: ClientProxy, config: ConfigService) {
+      return new context[ClassName](core, config);
     },
-    inject: [provide],
+    inject: [provide, ConfigService],
   };
 }
