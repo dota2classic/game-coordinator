@@ -53,7 +53,7 @@ export class GameCheckCycleHandler
 
   private makeGame(balance: RoomBalance | undefined, q: QueueModel) {
     if (!balance) {
-      this.logger.verbose("Can't find balanced game", {
+      this.logger.warn("Can't find balanced game", {
         mode: q.mode,
         version: q.version,
       });

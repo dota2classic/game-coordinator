@@ -17,6 +17,7 @@ export class WinstonWrapper implements LoggerService {
     this.winstonInstance = winston.createLogger({
       transports: [
         new winston.transports.Console({
+          level: "verbose",
           format: winston.format.combine(
             winston.format.timestamp({
               format: "MM-DD HH:mm:ss.SSS",
@@ -29,6 +30,7 @@ export class WinstonWrapper implements LoggerService {
           ),
         }),
         new winstonTransport({
+          level: "verbose",
           format: winston.format.combine(
             winston.format.errors({ stack: true }),
             winston.format.timestamp()
