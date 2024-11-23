@@ -8,7 +8,6 @@ import { QueueModel } from "mm/queue/model/queue.model";
 import { Logger } from "@nestjs/common";
 import { RoomBalance } from "../../room/model/entity/room-balance";
 
-
 /**
  * TODO: Refactor this into a queue system so we don't need processMap
  */
@@ -24,7 +23,7 @@ export class GameCheckCycleHandler
   constructor(
     private readonly rep: QueueRepository,
     private readonly qService: QueueService,
-    private readonly ebus: EventBus
+    private readonly ebus: EventBus,
   ) {}
 
   async handle(event: GameCheckCycleEvent) {

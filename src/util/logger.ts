@@ -3,16 +3,17 @@ import * as winstonTransport from "winston-transport";
 import * as fluent from "fluent-logger";
 import { LoggerService } from "@nestjs/common/services/logger.service";
 import { LogLevel } from "@nestjs/common";
-const fluentLogger = fluent.createFluentSender("tag_prefix", {
-  host: "localhost",
-  port: 24224,
-  timeout: 3.0,
-  reconnectInterval: 10_000, // 10 secs
-});
 
 export class WinstonWrapper implements LoggerService {
   private winstonInstance: winston.Logger;
-  constructor() {
+  constructor(host: string, port: number = 24224) {
+    const fluentLogger = fluent.createFluentSender("tag_prefix", {
+      host: host,
+      port: port,
+      timeout: 3.0,
+      reconnectInterval: 10_000, // 10 secs
+    });
+
     this.winstonInstance = winston.createLogger({
       transports: [
         new winston.transports.Console({

@@ -1,12 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { RoomBalance, TeamEntry } from "mm/room/model/entity/room-balance";
-import { BalanceException } from "mm/queue/exception/BalanceException";
+import { BalanceException } from "mm/queue/exception/balance.exception";
 import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
 import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
-import {
-  MatchmakingMode,
-  RoomSizes,
-} from "gateway/gateway/shared-types/matchmaking-mode";
 
 @Injectable()
 export class BalanceService {

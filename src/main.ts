@@ -8,8 +8,10 @@ import { StartEvent } from "mm/start.event";
 import { AppModule } from "app.module";
 import { PartyInvitationModel } from "mm/party/model/party-invitation.model";
 import { WinstonWrapper } from "./util/logger";
-import { ConfigService } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { RedisOptions } from "@nestjs/microservices/interfaces/microservice-configuration.interface";
+import configuration from "./config/configuration";
+import { Module } from "@nestjs/common";
 
 export function prepareModels(publisher: EventPublisher) {
   publisher.mergeClassContext(QueueModel);
@@ -20,31 +22,73 @@ export function prepareModels(publisher: EventPublisher) {
 
 async function bootstrap() {
 
-  const app = await NestFactory.createApplicationContext(AppModule, {
-    logger: new WinstonWrapper(),
-  });
+
+  const tmp = new ConfigService(configuration())
+  const app = await NestFactory.createMicroservice(
+    AppModule,
+    {
+      transport: Transport.REDIS,
+      options: {
+        retryAttempts: Infinity,
+        retryDelay: 3000,
+        password: tmp.get('redis.password'),
+        host: tmp.get('redis.host')
+      },
+    },
+  );
 
 
   // This ugly mess is waiting for NestJS ^11
   const config: ConfigService = app.get(ConfigService);
+  app.useLogger(new WinstonWrapper(config.get('fluentbit.host'), config.get<number>('fluentbit.port')))
 
-  const microservice = await NestFactory.createMicroservice<RedisOptions>(AppModule,{
-    transport: Transport.REDIS,
-    options: {
-      retryAttempts: Infinity,
-      retryDelay: 3000,
-      password: config.get("redis.password"),
-      host: config.get("redis.host"),
-    },
-  });
 
   const publisher = app.get(EventPublisher);
   prepareModels(publisher);
 
-  await microservice.listen()
+  await app.listen()
 
   await app.get(EventBus).publish(new StartEvent());
 
-  await app.close();
 }
+
+
+// async function bootstrap() {
+//
+//   const app = await NestFactory.createMicroservice(
+//     AppModule,
+//     {
+//       transport: Transport.REDIS,
+//       options: {
+//         retryAttempts: Infinity,
+//         retryDelay: 3000,
+//         password: 'test123',
+//         host: 'localhost'
+//       },
+//     },
+//   );
+//
+//
+//   // This ugly mess is waiting for NestJS ^11
+//   const config: ConfigService = app.get(ConfigService);
+//   app.useLogger(new WinstonWrapper(config.get('fluentbit.host'), config.get<number>('fluentbit.port')))
+//
+//   // const microservice = await NestFactory.createMicroservice<RedisOptions>(AppModule,{
+//   //   transport: Transport.REDIS,
+//   //   options: {
+//   //     retryAttempts: Infinity,
+//   //     retryDelay: 3000,
+//   //     password: config.get("redis.password"),
+//   //     host: config.get("redis.host"),
+//   //   },
+//   // });
+//
+//   const publisher = app.get(EventPublisher);
+//   prepareModels(publisher);
+//
+//   await app.listen()
+//
+//   await app.get(EventBus).publish(new StartEvent());
+//
+// }
 bootstrap();
