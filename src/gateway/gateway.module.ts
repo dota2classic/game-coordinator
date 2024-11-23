@@ -10,6 +10,7 @@ import { outerQuery } from "gateway/gateway/util/outerQuery";
 import { QueryCache } from "rcache";
 import { GetSessionByUserQuery } from "./gateway/queries/GetSessionByUser/get-session-by-user.query";
 import { ConfigService } from "@nestjs/config";
+import { outerQueryNew } from "../util/outerQueryNew";
 
 export function qCache<T, B>(host: string, password: string) {
   return new QueryCache<T, B>({
@@ -43,8 +44,9 @@ export function qCache<T, B>(host: string, password: string) {
   controllers: [QueryController, CommandController],
   providers: [
     GatewayService,
-    outerQuery(GetPlayerInfoQuery, "RedisQueue", qCache),
-    outerQuery(GetSessionByUserQuery, "RedisQueue", qCache),
+
+    outerQueryNew(GetPlayerInfoQuery, "RedisQueue", qCache),
+    outerQueryNew(GetSessionByUserQuery, "RedisQueue", qCache),
   ],
 })
 export class GatewayModule {}
