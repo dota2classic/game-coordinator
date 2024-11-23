@@ -22,8 +22,9 @@ export function prepareModels(publisher: EventPublisher) {
 
 async function bootstrap() {
 
-
+  // This ugly mess is waiting for NestJS ^11
   const tmp = new ConfigService(configuration())
+
   const app = await NestFactory.createMicroservice(
     AppModule,
     {
@@ -52,43 +53,4 @@ async function bootstrap() {
 
 }
 
-
-// async function bootstrap() {
-//
-//   const app = await NestFactory.createMicroservice(
-//     AppModule,
-//     {
-//       transport: Transport.REDIS,
-//       options: {
-//         retryAttempts: Infinity,
-//         retryDelay: 3000,
-//         password: 'test123',
-//         host: 'localhost'
-//       },
-//     },
-//   );
-//
-//
-//   // This ugly mess is waiting for NestJS ^11
-//   const config: ConfigService = app.get(ConfigService);
-//   app.useLogger(new WinstonWrapper(config.get('fluentbit.host'), config.get<number>('fluentbit.port')))
-//
-//   // const microservice = await NestFactory.createMicroservice<RedisOptions>(AppModule,{
-//   //   transport: Transport.REDIS,
-//   //   options: {
-//   //     retryAttempts: Infinity,
-//   //     retryDelay: 3000,
-//   //     password: config.get("redis.password"),
-//   //     host: config.get("redis.host"),
-//   //   },
-//   // });
-//
-//   const publisher = app.get(EventPublisher);
-//   prepareModels(publisher);
-//
-//   await app.listen()
-//
-//   await app.get(EventBus).publish(new StartEvent());
-//
-// }
 bootstrap();
