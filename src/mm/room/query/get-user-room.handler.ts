@@ -6,6 +6,8 @@ import {
   GetUserRoomQueryResultRoomInfo,
 } from "gateway/gateway/queries/GetUserRoom/get-user-room-query.result";
 import { RoomRepository } from "mm/room/repository/room.repository";
+import { ReadyCheckEntry } from "../../../gateway/gateway/events/room-ready-check-complete.event";
+import { PlayerId } from "../../../gateway/gateway/shared-types/player-id";
 
 @QueryHandler(GetUserRoomQuery)
 export class GetUserRoomHandler
@@ -27,6 +29,7 @@ export class GetUserRoomHandler
         room.readyCheckState.accepted,
         room.readyCheckState.total,
         room.didAccept(command.playerId),
+        room.getReadyCheckEntries()
       ),
     );
   }

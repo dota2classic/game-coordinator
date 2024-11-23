@@ -58,9 +58,7 @@ export class RoomModel extends AggregateRoot {
       new ReadyCheckStartedEvent(
         this.id,
         this.mode,
-        [...this.readyCheckMap.entries()].map(
-          ([id, state]) => new ReadyCheckEntry(new PlayerId(id), state),
-        ),
+        this.getReadyCheckEntries(),
         this.readyCheckState,
       ),
     );
@@ -97,9 +95,7 @@ export class RoomModel extends AggregateRoot {
         new ReadyStateUpdatedEvent(
           this.id,
           this.mode,
-          [...this.readyCheckMap.entries()].map(
-            ([id, state]) => new ReadyCheckEntry(new PlayerId(id), state),
-          ),
+          this.getReadyCheckEntries(),
           this.readyCheckState,
         ),
       );
@@ -141,5 +137,11 @@ export class RoomModel extends AggregateRoot {
         );
       }, true);
     });
+  }
+
+  getReadyCheckEntries() {
+    return [...this.readyCheckMap.entries()].map(
+      ([id, state]) => new ReadyCheckEntry(new PlayerId(id), state),
+    );
   }
 }
