@@ -42,17 +42,27 @@ export class BalanceService {
       EDUCATION_THRESHOLD;
 
     // Experience factor: if you have a lot of games, its diminishing returns, so we use log
-    const experienceFactor = Math.log(
-      Math.max(EDUCATION_THRESHOLD, gamesPlayed),
+    const experienceFactor = Math.log10(
+      Math.min(500, Math.max(10, gamesPlayed)),
     );
 
     const mmrScore = mmr * BalanceService.MMR_FACTOR;
 
-    const winrateFactor = wrLast20Games + BalanceService.TARGET_WINRATE;
+    // To prevent correction if newbie won his first game, we pad 20 games with 50% winrate
+    let realWinrate = wrLast20Games;
+    const padCount = 10;
+    if (gamesPlayed < padCount) {
+      const wonPlayedGames = wrLast20Games * gamesPlayed;
+      const wonPaddedGames = Math.round(
+        (padCount - gamesPlayed) * BalanceService.TARGET_WINRATE,
+      );
 
-    // console.log(educationFactor, experienceFactor, mmrScore, winrateFactor)
+      realWinrate = (wonPlayedGames + wonPaddedGames) / padCount;
+    }
 
-    return mmrScore * educationFactor * experienceFactor * winrateFactor;
+    const winrateFactor = realWinrate + BalanceService.TARGET_WINRATE;
+
+    return mmrScore * (winrateFactor + experienceFactor) * educationFactor;
   }
 
   public static getTotalScore(players: PlayerInQueueEntity[]): number {
