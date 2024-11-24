@@ -17,6 +17,7 @@ import { GetSessionByUserQuery } from "../../../../gateway/gateway/queries/GetSe
 import { QueueException } from "../../exception/queue.exception";
 import { PlayerId } from "../../../../gateway/gateway/shared-types/player-id";
 import { Dota2Version } from "../../../../gateway/gateway/shared-types/dota2version";
+import { BalancerV0 } from "../../service/balance";
 
 @CommandHandler(PlayerEnterQueueCommand)
 export class PlayerEnterQueueHandler
@@ -52,10 +53,10 @@ export class PlayerEnterQueueHandler
 
         return {
           playerId: partyMember,
-          balanceScore: BalanceService.getScore(
+          balanceScore: BalancerV0(
             mmr.mmr,
             mmr.recentWinrate,
-            mmr.recentKDA,
+            // mmr.recentKDA,
             mmr.gamesPlayed,
           ),
           banStatus: mmr.banStatus,

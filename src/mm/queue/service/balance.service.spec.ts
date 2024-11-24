@@ -3,6 +3,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TestEnvironment } from "@test/cqrs";
 import { BalanceService } from "mm/queue/service/balance.service";
+import { BalanceProvider, BalancerV0, LegacyBalancer } from "./balance";
 
 function getPlayerMap() {
   const raw = [
@@ -211,125 +212,130 @@ function getPlayerMap() {
   return asMap;
 }
 
-describe("BalanceService", () => {
-  let module: TestingModule;
-  let service: BalanceService;
+function createTestingSuite(algo: BalanceProvider, name: string) {
+  describe(`Balance algorithm ${name}`, () => {
+    let module: TestingModule;
 
-  beforeEach(async () => {
-    module = await Test.createTestingModule({
-      providers: [
-        // ...QueueProviders,
-        BalanceService,
-        ...TestEnvironment(),
-      ],
-    }).compile();
+    beforeEach(async () => {
+      module = await Test.createTestingModule({
+        providers: [...TestEnvironment()],
+      }).compile();
+    });
 
-    service = module.get(BalanceService);
+    const playerMap = getPlayerMap();
+    const lenny = "59565811";
+    const itachi = "116514945";
+    const sb = "120980252";
+    const gosha = "148928588";
+    const newbie60gamesWR55 = "160048904";
+    const visun = "253323011";
+    const suppdiff = "1044738317";
+    const rx = "1177028171";
+    const newbie50gamesWR45 = "1247368846";
+    const newbie40gamesWR65 = "1840854962";
+    const sirko = "1316075080";
+    const hleb = "1127420281";
+
+    const score = (id: string) => {
+      const r = playerMap[id];
+      return algo(r.mmr, r.winrate, r.gamesPlayed);
+    };
+
+    // Balance is hard. We can check if new balancing thingy falls into our constraints
+
+    it("rx > itachi", () => {
+      expect(score(rx)).toBeGreaterThan(score(itachi));
+    });
+
+    it("rx ~ 1.5 itachi", () => {
+      expect(Math.abs(score(rx) / score(itachi) - 1.5)).toBeLessThan(0.3);
+    });
+
+    it("rx ~ 1.5 visun", () => {
+      expect(Math.abs(score(rx) / score(visun) - 1.5)).toBeLessThan(0.3);
+    });
+
+    it("itachi ~ 1.5 hleb", () => {
+      expect(Math.abs(score(itachi) / score(hleb) - 1.5)).toBeLessThan(0.3);
+    });
+
+    it("rx ~ 2 hleb", () => {
+      console.log(score(rx), score(hleb));
+      expect(Math.abs(score(rx) / score(hleb) - 2)).toBeLessThan(0.3);
+    });
+
+    it("lenny ~ 1.2 itachi", () => {
+      expect(Math.abs(score(lenny) / score(itachi) - 1.2)).toBeLessThan(0.2);
+    });
+
+    it("gosha < itachi", () => {
+      expect(score(itachi)).toBeGreaterThan(score(gosha));
+    });
+
+    it("sittinbull < gosha", () => {
+      expect(score(gosha)).toBeGreaterThan(score(sb));
+    });
+
+    it("rx > visun", () => {
+      expect(score(rx)).toBeGreaterThan(score(visun));
+    });
+
+    it("lenny > itachi", () => {
+      expect(score(lenny)).toBeGreaterThan(score(itachi));
+    });
+
+    it("rx ~ 3 (50games, 45winrate)", () => {
+      expect(Math.abs(score(rx) / score(newbie50gamesWR45) - 3)).toBeLessThan(
+        0.3,
+      );
+    });
+
+    it("should pad winrate", () => {
+      const newbiewin = algo(2500, 1, 1);
+      const newbielose = algo(2500, 0, 1);
+      const newbiewin5 = algo(2500, 0.8, 5);
+      const rawNewbie = algo(2500, 0.5, 0);
+      expect(newbielose).toBeLessThan(newbiewin);
+      expect(newbiewin).toBeLessThan(newbiewin5);
+      expect(rawNewbie).toBeLessThan(newbielose);
+    });
+
+    it("34games, 65winrate > 50games, 45winrate", () => {
+      expect(score(newbie40gamesWR65)).toBeGreaterThan(
+        score(newbie50gamesWR45),
+      );
+    });
+    it("11games, 72winrate > 50games, 45winrate", () => {
+      expect(score(suppdiff)).toBeGreaterThan(score(newbie50gamesWR45));
+    });
+    it("should cdfd", () => {
+      expect(score(suppdiff)).toBeGreaterThan(
+        algo(2452, 0.35, 17),
+      );
+    });
+
+    it("should result in a low score if no games are played", () => {
+      const newbieScore = algo(2500, 0.5, 0);
+      const newbie2Score = algo(2500, 0.5, 3);
+      const decentScore = algo(2500, 0.5, 50);
+
+      expect(decentScore / Math.max(1, newbieScore)).toBeGreaterThan(10);
+      expect(decentScore / Math.max(1, newbie2Score)).toBeGreaterThan(2);
+    });
+
+    it("should make score bigger if winrate is higher", () => {
+      const score1 = algo(3000, 0.5, 19);
+      const score2 = algo(3000, 0.8, 19);
+      expect(score1).toBeLessThan(score2);
+    });
+
+    it("should make score bigger if more games played", () => {
+      const score1 = algo(3000, 0.5,  19);
+      const score2 = algo(3000, 0.5,  25);
+      expect(score1).toBeLessThan(score2);
+    });
   });
+}
 
-  const playerMap = getPlayerMap();
-  const lenny = "59565811";
-  const itachi = "116514945";
-  const sb = "120980252";
-  const gosha = "148928588";
-  const newbie60gamesWR55 = "160048904";
-  const visun = "253323011";
-  const suppdiff = "1044738317";
-  const rx = "1177028171";
-  const newbie50gamesWR45 = "1247368846";
-  const newbie40gamesWR65 = "1840854962";
-  const sirko = "1316075080";
-  const hleb = "1127420281";
 
-  const score = (id: string) => {
-    const r = playerMap[id];
-    return BalanceService.getScore(r.mmr, r.winrate, 0, r.gamesPlayed);
-  };
-
-  // Balance is hard. We can check if new balancing thingy falls into our constraints
-
-  it("rx > itachi", () => {
-    expect(score(rx)).toBeGreaterThan(score(itachi));
-  });
-
-  it("rx ~ 1.5 itachi", () => {
-    expect(Math.abs(score(rx) / score(itachi) - 1.5)).toBeLessThan(0.3);
-  });
-
-  it("rx ~ 1.5 visun", () => {
-    expect(Math.abs(score(rx) / score(visun) - 1.5)).toBeLessThan(0.3);
-  });
-
-  it("itachi ~ 1.5 hleb", () => {
-    expect(Math.abs(score(itachi) / score(hleb) - 1.5)).toBeLessThan(0.3);
-  });
-
-  it("rx ~ 2 hleb", () => {
-    console.log(score(rx), score(hleb));
-    expect(Math.abs(score(rx) / score(hleb) - 2)).toBeLessThan(0.3);
-  });
-
-  it("lenny ~ 1.2 itachi", () => {
-    expect(Math.abs(score(lenny) / score(itachi) - 1.2)).toBeLessThan(0.2);
-  });
-
-  it("gosha < itachi", () => {
-    expect(score(itachi)).toBeGreaterThan(score(gosha));
-  });
-
-  it("sittinbull < gosha", () => {
-    expect(score(gosha)).toBeGreaterThan(score(sb));
-  });
-
-  it("rx > visun", () => {
-    expect(score(rx)).toBeGreaterThan(score(visun));
-  });
-
-  it("lenny > itachi", () => {
-    expect(score(lenny)).toBeGreaterThan(score(itachi));
-  });
-
-  it("rx ~ 3 (50games, 45winrate)", () => {
-    expect(Math.abs(score(rx) / score(newbie50gamesWR45) - 3)).toBeLessThan(
-      0.3,
-    );
-  });
-
-  it("should pad winrate", () => {
-    const newbiewin = BalanceService.getScore(2500, 1, 0, 1);
-    const newbielose = BalanceService.getScore(2500, 0, 0, 1);
-    const newbiewin5 = BalanceService.getScore(2500, 0.8, 0, 5);
-    const rawNewbie = BalanceService.getScore(2500, 0.5, 0, 0);
-    expect(newbielose).toBeLessThan(newbiewin)
-    expect(newbiewin).toBeLessThan(newbiewin5)
-    expect(rawNewbie).toBeLessThan(newbielose)
-  });
-
-  it("34games, 65winrate > 50games, 45winrate", () => {
-    expect(score(newbie40gamesWR65)).toBeGreaterThan(score(newbie50gamesWR45));
-  });
-  it("11games, 72winrate > 50games, 45winrate", () => {
-    expect(score(suppdiff)).toBeGreaterThan(score(newbie50gamesWR45));
-  });
-
-  it("should result in a low score if no games are played", () => {
-    const newbieScore = BalanceService.getScore(2500, 0.5, 0, 0);
-    const newbie2Score = BalanceService.getScore(2500, 0.5, 0, 3);
-    const decentScore = BalanceService.getScore(2500, 0.5, 0, 50);
-
-    expect(decentScore / Math.max(1, newbieScore)).toBeGreaterThan(10);
-    expect(decentScore / Math.max(1, newbie2Score)).toBeGreaterThan(2);
-  });
-
-  it("should make score bigger if winrate is higher", () => {
-    const score1 = BalanceService.getScore(3000, 0.5, 0.3, 19);
-    const score2 = BalanceService.getScore(3000, 0.8, 0.3, 19);
-    expect(score1).toBeLessThan(score2);
-  });
-
-  it("should make score bigger if more games played", () => {
-    const score1 = BalanceService.getScore(3000, 0.5, 0.3, 19);
-    const score2 = BalanceService.getScore(3000, 0.5, 0.3, 25);
-    expect(score1).toBeLessThan(score2);
-  });
-});
+createTestingSuite(BalancerV0, "Balancer V0")

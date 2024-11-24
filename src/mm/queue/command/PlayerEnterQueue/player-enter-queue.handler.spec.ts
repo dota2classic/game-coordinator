@@ -21,6 +21,7 @@ import { GetSessionByUserQuery } from "../../../../gateway/gateway/queries/GetSe
 import {
   GetSessionByUserQueryResult
 } from "../../../../gateway/gateway/queries/GetSessionByUser/get-session-by-user-query.result";
+import { BalancerV0 } from "../../service/balance";
 
 describe("PlayerEnterQueueHandler", () => {
   let ebus: EventBus;
@@ -81,7 +82,7 @@ describe("PlayerEnterQueueHandler", () => {
         party.id,
         party.players.map((t) => ({
           playerId: t,
-          balanceScore: BalanceService.getScore(3000, 0.5, 2.1, 10),
+          balanceScore: BalancerV0(3000, 0.5,  10),
           banStatus: new BanStatus(false, 0, BanReason.GAME_DECLINE),
         })),
         MatchmakingMode.SOLOMID,
