@@ -3,7 +3,7 @@ import { QueueModel } from "mm/queue/model/queue.model";
 import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
 import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
 import { BalanceService } from "mm/queue/service/balance.service";
-import { Cron } from "@nestjs/schedule";
+import { Cron, CronExpression } from "@nestjs/schedule";
 import { EventBus } from "@nestjs/cqrs";
 import { GameCheckCycleEvent } from "mm/queue/event/game-check-cycle.event";
 import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
@@ -37,7 +37,6 @@ export class QueueService {
   }
 
   // each minute
-  // @Cron(CronExpression.EVERY_MINUTE)
   @Cron("*/20 * * * * *")
   async checkRankedGame() {
     // this.ebus.publish(
