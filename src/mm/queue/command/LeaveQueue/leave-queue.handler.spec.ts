@@ -13,6 +13,7 @@ import { QueueUpdatedEvent } from "gateway/gateway/events/queue-updated.event";
 import { randomUser } from "@test/values";
 import { Dota2Version } from "../../../../gateway/gateway/shared-types/dota2version";
 import { BanStatus } from "../../../../gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
+import { PartyQueueStateUpdatedEvent } from "../../../../gateway/gateway/events/mm/party-queue-state-updated.event";
 
 describe("LeaveQueueHandler", () => {
   let ebus: EventBus;
@@ -58,15 +59,14 @@ describe("LeaveQueueHandler", () => {
     const a = await module
       .get(QueueRepository)
       .get(QueueModel.id(MatchmakingMode.SOLOMID, Dota2Version.Dota_684));
-    a.entries.push(
-      new QueueEntryModel(
-        "partyID",
-        MatchmakingMode.SOLOMID,
-        Dota2Version.Dota_684,
-        [new PlayerInQueueEntity(randomUser(), 100, BanStatus.NOT_BANNED)],
-        0,
-      ),
+    const entry = new QueueEntryModel(
+      "partyID",
+      MatchmakingMode.SOLOMID,
+      Dota2Version.Dota_684,
+      [new PlayerInQueueEntity(randomUser(), 100, BanStatus.NOT_BANNED)],
+      0,
     );
+    a.entries.push(entry);
 
     await cbus.execute(
       new LeaveQueueCommand(
@@ -77,6 +77,11 @@ describe("LeaveQueueHandler", () => {
     );
 
     expect(ebus).toEmit(
+      new PartyQueueStateUpdatedEvent(
+        "partyID",
+        entry.players.map((it) => it.playerId),
+        undefined
+      ),
       new QueueUpdatedEvent(MatchmakingMode.SOLOMID, Dota2Version.Dota_684),
     );
   });

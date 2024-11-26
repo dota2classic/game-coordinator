@@ -11,8 +11,6 @@ import { QueueModel } from "mm/queue/model/queue.model";
 import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
 import { GameFoundEvent } from "mm/queue/event/game-found.event";
 import { randomUser } from "@test/values";
-import { GameCheckCycleEvent } from "mm/queue/event/game-check-cycle.event";
-import { GameCheckCycleHandler } from "mm/queue/event-handler/game-check-cycle.handler";
 import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
 import { Dota2Version } from "../../../../gateway/gateway/shared-types/dota2version";
 import { BanStatus } from "../../../../gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
@@ -20,7 +18,7 @@ import {
   RoomBalance,
   TeamEntry,
 } from "../../../room/model/entity/room-balance";
-import { BalanceService } from "../../service/balance.service";
+import { PartyQueueStateUpdatedEvent } from "../../../../gateway/gateway/events/mm/party-queue-state-updated.event";
 
 const u1 = randomUser();
 const u2 = randomUser();
@@ -80,7 +78,13 @@ describe("EnterQueueHandler", () => {
         Dota2Version.Dota_684,
       ),
     );
-    expect(ebus).toEmit(new QueueUpdatedEvent(mode, Dota2Version.Dota_684));
+    expect(ebus).toEmit(
+      new PartyQueueStateUpdatedEvent("party", [u1], {
+        mode,
+        version: Dota2Version.Dota_684,
+      }),
+      new QueueUpdatedEvent(mode, Dota2Version.Dota_684),
+    );
   });
 
   // Skip because: not implemented yet
@@ -167,8 +171,17 @@ describe("EnterQueueHandler", () => {
     );
 
     expect(ebus).toEmit(
+      new PartyQueueStateUpdatedEvent("party", [u1], {
+        mode: MatchmakingMode.RANKED,
+        version: Dota2Version.Dota_684,
+      }),
       new QueueUpdatedEvent(MatchmakingMode.RANKED, Dota2Version.Dota_684), // enter ranked queue
+      new PartyQueueStateUpdatedEvent("party", [u1], undefined),
       new QueueUpdatedEvent(MatchmakingMode.RANKED, Dota2Version.Dota_684), // leave ranked queue
+      new PartyQueueStateUpdatedEvent("party", [u1], {
+        mode: MatchmakingMode.SOLOMID,
+        version: Dota2Version.Dota_684,
+      }),
       new QueueUpdatedEvent(MatchmakingMode.SOLOMID, Dota2Version.Dota_684), // enter solomid
     );
   });
