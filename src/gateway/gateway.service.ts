@@ -25,6 +25,7 @@ import { EnterQueueDeclinedEvent } from "gateway/gateway/events/mm/enter-queue-d
 import { EnterRankedQueueDeclinedEvent } from "gateway/gateway/events/mm/enter-ranked-queue-declined.event";
 import { PlayerDeclinedGameEvent } from "gateway/gateway/events/mm/player-declined-game.event";
 import { LogEvent } from "gateway/gateway/events/log.event";
+import { PartyQueueStateUpdatedEvent } from "./gateway/events/mm/party-queue-state-updated.event";
 
 @Injectable()
 export class GatewayService implements OnApplicationBootstrap {
@@ -63,6 +64,7 @@ export class GatewayService implements OnApplicationBootstrap {
       EnterQueueDeclinedEvent,
       EnterRankedQueueDeclinedEvent,
       PlayerDeclinedGameEvent,
+      PartyQueueStateUpdatedEvent
     ];
     this.ebus
       .pipe(ofType(...publicEvents))
