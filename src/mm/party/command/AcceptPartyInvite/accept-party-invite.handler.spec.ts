@@ -12,7 +12,8 @@ import { PartyCreatedEvent } from "mm/party/event/party-created.event";
 import { PartyUpdatedEvent } from "gateway/gateway/events/party/party-updated.event";
 import { PartyInviteResultEvent } from "gateway/gateway/events/party/party-invite-result.event";
 import { PartyDeletedEvent } from "gateway/gateway/events/party/party-deleted.event";
-import { prepareModels } from "../../../../main";
+
+import { prepareModels } from "../../../../prepareModels";
 
 describe("AcceptPartyInviteHandler", () => {
   let ebus: EventBus;
