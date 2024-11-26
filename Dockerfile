@@ -20,6 +20,6 @@ COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/package.json .
 COPY --from=build /usr/src/app/bun.lockb .
 
-CMD ["sh", "-c", "yarn start:prod"]
-ENTRYPOINT [ "bun", "run", "dist/main.js" ]
+#CMD ["sh", "-c", "yarn start:prod"]
+ENTRYPOINT [ "bun", "run", "dist/src/main.js" ]
 
