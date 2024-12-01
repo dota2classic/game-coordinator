@@ -3,21 +3,12 @@ import { QueueModel } from "mm/queue/model/queue.model";
 import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
 import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
 import { BalanceService } from "mm/queue/service/balance.service";
-import { Cron, CronExpression } from "@nestjs/schedule";
+import { Cron } from "@nestjs/schedule";
 import { EventBus } from "@nestjs/cqrs";
 import { GameCheckCycleEvent } from "mm/queue/event/game-check-cycle.event";
 import { Dota2Version } from "gateway/gateway/shared-types/dota2version";
 import { findBestMatchBy } from "../../../util/permutations";
 import { RoomBalance, TeamEntry } from "../../room/model/entity/room-balance";
-
-const scoreAvgDifference = (
-  left: QueueEntryModel[],
-  right: QueueEntryModel[],
-) => {
-  const lavg = left.reduce((a, b) => a + b.score, 0) / 5;
-  const ravg = right.reduce((a, b) => a + b.score, 0) / 5;
-  return Math.abs(lavg - ravg);
-};
 
 @Injectable()
 export class QueueService {
@@ -25,6 +16,15 @@ export class QueueService {
     private readonly balanceService: BalanceService,
     private readonly ebus: EventBus,
   ) {}
+
+  public static balanceOptimizeFunction = (
+    left: QueueEntryModel[],
+    right: QueueEntryModel[],
+  ) => {
+    const lavg = left.reduce((a, b) => a + b.score, 0) / 5;
+    const ravg = right.reduce((a, b) => a + b.score, 0) / 5;
+    return Math.abs(lavg - ravg);
+  };
 
   private logger = new Logger(QueueService.name);
 
@@ -140,7 +140,7 @@ export class QueueService {
     const bestMatch = findBestMatchBy(
       pool,
       teamSize,
-      scoreAvgDifference,
+      QueueService.balanceOptimizeFunction,
       timeLimit, // Max 5 seconds to find a game
     );
     if (bestMatch === undefined) {
@@ -156,7 +156,7 @@ export class QueueService {
     const [left, right] = bestMatch;
 
     this.logger.log(`Found balanced game`, {
-      diff: scoreAvgDifference(left, right),
+      diff: QueueService.balanceOptimizeFunction(left, right),
       left: left.reduce((a, b) => a + b.score, 0) / 5,
       right: right.reduce((a, b) => a + b.score, 0) / 5,
     });

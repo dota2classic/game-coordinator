@@ -295,10 +295,72 @@ describe("efficient permutations", () => {
 
     expect(pool).toHaveLength(100);
 
-    let start = performance.now()
+    let start = performance.now();
     const res = findBestMatchBy(pool, 5, diff, 1000, undefined);
 
-    expect(performance.now() - start).toBeLessThan(1100) // Some room for error
+    expect(performance.now() - start).toBeLessThan(1100); // Some room for error
     expect(res).toBeDefined();
+  });
+
+  it("should really respect waiting score", () => {
+    const pool: QueueEntryModel[] = createTestPool(15, "seed3");
+    // const pool: QueueEntryModel[] = createTestPool(15, Math.random().toString());
+    expect(pool).toHaveLength(15);
+    pool.forEach((entry) => (entry.waitingScore = 0));
+
+    pool[1].waitingScore = 5000;
+    // Mock for testing, we expect to not have this giga party
+    pool[1].players.forEach((plr) => {
+      // @ts-ignore
+      plr.balanceScore = 10000
+    });
+    pool[4].waitingScore = 500;
+    pool[10].waitingScore = 1000;
+
+    const diff2d = (left: QueueEntryModel[], right: QueueEntryModel[]) => {
+      const lavg = left.reduce((a, b) => a + b.score, 0) / 5;
+      const ravg = right.reduce((a, b) => a + b.score, 0) / 5;
+      const avgDiff = Math.abs(lavg - ravg);
+
+      let waitingScore = 0;
+      for (let i = 0; i < left.length; i++) {
+        waitingScore += left[i].waitingScore;
+      }
+      for (let i = 0; i < right.length; i++) {
+        waitingScore += right[i].waitingScore;
+      }
+
+      // We want waitingScore to be highest, so we invert it
+      waitingScore = Math.log(Math.max(1, waitingScore))
+      waitingScore =  -waitingScore;
+
+      const comp1 = Math.pow(waitingScore, 3);
+      // const comp2 = Math.pow(avgDiff, 2)
+      const comp2 = avgDiff;
+
+      // const dist = Math.pow(waitingScore, 2) + Math.pow(avgDiff, 2);
+      const dist = comp1 + comp2;
+
+      // console.log([waitingScore, comp1, avgDiff, comp2, dist].map(Math.round))
+      return dist
+    };
+
+    const res2d = findBestMatchBy(pool, 5, diff2d, 5000);
+
+    const entries = res2d.flatMap(it => it.map(z => z.waitingScore));
+    expect(entries).toContain(500)
+    expect(entries).toContain(1000);
+
+    expect(entries).not.toContain(5000);
+
+
+    const diff2dr = diff(res2d[0], res2d[1])
+
+    const res1d = findBestMatchBy(pool, 5, diff, 5000);
+
+
+    const diff1dr = diff(res1d[0], res1d[1]);
+
+    console.log(diff2dr, diff1dr)
   });
 });
