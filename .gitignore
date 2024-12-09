@@ -2,7 +2,7 @@
 /dist
 /node_modules
 
-
+configs/*
 config.yaml
 # Logs
 logs

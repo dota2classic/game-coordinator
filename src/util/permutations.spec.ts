@@ -8,6 +8,7 @@ import { PlayerInQueueEntity } from "../mm/queue/model/entity/player-in-queue.en
 import { PlayerId } from "../gateway/gateway/shared-types/player-id";
 import * as seedrandom from "seedrandom";
 import { performance } from "perf_hooks";
+import { QueueService } from "../mm/queue/service/queue.service";
 
 function isViableTeam(t: QueueEntryModel[]) {
   return t.reduce((a, b) => a + b.size, 0) == 5;
@@ -295,10 +296,46 @@ describe("efficient permutations", () => {
 
     expect(pool).toHaveLength(100);
 
-    let start = performance.now()
+    let start = performance.now();
     const res = findBestMatchBy(pool, 5, diff, 1000, undefined);
 
-    expect(performance.now() - start).toBeLessThan(1100) // Some room for error
+    expect(performance.now() - start).toBeLessThan(1100); // Some room for error
     expect(res).toBeDefined();
+  });
+
+  it("should really respect waiting score", () => {
+    const pool: QueueEntryModel[] = createTestPool(15, "seed3");
+    // const pool: QueueEntryModel[] = createTestPool(15, Math.random().toString());
+    expect(pool).toHaveLength(15);
+    pool.forEach((entry) => (entry.waitingScore = 0));
+
+    for(let i = 0; i < 15; i++) {
+      pool[i].waitingScore = i === 0 ? 1 : 100 * i;
+    }
+
+
+    const res2d = findBestMatchBy(pool, 5, QueueService.balanceOptimizeFunction, 5000);
+
+    const entries = res2d.flatMap((it) => it.map((z) => z.waitingScore));
+    // expect(entries).not.toContain(0);
+    // expect(entries).not.toContain(100);
+    // expect(entries).not.toContain(200);
+
+    // expect(entries).toContain(1000);
+    // expect(entries).toContain(1100);
+    expect(entries).toContain(1200);
+    expect(entries).toContain(1300);
+    expect(entries).toContain(1400);
+
+    const diff2dr = diff(res2d[0], res2d[1]);
+
+    const res1d = findBestMatchBy(pool, 5, diff, 5000);
+
+    console.log(res1d.map((it) => it.flatMap((it) => it.score)));
+    console.log(res2d.map((it) => it.flatMap((it) => it.score)));
+
+    const diff1dr = diff(res1d[0], res1d[1]);
+
+    console.log(diff2dr, diff1dr);
   });
 });

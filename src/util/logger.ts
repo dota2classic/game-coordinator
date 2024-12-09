@@ -7,7 +7,7 @@ import { LogLevel } from "@nestjs/common";
 export class WinstonWrapper implements LoggerService {
   private winstonInstance: winston.Logger;
   constructor(host: string, port: number = 24224) {
-    const fluentLogger = fluent.createFluentSender("tag_prefix", {
+    const fluentLogger = fluent.createFluentSender("coordinator", {
       host: host,
       port: port,
       timeout: 3.0,
@@ -31,10 +31,6 @@ export class WinstonWrapper implements LoggerService {
         }),
         new winstonTransport({
           level: "verbose",
-          format: winston.format.combine(
-            winston.format.errors({ stack: true }),
-            winston.format.timestamp()
-          ),
           log(v, next) {
             fluentLogger.emit(v, next);
           },

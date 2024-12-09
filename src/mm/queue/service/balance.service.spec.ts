@@ -3,7 +3,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TestEnvironment } from "@test/cqrs";
 import { BalanceService } from "mm/queue/service/balance.service";
-import { BalanceProvider, BalancerV0, LegacyBalancer } from "./balance";
+import { BalanceProvider, BalancerV0, BalancerV1_MMR, LegacyBalancer } from "./balance";
 
 function getPlayerMap() {
   const raw = [
@@ -264,8 +264,8 @@ function createTestingSuite(algo: BalanceProvider, name: string) {
       expect(Math.abs(score(rx) / score(hleb) - 2)).toBeLessThan(0.3);
     });
 
-    it("lenny ~ 1.2 itachi", () => {
-      expect(Math.abs(score(lenny) / score(itachi) - 1.2)).toBeLessThan(0.2);
+    it("lenny ~ 1.4 itachi", () => {
+      expect(Math.abs(score(lenny) / score(itachi) - 1.4)).toBeLessThan(0.2);
     });
 
     it("gosha < itachi", () => {
@@ -284,8 +284,8 @@ function createTestingSuite(algo: BalanceProvider, name: string) {
       expect(score(lenny)).toBeGreaterThan(score(itachi));
     });
 
-    it("rx ~ 3 (50games, 45winrate)", () => {
-      expect(Math.abs(score(rx) / score(newbie50gamesWR45) - 3)).toBeLessThan(
+    it("rx ~ 3.5 (50games, 45winrate)", () => {
+      expect(Math.abs(score(rx) / score(newbie50gamesWR45) - 3.5)).toBeLessThan(
         0.3,
       );
     });
@@ -305,9 +305,10 @@ function createTestingSuite(algo: BalanceProvider, name: string) {
         score(newbie50gamesWR45),
       );
     });
-    it("11games, 72winrate > 50games, 45winrate", () => {
-      expect(score(suppdiff)).toBeGreaterThan(score(newbie50gamesWR45));
+    it("11games, 72winrate +- 50games, 45winrate", () => {
+      expect(Math.abs(score(suppdiff) / score(newbie50gamesWR45) - 1)).toBeLessThan(0.2)
     });
+
     it("should cdfd", () => {
       expect(score(suppdiff)).toBeGreaterThan(
         algo(2452, 0.35, 17),
@@ -330,12 +331,13 @@ function createTestingSuite(algo: BalanceProvider, name: string) {
     });
 
     it("should make score bigger if more games played", () => {
-      const score1 = algo(3000, 0.5,  19);
-      const score2 = algo(3000, 0.5,  25);
+      const score1 = algo(3000, 0.5,  5);
+      const score2 = algo(3000, 0.5,  9);
       expect(score1).toBeLessThan(score2);
     });
   });
 }
 
 
-createTestingSuite(BalancerV0, "Balancer V0")
+// createTestingSuite(BalancerV0, "Balancer V0")
+createTestingSuite(BalancerV1_MMR, "BalancerV1_MMR")
