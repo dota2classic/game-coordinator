@@ -23,8 +23,39 @@ export class QueueService {
   ) => {
     const lavg = left.reduce((a, b) => a + b.score, 0) / 5;
     const ravg = right.reduce((a, b) => a + b.score, 0) / 5;
+    const avgDiff = Math.abs(lavg - ravg);
+
+    let waitingScore = 0;
+    for (let i = 0; i < left.length; i++) {
+      waitingScore += left[i].waitingScore;
+    }
+    for (let i = 0; i < right.length; i++) {
+      waitingScore += right[i].waitingScore;
+    }
+
+    // We want waitingScore to be highest, so we invert it
+    waitingScore = Math.log(Math.max(1, waitingScore));
+    waitingScore = -waitingScore;
+
+    const comp1 = waitingScore * 100000;
+    // const comp1 = waitingScore * 100 / Math.abs(Math.max(10, avgDiff));
+
+    return comp1 + avgDiff;
+  };
+
+
+
+  public static balanceOptimizeFunction2 = (
+    left: QueueEntryModel[],
+    right: QueueEntryModel[],
+  ) => {
+    const lavg = left.reduce((a, b) => a + b.score, 0) / 5;
+    const ravg = right.reduce((a, b) => a + b.score, 0) / 5;
     return Math.abs(lavg - ravg);
   };
+
+
+
 
   private logger = new Logger(QueueService.name);
 

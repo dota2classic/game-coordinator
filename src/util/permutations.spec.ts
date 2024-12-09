@@ -8,6 +8,7 @@ import { PlayerInQueueEntity } from "../mm/queue/model/entity/player-in-queue.en
 import { PlayerId } from "../gateway/gateway/shared-types/player-id";
 import * as seedrandom from "seedrandom";
 import { performance } from "perf_hooks";
+import { QueueService } from "../mm/queue/service/queue.service";
 
 function isViableTeam(t: QueueEntryModel[]) {
   return t.reduce((a, b) => a + b.size, 0) == 5;
@@ -308,59 +309,33 @@ describe("efficient permutations", () => {
     expect(pool).toHaveLength(15);
     pool.forEach((entry) => (entry.waitingScore = 0));
 
-    pool[1].waitingScore = 5000;
-    // Mock for testing, we expect to not have this giga party
-    pool[1].players.forEach((plr) => {
-      // @ts-ignore
-      plr.balanceScore = 10000
-    });
-    pool[4].waitingScore = 500;
-    pool[10].waitingScore = 1000;
-
-    const diff2d = (left: QueueEntryModel[], right: QueueEntryModel[]) => {
-      const lavg = left.reduce((a, b) => a + b.score, 0) / 5;
-      const ravg = right.reduce((a, b) => a + b.score, 0) / 5;
-      const avgDiff = Math.abs(lavg - ravg);
-
-      let waitingScore = 0;
-      for (let i = 0; i < left.length; i++) {
-        waitingScore += left[i].waitingScore;
-      }
-      for (let i = 0; i < right.length; i++) {
-        waitingScore += right[i].waitingScore;
-      }
-
-      // We want waitingScore to be highest, so we invert it
-      waitingScore = Math.log(Math.max(1, waitingScore))
-      waitingScore =  -waitingScore;
-
-      const comp1 = Math.pow(waitingScore, 3);
-      // const comp2 = Math.pow(avgDiff, 2)
-      const comp2 = avgDiff;
-
-      // const dist = Math.pow(waitingScore, 2) + Math.pow(avgDiff, 2);
-      const dist = comp1 + comp2;
-
-      // console.log([waitingScore, comp1, avgDiff, comp2, dist].map(Math.round))
-      return dist
-    };
-
-    const res2d = findBestMatchBy(pool, 5, diff2d, 5000);
-
-    const entries = res2d.flatMap(it => it.map(z => z.waitingScore));
-    expect(entries).toContain(500)
-    expect(entries).toContain(1000);
-
-    expect(entries).not.toContain(5000);
+    for(let i = 0; i < 15; i++) {
+      pool[i].waitingScore = i === 0 ? 1 : 100 * i;
+    }
 
 
-    const diff2dr = diff(res2d[0], res2d[1])
+    const res2d = findBestMatchBy(pool, 5, QueueService.balanceOptimizeFunction, 5000);
+
+    const entries = res2d.flatMap((it) => it.map((z) => z.waitingScore));
+    // expect(entries).not.toContain(0);
+    // expect(entries).not.toContain(100);
+    // expect(entries).not.toContain(200);
+
+    // expect(entries).toContain(1000);
+    // expect(entries).toContain(1100);
+    expect(entries).toContain(1200);
+    expect(entries).toContain(1300);
+    expect(entries).toContain(1400);
+
+    const diff2dr = diff(res2d[0], res2d[1]);
 
     const res1d = findBestMatchBy(pool, 5, diff, 5000);
 
+    console.log(res1d.map((it) => it.flatMap((it) => it.score)));
+    console.log(res2d.map((it) => it.flatMap((it) => it.score)));
 
     const diff1dr = diff(res1d[0], res1d[1]);
 
-    console.log(diff2dr, diff1dr)
+    console.log(diff2dr, diff1dr);
   });
 });
