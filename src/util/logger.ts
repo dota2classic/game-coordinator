@@ -38,10 +38,7 @@ export class WinstonWrapper implements LoggerService {
             fluentLogger.emit(v, next);
           },
         }),
-      );
-
-    this.winstonInstance = winston.createLogger({
-      transports,
+      ],
     });
   }
 
