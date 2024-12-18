@@ -17,6 +17,7 @@ async function bootstrap() {
     logger: new WinstonWrapper(
       config.get("fluentbit.host"),
       config.get<number>("fluentbit.port"),
+      config.get<boolean>("fluentbit.disabled"),
     ),
     transport: Transport.REDIS,
     options: {

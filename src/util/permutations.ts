@@ -53,7 +53,7 @@ export function findBestMatchBy(
   func: (left: QueueEntryModel[], right: QueueEntryModel[]) => number,
   timeLimitation: number,
   acceptableThreshold: number | undefined = undefined,
-) {
+): [QueueEntryModel[], QueueEntryModel[]] | undefined {
   let timeStarted = performance.now();
 
   let bestScore = Number.MAX_SAFE_INTEGER;

@@ -21,91 +21,6 @@ describe("QueueService", () => {
     qs = module.get(QueueService);
   });
 
-  // it("should not find unranked game where not enough players", async () => {
-  //   const qModel = new QueueModel(
-  //     MatchmakingMode.SOLOMID,
-  //     Dota2Version.Dota_684,
-  //   );
-  //   expect(qs.findGame(qModel)).toBeUndefined();
-  //   qModel.addEntry(
-  //     new QueueEntryModel(
-  //       "1",
-  //       MatchmakingMode.SOLOMID,
-  //       Dota2Version.Dota_684,
-  //       [new PlayerInQueueEntity(randomUser(), 100)],
-  //       0,
-  //     ),
-  //   );
-  //   expect(qs.findGame(qModel)).toBeUndefined();
-  // });
-
-  // it("should find unranked game where there are only singles", async () => {
-  //   const qModel = new QueueModel(
-  //     MatchmakingMode.SOLOMID,
-  //     Dota2Version.Dota_684,
-  //   );
-  //   qModel.addEntry(
-  //     new QueueEntryModel(
-  //       "1",
-  //       MatchmakingMode.SOLOMID,
-  //       Dota2Version.Dota_684,
-  //       [new PlayerInQueueEntity(randomUser(), 100)],
-  //       0,
-  //     ),
-  //   );
-  //   qModel.addEntry(
-  //     new QueueEntryModel(
-  //       "2",
-  //       MatchmakingMode.SOLOMID,
-  //       Dota2Version.Dota_684,
-  //       [new PlayerInQueueEntity(randomUser(), 100)],
-  //       0,
-  //     ),
-  //   );
-  //   expect(qs.findGame(qModel)).toBeDefined();
-  // });
-
-  // it("should find unranked game where there is party", async () => {
-  //   const qModel = new QueueModel(
-  //     MatchmakingMode.SOLOMID,
-  //     Dota2Version.Dota_684,
-  //   );
-  //   qModel.addEntry(
-  //     new QueueEntryModel(
-  //       "1",
-  //       MatchmakingMode.SOLOMID,
-  //       Dota2Version.Dota_684,
-  //       [
-  //         new PlayerInQueueEntity(randomUser(), 100),
-  //         new PlayerInQueueEntity(randomUser(), 100),
-  //       ],
-  //       0,
-  //     ),
-  //   );
-  //   expect(qs.findGame(qModel)).toBeDefined();
-  // });
-
-  // it("should not find unranked game when party size > room size", async () => {
-  //   const qModel = new QueueModel(
-  //     MatchmakingMode.SOLOMID,
-  //     Dota2Version.Dota_684,
-  //   );
-  //   qModel.addEntry(
-  //     new QueueEntryModel(
-  //       "1",
-  //       MatchmakingMode.SOLOMID,
-  //       Dota2Version.Dota_684,
-  //       [
-  //         new PlayerInQueueEntity(randomUser(), 100),
-  //         new PlayerInQueueEntity(randomUser(), 100),
-  //         new PlayerInQueueEntity(randomUser(), 100),
-  //       ],
-  //       0,
-  //     ),
-  //   );
-  //   expect(qs.findGame(qModel)).toBeUndefined();
-  // });
-
   type PartySize = 1 | 2 | 3 | 4 | 5;
   type Preset = Partial<Record<PartySize, number>>;
 
@@ -298,7 +213,6 @@ describe("QueueService", () => {
     expect(balance.teams[1].parties).toHaveLength(1);
   });
 
-
   it("should handle parties and put them together", () => {
     const qModel = new QueueModel(MatchmakingMode.BOTS, Dota2Version.Dota_684);
 
@@ -307,7 +221,10 @@ describe("QueueService", () => {
         uuid(),
         MatchmakingMode.UNRANKED,
         Dota2Version.Dota_684,
-        [new PlayerInQueueEntity(randomUser(), 1000), new PlayerInQueueEntity(randomUser(), 1000)],
+        [
+          new PlayerInQueueEntity(randomUser(), 1000),
+          new PlayerInQueueEntity(randomUser(), 1000),
+        ],
       ),
     );
 
@@ -321,5 +238,97 @@ describe("QueueService", () => {
     expect(balance.teams[0].parties).toHaveLength(1);
 
     expect(balance.teams[1].parties).toHaveLength(0);
-  })
+  });
+
+  it("should not find 1x1 game if there are not enough players", () => {
+    const qModel = new QueueModel(
+      MatchmakingMode.SOLOMID,
+      Dota2Version.Dota_684,
+    );
+
+    const u1 = randomUser();
+    qModel.addEntry(
+      new QueueEntryModel(
+        uuid(),
+        MatchmakingMode.SOLOMID,
+        Dota2Version.Dota_684,
+        [new PlayerInQueueEntity(u1, 1000)],
+      ),
+    );
+
+    const balance = qs.findSolomidGame(qModel);
+    expect(balance).toBeUndefined();
+  });
+
+  it("should match 1x1 game with party of 2 players", () => {
+    const qModel = new QueueModel(
+      MatchmakingMode.SOLOMID,
+      Dota2Version.Dota_684,
+    );
+
+    const u1 = randomUser();
+    const u2 = randomUser();
+    qModel.addEntry(
+      new QueueEntryModel(
+        uuid(),
+        MatchmakingMode.SOLOMID,
+        Dota2Version.Dota_684,
+        [new PlayerInQueueEntity(u1, 1000), new PlayerInQueueEntity(u2, 1000)],
+      ),
+    );
+
+    const balance = qs.findSolomidGame(qModel);
+    expect(balance).toBeDefined();
+
+    expect(balance.teams[0].parties).toHaveLength(1);
+    expect(balance.teams[1].parties).toHaveLength(1);
+
+    expect(balance.teams[0].parties[0].players[0].playerId.value).toEqual(
+      u1.value,
+    );
+
+    expect(balance.teams[1].parties[0].players[0].playerId.value).toEqual(
+      u2.value,
+    );
+  });
+
+  it("should match 1x1 game with single players", () => {
+    const qModel = new QueueModel(
+      MatchmakingMode.SOLOMID,
+      Dota2Version.Dota_684,
+    );
+
+    const u1 = randomUser();
+    const u2 = randomUser();
+    qModel.addEntry(
+      new QueueEntryModel(
+        uuid(),
+        MatchmakingMode.SOLOMID,
+        Dota2Version.Dota_684,
+        [new PlayerInQueueEntity(u1, 1000)],
+      ),
+    );
+    qModel.addEntry(
+      new QueueEntryModel(
+        uuid(),
+        MatchmakingMode.SOLOMID,
+        Dota2Version.Dota_684,
+        [new PlayerInQueueEntity(u2, 1000)],
+      ),
+    );
+
+    const balance = qs.findSolomidGame(qModel);
+    expect(balance).toBeDefined();
+
+    expect(balance.teams[0].parties).toHaveLength(1);
+    expect(balance.teams[1].parties).toHaveLength(1);
+
+    expect(balance.teams[0].parties[0].players[0].playerId.value).toEqual(
+      u1.value,
+    );
+
+    expect(balance.teams[1].parties[0].players[0].playerId.value).toEqual(
+      u2.value,
+    );
+  });
 });

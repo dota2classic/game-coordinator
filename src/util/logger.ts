@@ -6,7 +6,7 @@ import { LogLevel } from "@nestjs/common";
 
 export class WinstonWrapper implements LoggerService {
   private winstonInstance: winston.Logger;
-  constructor(host: string, port: number = 24224) {
+  constructor(host: string, port: number = 24224, disabled: boolean = false) {
     const fluentLogger = fluent.createFluentSender("coordinator", {
       host: host,
       port: port,
@@ -14,28 +14,34 @@ export class WinstonWrapper implements LoggerService {
       reconnectInterval: 10_000, // 10 secs
     });
 
-    this.winstonInstance = winston.createLogger({
-      transports: [
-        new winston.transports.Console({
-          level: "verbose",
-          format: winston.format.combine(
-            winston.format.timestamp({
-              format: "MM-DD HH:mm:ss.SSS",
-            }),
-            winston.format.prettyPrint(),
-            winston.format.printf((info) => {
-              const { level, timestamp, ...message } = info;
-              return `${timestamp} | ${level.padEnd(5)} | ${JSON.stringify(message)}`;
-            }),
-          ),
-        }),
+    const transports: winstonTransport[] = [
+      new winston.transports.Console({
+        level: "verbose",
+        format: winston.format.combine(
+          winston.format.timestamp({
+            format: "MM-DD HH:mm:ss.SSS",
+          }),
+          winston.format.prettyPrint(),
+          winston.format.printf((info) => {
+            const { level, timestamp, ...message } = info;
+            return `${timestamp} | ${level.padEnd(5)} | ${JSON.stringify(message)}`;
+          }),
+        ),
+      }),
+    ];
+
+    if (!disabled)
+      transports.push(
         new winstonTransport({
           level: "verbose",
           log(v, next) {
             fluentLogger.emit(v, next);
           },
         }),
-      ],
+      );
+
+    this.winstonInstance = winston.createLogger({
+      transports,
     });
   }
 

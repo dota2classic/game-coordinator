@@ -17,7 +17,7 @@ export class QueueService {
     private readonly ebus: EventBus,
   ) {}
 
-  public static balanceOptimizeFunction = (
+  public static waitingScoreFirstOptimizeFunction = (
     left: QueueEntryModel[],
     right: QueueEntryModel[],
   ) => {
@@ -43,8 +43,6 @@ export class QueueService {
     return comp1 + avgDiff;
   };
 
-
-
   public static balanceOptimizeFunction2 = (
     left: QueueEntryModel[],
     right: QueueEntryModel[],
@@ -53,9 +51,6 @@ export class QueueService {
     const ravg = right.reduce((a, b) => a + b.score, 0) / 5;
     return Math.abs(lavg - ravg);
   };
-
-
-
 
   private logger = new Logger(QueueService.name);
 
@@ -70,26 +65,16 @@ export class QueueService {
   // each minute
   @Cron("*/20 * * * * *")
   async checkRankedGame() {
-    // this.ebus.publish(
-    //   new GameCheckCycleEvent(MatchmakingMode.UNRANKED, Dota2Version.Dota_681),
-    // );
     this.ebus.publish(
       new GameCheckCycleEvent(MatchmakingMode.UNRANKED, Dota2Version.Dota_684),
     );
-    //
-    // this.ebus.publish(
-    //   new GameCheckCycleEvent(MatchmakingMode.RANKED, Dota2Version.Dota_681),
-    // );
-    // this.ebus.publish(
-    //   new GameCheckCycleEvent(MatchmakingMode.RANKED, Dota2Version.Dota_684),
-    // );
+  }
 
-    // this.ebus.publish(
-    //   new GameCheckCycleEvent(MatchmakingMode.HIGHROOM, Dota2Version.Dota_681),
-    // );
-    // this.ebus.publish(
-    //   new GameCheckCycleEvent(MatchmakingMode.HIGHROOM, Dota2Version.Dota_684),
-    // );
+  @Cron("*/10 * * * * *")
+  async checkSolomidGame() {
+    this.ebus.publish(
+      new GameCheckCycleEvent(MatchmakingMode.SOLOMID, Dota2Version.Dota_684),
+    );
   }
 
   /**
@@ -171,7 +156,7 @@ export class QueueService {
     const bestMatch = findBestMatchBy(
       pool,
       teamSize,
-      QueueService.balanceOptimizeFunction,
+      QueueService.waitingScoreFirstOptimizeFunction,
       timeLimit, // Max 5 seconds to find a game
     );
     if (bestMatch === undefined) {
@@ -187,11 +172,54 @@ export class QueueService {
     const [left, right] = bestMatch;
 
     this.logger.log(`Found balanced game`, {
-      diff: QueueService.balanceOptimizeFunction(left, right),
+      diff: QueueService.waitingScoreFirstOptimizeFunction(left, right),
       left: left.reduce((a, b) => a + b.score, 0) / 5,
       right: right.reduce((a, b) => a + b.score, 0) / 5,
     });
 
     return new RoomBalance([new TeamEntry(left), new TeamEntry(right)]);
+  }
+
+  /**
+   * Party of 2 players are automatically placed against each other
+   * @param q
+   */
+  public findSolomidGame(q: QueueModel): RoomBalance | undefined {
+    if (q.entries.flatMap((it) => it.players).length < 2) return;
+    // If we have a pair party, match them
+    const pair = q.entries.find((it) => it.size === 2);
+    if (pair) {
+      this.logger.log("Making 1x1 game of 2 sized party");
+      return new RoomBalance([
+        new TeamEntry([
+          new QueueEntryModel(pair.partyID, pair.mode, pair.version, [
+            pair.players[0],
+          ]),
+        ]),
+        new TeamEntry([
+          new QueueEntryModel(pair.partyID, pair.mode, pair.version, [
+            pair.players[1],
+          ]),
+        ]),
+      ]);
+    }
+    const pool = [...q.entries];
+
+    const bestMatch = findBestMatchBy(
+      pool,
+      1,
+      QueueService.waitingScoreFirstOptimizeFunction,
+      2000, // Max 5 seconds to find a game
+    );
+
+    if (bestMatch === undefined) {
+      this.logger.warn("Can't find game: should not be possible");
+      return undefined;
+    }
+
+    return new RoomBalance([
+      new TeamEntry(bestMatch[0]),
+      new TeamEntry(bestMatch[1]),
+    ]);
   }
 }

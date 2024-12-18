@@ -314,7 +314,7 @@ describe("efficient permutations", () => {
     }
 
 
-    const res2d = findBestMatchBy(pool, 5, QueueService.balanceOptimizeFunction, 5000);
+    const res2d = findBestMatchBy(pool, 5, QueueService.waitingScoreFirstOptimizeFunction, 5000);
 
     const entries = res2d.flatMap((it) => it.map((z) => z.waitingScore));
     // expect(entries).not.toContain(0);
