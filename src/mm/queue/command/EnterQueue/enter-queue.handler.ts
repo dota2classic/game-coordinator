@@ -4,10 +4,7 @@ import { EnterQueueCommand } from "mm/queue/command/EnterQueue/enter-queue.comma
 import { QueueRepository } from "mm/queue/repository/queue.repository";
 import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
 import { QueueModel } from "mm/queue/model/queue.model";
-import {
-  MatchmakingMode,
-  RoomSizes,
-} from "gateway/gateway/shared-types/matchmaking-mode";
+import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
 import { EnterQueueDeclinedEvent } from "gateway/gateway/events/mm/enter-queue-declined.event";
 import { PartyId } from "gateway/gateway/shared-types/party-id";
 import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entity";
@@ -20,7 +17,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
 
   constructor(
     private readonly queueRepository: QueueRepository,
-    private readonly ebus: EventBus
+    private readonly ebus: EventBus,
   ) {}
 
   private checkForBans(
@@ -58,7 +55,9 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
 
     if (this.checkForBans(partyId, mode, players, version)) {
       // if can't go cause of bans we return
-      this.logger.warn("Tried to queue while banned", { players: players.map(it => it.playerId.value)  })
+      this.logger.warn("Tried to queue while banned", {
+        players: players.map((it) => it.playerId.value),
+      });
       return;
     }
 
@@ -81,6 +80,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     return entry.id;
   }
 
+  // TODO: move everything to cycles?
   private async checkForGame(q: QueueModel) {
     // This mode is exclusive and uses interval-based game findings
 
@@ -88,9 +88,11 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     if (q.mode === MatchmakingMode.RANKED) return;
     if (q.mode === MatchmakingMode.UNRANKED) return;
     if (q.mode === MatchmakingMode.BOTS) return;
+    if (q.mode === MatchmakingMode.SOLOMID) return;
 
-
-    this.logger.warn(`Tried to enter queue ${formatGameMode(q.mode)}! This is not supported yet.`)
+    this.logger.warn(
+      `Tried to enter queue ${formatGameMode(q.mode)}! This is not supported yet.`,
+    );
 
     // const game = this.queueService.findGame(q);
     //
