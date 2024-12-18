@@ -17,6 +17,7 @@ import { RoomReadyEvent } from "../../gateway/gateway/events/room-ready.event";
 import { QueueRepository } from "../queue/repository/queue.repository";
 import { QueueModel } from "../queue/model/queue.model";
 import { PlayerId } from "../../gateway/gateway/shared-types/player-id";
+import { RoomNotReadyEvent } from "../../gateway/gateway/events/room-not-ready.event";
 
 async function awaitEvent<T>(
   ebus: EventBus,
@@ -53,6 +54,27 @@ describe("Enter queue into accept flow", () => {
     await app.close();
   });
 
+  const populateQueue = async (mode: MatchmakingMode, playerCnt: number) => {
+    await cbus.execute(new CreateQueueCommand(mode, Dota2Version.Dota_684));
+
+    const users: PlayerId[] = [];
+
+    for (let i = 0; i < playerCnt; i++) {
+      const u1 = randomUser();
+      users.push(u1);
+      await cbus.execute(
+        new EnterQueueCommand(
+          u1.value,
+          [new PlayerInQueueEntity(u1, 100)],
+          mode,
+          Dota2Version.Dota_684,
+        ),
+      );
+    }
+
+    return users;
+  };
+
   it.each([
     [MatchmakingMode.SOLOMID, 2],
     [MatchmakingMode.UNRANKED, 10],
@@ -60,22 +82,7 @@ describe("Enter queue into accept flow", () => {
   ])(
     `should create room, ready check, room ready, clean queue when mode is %s`,
     async (mode: MatchmakingMode, playerCnt: number) => {
-      await cbus.execute(new CreateQueueCommand(mode, Dota2Version.Dota_684));
-
-      const users: PlayerId[] = [];
-
-      for (let i = 0; i < playerCnt; i++) {
-        const u1 = randomUser();
-        users.push(u1);
-        await cbus.execute(
-          new EnterQueueCommand(
-            u1.value,
-            [new PlayerInQueueEntity(u1, 100)],
-            mode,
-            Dota2Version.Dota_684,
-          ),
-        );
-      }
+      const users = await populateQueue(mode, playerCnt);
 
       const $roomCreatedEvent = awaitEvent(ebus, RoomCreatedEvent);
       const $roomReadyEvent = awaitEvent(ebus, RoomReadyEvent);
@@ -108,4 +115,35 @@ describe("Enter queue into accept flow", () => {
       expect(q.entries).toHaveLength(0);
     },
   );
+
+  it.each([
+    [MatchmakingMode.SOLOMID, 2],
+    [MatchmakingMode.UNRANKED, 10],
+    [MatchmakingMode.BOTS, 1],
+  ])(
+    `should create room, ready check, room not ready, return to queue and clean when mode is %s`,
+    async (mode: MatchmakingMode, playerCnt: number) => {
+      const users = await populateQueue(mode, playerCnt);
+
+      const $roomCreatedEvent = awaitEvent(ebus, RoomCreatedEvent);
+      const $roomNotReadyEvent = awaitEvent(ebus, RoomNotReadyEvent);
+
+      await ebus.publish(new GameCheckCycleEvent(mode, Dota2Version.Dota_684));
+
+      const room = await $roomCreatedEvent;
+
+      await cbus.execute(
+        new SetReadyCheckCommand(users[0], room.id, ReadyState.DECLINE),
+      );
+
+      const roomNotReadyEvent = await $roomNotReadyEvent;
+
+      const q = await app
+        .get(QueueRepository)
+        .get(QueueModel.id(mode, Dota2Version.Dota_684));
+
+      expect(q.entries.map(it => it.partyID)).toMatchObject(users.slice(1).map(it => it.value))
+    },
+  );
+
 });
