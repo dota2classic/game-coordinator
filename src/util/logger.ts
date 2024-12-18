@@ -1,13 +1,13 @@
 import * as winston from "winston";
-import * as winstonTransport from "winston-transport";
 import * as fluent from "fluent-logger";
+import * as winstonTransport from "winston-transport";
 import { LoggerService } from "@nestjs/common/services/logger.service";
 import { LogLevel } from "@nestjs/common";
 
 export class WinstonWrapper implements LoggerService {
   private winstonInstance: winston.Logger;
-  constructor(host: string, port: number = 24224, disabled: boolean = false) {
-    const fluentLogger = fluent.createFluentSender("coordinator", {
+  constructor(host: string, port: number = 24224, disabled = false) {
+    const fluentLogger = fluent.createFluentSender("api-gateway", {
       host: host,
       port: port,
       timeout: 3.0,
@@ -29,8 +29,7 @@ export class WinstonWrapper implements LoggerService {
         ),
       }),
     ];
-
-    if (!disabled) {
+    if (!disabled)
       transports.push(
         new winstonTransport({
           level: "verbose",
@@ -39,30 +38,10 @@ export class WinstonWrapper implements LoggerService {
           },
         }),
       );
-    }
-  }
 
-  private wrap(msg: any, ...optionalParams: any[]) {
-    let message =
-      typeof msg === "string"
-        ? {
-            message: msg,
-          }
-        : { ...msg };
-    if (optionalParams.length > 1) {
-      message = {
-        ...message,
-        ...optionalParams[0],
-        context: optionalParams[1],
-      };
-    } else if (optionalParams.length === 1) {
-      message = {
-        ...message,
-        context: optionalParams[0],
-      };
-    }
-
-    return message;
+    this.winstonInstance = winston.createLogger({
+      transports: transports,
+    });
   }
 
   debug(message: any, ...optionalParams: any[]): any {
@@ -92,5 +71,28 @@ export class WinstonWrapper implements LoggerService {
 
   warn(message: any, ...optionalParams: any[]): any {
     this.winstonInstance.warn(this.wrap(message, ...optionalParams));
+  }
+
+  private wrap(msg: any, ...optionalParams: any[]) {
+    let message =
+      typeof msg === "string"
+        ? {
+          message: msg,
+        }
+        : { ...msg };
+    if (optionalParams.length > 1) {
+      message = {
+        ...message,
+        ...optionalParams[0],
+        context: optionalParams[1],
+      };
+    } else if (optionalParams.length === 1) {
+      message = {
+        ...message,
+        context: optionalParams[0],
+      };
+    }
+
+    return message;
   }
 }

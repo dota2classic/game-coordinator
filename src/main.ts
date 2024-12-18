@@ -12,11 +12,13 @@ import { prepareModels } from "./prepareModels";
 async function bootstrap() {
   // This ugly mess is waiting for NestJS ^11
   const config = new ConfigService(configuration());
+  // console.log(config)
+
 
   const app = await NestFactory.createMicroservice<RedisOptions>(AppModule, {
     logger: new WinstonWrapper(
       config.get("fluentbit.host"),
-      config.get<number>("fluentbit.port"),
+      config.get("fluentbit.port"),
       config.get<boolean>("fluentbit.disabled"),
     ),
     transport: Transport.REDIS,
@@ -28,7 +30,10 @@ async function bootstrap() {
     },
   });
 
+  console.log("yes")
+
   await app.listen();
+  console.log("yes")
 
   const publisher = app.get(EventPublisher);
   prepareModels(publisher);
