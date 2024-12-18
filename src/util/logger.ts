@@ -30,7 +30,7 @@ export class WinstonWrapper implements LoggerService {
       }),
     ];
 
-    if (!disabled)
+    if (!disabled) {
       transports.push(
         new winstonTransport({
           level: "verbose",
@@ -38,8 +38,8 @@ export class WinstonWrapper implements LoggerService {
             fluentLogger.emit(v, next);
           },
         }),
-      ],
-    });
+      );
+    }
   }
 
   private wrap(msg: any, ...optionalParams: any[]) {
