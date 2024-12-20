@@ -42,16 +42,22 @@ export class GameCheckCycleHandler
       return;
     }
 
+    await this.updateWaitingScore(q);
+
     if (event.mode === MatchmakingMode.BOTS) {
       const balance = this.qService.findBotsGame(q);
       this.makeGame(balance, q);
-    }else if (event.mode === MatchmakingMode.SOLOMID) {
-      const balance = this.qService.findSolomidGame(q)
+    } else if (event.mode === MatchmakingMode.SOLOMID) {
+      const balance = this.qService.findSolomidGame(q);
       this.makeGame(balance, q);
     } else {
       const balance = this.qService.findBalancedGame(q);
       this.makeGame(balance, q);
     }
+  }
+
+  private updateWaitingScore(q: QueueModel) {
+    q.entries.forEach((entry) => entry.waitingScore++);
   }
 
   private makeGame(balance: RoomBalance | undefined, q: QueueModel) {

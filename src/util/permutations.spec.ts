@@ -331,11 +331,11 @@ describe("efficient permutations", () => {
 
     const res1d = findBestMatchBy(pool, 5, diff, 5000);
 
-    console.log(res1d.map((it) => it.flatMap((it) => it.score)));
-    console.log(res2d.map((it) => it.flatMap((it) => it.score)));
+    // console.log(res1d.map((it) => it.flatMap((it) => it.score)));
+    // console.log(res2d.map((it) => it.flatMap((it) => it.score)));
 
     const diff1dr = diff(res1d[0], res1d[1]);
 
-    console.log(diff2dr, diff1dr);
+    // console.log(diff2dr, diff1dr);
   });
 });

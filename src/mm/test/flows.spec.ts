@@ -28,7 +28,7 @@ async function awaitEvent<T>(
 }
 
 describe("Enter queue into accept flow", () => {
-  jest.setTimeout(1000);
+  jest.setTimeout(3000);
 
   let module: TestingModule;
   let app: NestApplication;
@@ -49,6 +49,14 @@ describe("Enter queue into accept flow", () => {
     cbus = app.get(CommandBus);
     await app.init();
   });
+
+
+  afterEach(async () => {
+    const qr = app.get(QueueRepository);
+    const queues = await qr.all()
+    await Promise.all(queues.map(it => qr.delete(it.compId)))
+
+  })
 
   afterAll(async () => {
     await app.close();
@@ -142,8 +150,57 @@ describe("Enter queue into accept flow", () => {
         .get(QueueRepository)
         .get(QueueModel.id(mode, Dota2Version.Dota_684));
 
-      expect(q.entries.map(it => it.partyID)).toMatchObject(users.slice(1).map(it => it.value))
+      expect(q.entries.map((it) => it.partyID)).toMatchObject(
+        users.slice(1).map((it) => it.value),
+      );
     },
   );
 
+  it.each([
+    [MatchmakingMode.SOLOMID, 2],
+    [MatchmakingMode.UNRANKED, 10],
+  ])(
+    `should preserve waiting score if party is good after failed ready check for mode %s`,
+    async (mode: MatchmakingMode, playerCnt: number) => {
+      const half = Math.floor(playerCnt / 2);
+      const users1 = await populateQueue(mode, half);
+
+      // 3 cycles = waitingscore = 3
+      await ebus.publish(new GameCheckCycleEvent(mode, Dota2Version.Dota_684));
+      await ebus.publish(new GameCheckCycleEvent(mode, Dota2Version.Dota_684));
+      await ebus.publish(new GameCheckCycleEvent(mode, Dota2Version.Dota_684));
+
+
+      const $roomCreatedEvent = awaitEvent(ebus, RoomCreatedEvent);
+      const $roomNotReadyEvent = awaitEvent(ebus, RoomNotReadyEvent);
+
+      const users = [...users1, ...(await populateQueue(mode, half))];
+
+      await ebus.publish(new GameCheckCycleEvent(mode, Dota2Version.Dota_684));
+
+      const room = await $roomCreatedEvent;
+
+      await cbus.execute(
+        new SetReadyCheckCommand(users[0], room.id, ReadyState.DECLINE),
+      );
+
+      const roomNotReadyEvent = await $roomNotReadyEvent;
+
+      const q = await app
+        .get(QueueRepository)
+        .get(QueueModel.id(mode, Dota2Version.Dota_684));
+
+      expect(q.entries.map((it) => it.partyID)).toMatchObject(
+        users.slice(1).map((it) => it.value),
+      );
+
+      const longWaitingEntries = q.entries.filter((entry) =>
+        users1.map((it) => it.value).includes(entry.players[0].playerId.value),
+      );
+
+      expect(longWaitingEntries.map((it) => it.waitingScore)).toMatchObject(
+        longWaitingEntries.map(() => 4),
+      );
+    },
+  );
 });

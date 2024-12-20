@@ -8,6 +8,7 @@ import { ConfigService } from "@nestjs/config";
 import { RedisOptions } from "@nestjs/microservices/interfaces/microservice-configuration.interface";
 import configuration from "./config/configuration";
 import { prepareModels } from "./prepareModels";
+import { Logger } from "@nestjs/common";
 
 async function bootstrap() {
   // This ugly mess is waiting for NestJS ^11
@@ -30,10 +31,14 @@ async function bootstrap() {
     },
   });
 
-  console.log("yes")
+
+
+  const elogger = new Logger(EventBus.name);
+
+  app.get(EventBus).subscribe(event => elogger.log(event.constructor.name, event))
 
   await app.listen();
-  console.log("yes")
+
 
   const publisher = app.get(EventPublisher);
   prepareModels(publisher);

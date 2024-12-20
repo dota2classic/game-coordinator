@@ -9,7 +9,7 @@ export class EnterQueueCommand {
     public readonly players: PlayerInQueueEntity[],
     public readonly mode: MatchmakingMode,
     public readonly version: Dota2Version,
-    public readonly waitingScore: number
+    public readonly waitingScore: number = 0
   ) {}
 
   public get size() {
