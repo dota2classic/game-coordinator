@@ -59,7 +59,7 @@ export class RoomSaga {
       ofType(BadRoomFinalizedEvent),
       mergeMap((t: BadRoomFinalizedEvent) =>
         t.goodParties.map(
-          (t) => new EnterQueueCommand(t.partyID, t.players, t.mode, t.version),
+          (t) => new EnterQueueCommand(t.partyID, t.players, t.mode, t.version, t.waitingScore),
         ),
       ),
     );

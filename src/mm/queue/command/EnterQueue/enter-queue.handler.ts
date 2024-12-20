@@ -49,7 +49,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
     return false;
   }
 
-  async execute({ partyId, mode, players, version }: EnterQueueCommand) {
+  async execute({ partyId, mode, players, version, waitingScore }: EnterQueueCommand) {
     const q = await this.queueRepository.get(QueueRepository.id(mode, version));
     if (!q) return;
 
@@ -71,7 +71,7 @@ export class EnterQueueHandler implements ICommandHandler<EnterQueueCommand> {
         q.commit();
       });
 
-    const entry = new QueueEntryModel(partyId, mode, version, players);
+    const entry = new QueueEntryModel(partyId, mode, version, players, waitingScore);
 
     q.addEntry(entry);
     q.commit();
