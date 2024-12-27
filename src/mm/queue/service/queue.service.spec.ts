@@ -180,7 +180,7 @@ describe("QueueService", () => {
     ).toEqual(1);
   });
 
-  it("should put players in different teams if not in party", () => {
+  it("should put only one party per game", () => {
     const qModel = new QueueModel(MatchmakingMode.BOTS, Dota2Version.Dota_684);
 
     qModel.addEntry(
@@ -206,11 +206,10 @@ describe("QueueService", () => {
     expect(balance.teams).toHaveLength(2);
     expect(
       balance.teams[0].parties.length + balance.teams[1].parties.length,
-    ).toEqual(2);
+    ).toEqual(1);
 
     expect(balance.teams[0].parties).toHaveLength(1);
-
-    expect(balance.teams[1].parties).toHaveLength(1);
+    expect(balance.teams[1].parties).toHaveLength(0);
   });
 
   it("should handle parties and put them together", () => {

@@ -78,50 +78,21 @@ export class QueueService {
   }
 
   /**
-   * Group all players in queue and find them a goddamn game
+   * 1 game per party
    * @param q
    * @param teamSize
    * @private
    */
   public findBotsGame(
     q: QueueModel,
-    teamSize: number = 5,
   ): RoomBalance | undefined {
     if (q.size === 0) return undefined;
 
-    const radiantParties: QueueEntryModel[] = [];
-    const direParties: QueueEntryModel[] = [];
-
-    let radiantPlayerCount = 0;
-    let direPlayerCount = 0;
-
-    const preparedParties = [...q.entries];
-
-    for (let party of preparedParties) {
-      const pc = party.size;
-      const canGoLeft = teamSize - radiantPlayerCount > pc;
-      const canGoRight = teamSize - direPlayerCount > pc;
-
-      if (canGoLeft && (radiantPlayerCount <= direPlayerCount || !canGoRight)) {
-        radiantParties.push(party);
-        radiantPlayerCount += pc;
-      } else if (
-        canGoRight &&
-        (direPlayerCount <= radiantPlayerCount || !canGoLeft)
-      ) {
-        direParties.push(party);
-        direPlayerCount += pc;
-      } else {
-        // We can't fit them anymore!
-        continue;
-      }
-    }
-
-    if (radiantPlayerCount === 0 && direPlayerCount === 0) return undefined;
+    const entry = q.entries[0]
 
     return new RoomBalance([
-      new TeamEntry(radiantParties),
-      new TeamEntry(direParties),
+      new TeamEntry([entry]),
+      new TeamEntry([]),
     ]);
   }
 
