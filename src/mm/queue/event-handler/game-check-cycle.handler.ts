@@ -8,17 +8,12 @@ import { QueueModel } from "mm/queue/model/queue.model";
 import { Logger } from "@nestjs/common";
 import { RoomBalance } from "../../room/model/entity/room-balance";
 
-/**
- * TODO: Refactor this into a queue system so we don't need processMap
- */
+
 @EventsHandler(GameCheckCycleEvent)
 export class GameCheckCycleHandler
   implements IEventHandler<GameCheckCycleEvent>
 {
   private logger = new Logger(GameCheckCycleHandler.name);
-  private processMap: Partial<{
-    [key in MatchmakingMode]: boolean;
-  }> = {};
 
   constructor(
     private readonly rep: QueueRepository,
@@ -44,15 +39,26 @@ export class GameCheckCycleHandler
 
     await this.updateWaitingScore(q);
 
+
+
+
     if (event.mode === MatchmakingMode.BOTS) {
-      const balance = this.qService.findBotsGame(q);
-      this.makeGame(balance, q);
+      this.handleQueue(q, this.qService.findBotsGame.bind(this.qService))
     } else if (event.mode === MatchmakingMode.SOLOMID) {
-      const balance = this.qService.findSolomidGame(q);
-      this.makeGame(balance, q);
+      this.handleQueue(q, this.qService.findSolomidGame.bind(this.qService))
     } else {
-      const balance = this.qService.findBalancedGame(q);
+      this.handleQueue(q, this.qService.findBalancedGame.bind(this.qService))
+    }
+  }
+
+  private handleQueue(
+    q: QueueModel,
+    obtainBalance: (q: QueueModel) => RoomBalance | undefined,
+  ) {
+    let balance = obtainBalance(q);
+    while (balance !== undefined) {
       this.makeGame(balance, q);
+      balance = obtainBalance(q);
     }
   }
 
