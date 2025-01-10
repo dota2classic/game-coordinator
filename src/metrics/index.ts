@@ -16,5 +16,6 @@ export const MetricsProviders: Provider[] = [
     help: "123",
     labelNames: ["mode", "party_size", "end_reason"],
     buckets: [1, 5, 10, 30, 60, 120, 60 * 5, 60 * 30, 60 * 60, 60 * 180],
+    aggregator: "average"
   }),
 ];
