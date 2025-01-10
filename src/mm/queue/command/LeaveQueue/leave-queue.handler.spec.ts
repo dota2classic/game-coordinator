@@ -14,6 +14,7 @@ import { randomUser } from "@test/values";
 import { Dota2Version } from "../../../../gateway/gateway/shared-types/dota2version";
 import { BanStatus } from "../../../../gateway/gateway/queries/GetPlayerInfo/get-player-info-query.result";
 import { PartyQueueStateUpdatedEvent } from "../../../../gateway/gateway/events/mm/party-queue-state-updated.event";
+import { PartyLeftQueueEvent } from "../../event/party-left-queue.event";
 
 describe("LeaveQueueHandler", () => {
   let ebus: EventBus;
@@ -80,9 +81,13 @@ describe("LeaveQueueHandler", () => {
       new PartyQueueStateUpdatedEvent(
         "partyID",
         entry.players.map((it) => it.playerId),
-        undefined
+        undefined,
       ),
       new QueueUpdatedEvent(MatchmakingMode.SOLOMID, Dota2Version.Dota_684),
+      new PartyLeftQueueEvent(
+        "partyID",
+        entry.players.map((it) => it.playerId),
+      ),
     );
   });
 });

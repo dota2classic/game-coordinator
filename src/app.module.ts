@@ -1,13 +1,16 @@
 import { Module } from "@nestjs/common";
 import { MmModule } from "mm/mm.module";
 import { GatewayModule } from "gateway/gateway.module";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import configuration from "./config/configuration";
+import { makeGaugeProvider, makeHistogramProvider, PrometheusModule } from "@willsoto/nestjs-prometheus";
+import { MetricsModule } from "./metrics/metrics.module";
 
 @Module({
   imports: [
     MmModule,
     GatewayModule,
+    MetricsModule,
 
     ConfigModule.forRoot({
       isGlobal: true,
@@ -22,6 +25,8 @@ import configuration from "./config/configuration";
     //   logLevel: 2, //based on sentry.io loglevel //
     // }),
   ],
-  providers: [],
+  providers: [
+
+  ],
 })
 export class AppModule {}

@@ -55,13 +55,15 @@ export class QueueModel extends AggregateRoot {
     this.apply(new QueueUpdatedEvent(this.mode, this.version));
   }
 
-  public removeEntry(partyId: PartyId) {
+  public removeEntry(partyId: PartyId): QueueEntryModel | undefined {
     const index = this.entries.findIndex((t) => t.partyID === partyId);
     if (index !== -1) {
       const [removed] = this.entries.splice(index, 1);
       this.updateParty(removed, false);
       this.publish(new QueueUpdatedEvent(this.mode, this.version));
+      return removed;
     }
+    return undefined
   }
 
   private updateParty(entry: QueueEntryModel, inQueue: boolean) {
