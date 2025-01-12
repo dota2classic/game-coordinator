@@ -66,6 +66,9 @@ export class QueueService {
     this.ebus.publish(
       new GameCheckCycleEvent(MatchmakingMode.UNRANKED, Dota2Version.Dota_684),
     );
+    this.ebus.publish(
+      new GameCheckCycleEvent(MatchmakingMode.BOTS_2X2, Dota2Version.Dota_684),
+    );
   }
 
   @Cron("*/10 * * * * *")
