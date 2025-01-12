@@ -46,8 +46,10 @@ export class GameCheckCycleHandler
       this.handleQueue(q, this.qService.findBotsGame.bind(this.qService))
     } else if (event.mode === MatchmakingMode.SOLOMID) {
       this.handleQueue(q, this.qService.findSolomidGame.bind(this.qService))
+    } else if(event.mode === MatchmakingMode.BOTS_2X2) {
+      this.handleQueue(q, (q) => this.qService.findBalancedGame(q, 2))
     } else {
-      this.handleQueue(q, this.qService.findBalancedGame.bind(this.qService))
+      this.handleQueue(q, (q) => this.qService.findBalancedGame(q, 5))
     }
   }
 

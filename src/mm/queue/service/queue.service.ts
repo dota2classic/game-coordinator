@@ -2,7 +2,6 @@ import { Injectable, Logger } from "@nestjs/common";
 import { QueueModel } from "mm/queue/model/queue.model";
 import { MatchmakingMode } from "gateway/gateway/shared-types/matchmaking-mode";
 import { QueueEntryModel } from "mm/queue/model/queue-entry.model";
-import { BalanceService } from "mm/queue/service/balance.service";
 import { Cron } from "@nestjs/schedule";
 import { EventBus } from "@nestjs/cqrs";
 import { GameCheckCycleEvent } from "mm/queue/event/game-check-cycle.event";
@@ -13,7 +12,6 @@ import { RoomBalance, TeamEntry } from "../../room/model/entity/room-balance";
 @Injectable()
 export class QueueService {
   constructor(
-    private readonly balanceService: BalanceService,
     private readonly ebus: EventBus,
   ) {}
 
@@ -83,17 +81,12 @@ export class QueueService {
    * @param teamSize
    * @private
    */
-  public findBotsGame(
-    q: QueueModel,
-  ): RoomBalance | undefined {
+  public findBotsGame(q: QueueModel): RoomBalance | undefined {
     if (q.size === 0) return undefined;
 
-    const entry = q.entries[0]
+    const entry = q.entries[0];
 
-    return new RoomBalance([
-      new TeamEntry([entry]),
-      new TeamEntry([]),
-    ]);
+    return new RoomBalance([new TeamEntry([entry]), new TeamEntry([])]);
   }
 
   /**
@@ -106,12 +99,16 @@ export class QueueService {
 
     // Let's first filter off this case
     const totalPlayersInQ = q.size;
-    if (totalPlayersInQ < 10) {
-      this.logger.verbose("Less than 10 players in queue, skipping", {
-        mode: q.mode,
-        version: q.version,
-        queue_size: totalPlayersInQ,
-      });
+    if (totalPlayersInQ < teamSize * 2) {
+      this.logger.verbose(
+        `Less players in queue than required for game, skipping`,
+        {
+          mode: q.mode,
+          version: q.version,
+          queue_size: totalPlayersInQ,
+          team_size: teamSize,
+        },
+      );
       return;
     }
 

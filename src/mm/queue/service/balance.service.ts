@@ -17,31 +17,4 @@ export class BalanceService {
   static EXPERIENCE_FACTOR = 2.0;
   static MMR_FACTOR = 1.0;
   static TARGET_WINRATE = 0.5;
-
-
-  public static soloMidBalance(teamSize: number, entries: QueueEntryModel[]) {
-    const isPartySolomid =
-      entries.length === 1 && entries[0].players.length === 2;
-
-    if (isPartySolomid) {
-      const entry = entries[0];
-      return new RoomBalance([
-        new TeamEntry([
-          new QueueEntryModel(entry.partyID, entry.mode, entry.version, [
-            entry.players[0],
-          ]),
-        ]),
-        new TeamEntry([
-          new QueueEntryModel(entry.partyID, entry.mode, entry.version, [
-            entry.players[1],
-          ]),
-        ]),
-      ]);
-    }
-
-    if (entries.length !== 2) throw new BalanceException();
-    return new RoomBalance(
-      [[entries[0]], [entries[1]]].map((list) => new TeamEntry(list, 0)),
-    );
-  }
 }

@@ -9,6 +9,20 @@ import { PlayerInQueueEntity } from "mm/queue/model/entity/player-in-queue.entit
 import { randomUser } from "@test/values";
 import { Dota2Version } from "../../../gateway/gateway/shared-types/dota2version";
 import { uuid } from "../../../@shared/generateID";
+import { PlayerId } from "../../../gateway/gateway/shared-types/player-id";
+
+function withUser(q: QueueModel, ...players: PlayerId[]): PlayerId[] {
+  q.addEntry(
+    new QueueEntryModel(
+      uuid(),
+      MatchmakingMode.SOLOMID,
+      Dota2Version.Dota_684,
+      players.map((u1) => new PlayerInQueueEntity(u1, 1000)),
+    ),
+  );
+
+  return players;
+}
 
 describe("QueueService", () => {
   let qs: QueueService;
@@ -329,5 +343,65 @@ describe("QueueService", () => {
     expect(balance.teams[1].parties[0].players[0].playerId.value).toEqual(
       u2.value,
     );
+  });
+
+  it("should find 2x2 bots game with 4 singles", () => {
+    const qModel = new QueueModel(
+      MatchmakingMode.BOTS_2X2,
+      Dota2Version.Dota_684,
+    );
+
+    const users = Array.from({ length: 5 }, randomUser);
+    users.forEach((u) => withUser(qModel, u));
+
+    const balance = qs.findBalancedGame(qModel, 2);
+    expect(balance).toBeDefined();
+
+    expect(balance.teams[0].parties).toHaveLength(2);
+    expect(balance.teams[0].parties).toHaveLength(2);
+  });
+
+  it("should find 2x2 bots game with party of 2 and singles", () => {
+    const qModel = new QueueModel(
+      MatchmakingMode.BOTS_2X2,
+      Dota2Version.Dota_684,
+    );
+
+    const users = [
+      ...withUser(qModel, randomUser(), randomUser()),
+      Array.from({ length: 3 }, randomUser).map((u) => withUser(qModel, u)),
+    ];
+
+    const balance = qs.findBalancedGame(qModel, 2);
+    expect(balance).toBeDefined();
+
+    // Party of 2 should be in game, as well as 2 singles
+    expect(
+      [balance.teams[0].parties.length, balance.teams[1].parties.length].sort(),
+    ).toEqual([1, 2]);
+  });
+
+  it("should not find 2x2 bots game when parties are big", () => {
+    const qModel = new QueueModel(
+      MatchmakingMode.BOTS_2X2,
+      Dota2Version.Dota_684,
+    );
+
+    const users = [
+      ...withUser(qModel, randomUser(), randomUser(), randomUser()),
+      ...withUser(qModel, randomUser(), randomUser()),
+      ...withUser(
+        qModel,
+        randomUser(),
+        randomUser(),
+        randomUser(),
+        randomUser(),
+        randomUser(),
+      ),
+      ...withUser(qModel, randomUser()),
+    ];
+
+    const balance = qs.findBalancedGame(qModel, 2);
+    expect(balance).toBeUndefined();
   });
 });

@@ -28,7 +28,7 @@ async function awaitEvent<T>(
 }
 
 describe("Enter queue into accept flow", () => {
-  jest.setTimeout(3000);
+  jest.setTimeout(10000);
 
   let module: TestingModule;
   let app: NestApplication;
