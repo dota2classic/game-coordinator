@@ -39,7 +39,7 @@ describe("PlayerEnterQueueHandler", () => {
         0.5,
         2.1,
         10,
-        new BanStatus(false, 0, BanReason.GAME_DECLINE),
+        new BanStatus(false, "", BanReason.GAME_DECLINE),
       ),
   );
   const GetSessionByUserQueryHandlerMock = mockQuery<GetSessionByUserQuery, GetSessionByUserQueryResult>(
@@ -83,7 +83,7 @@ describe("PlayerEnterQueueHandler", () => {
         party.players.map((t) => ({
           playerId: t,
           balanceScore: BalancerV0(3000, 0.5,  10),
-          banStatus: new BanStatus(false, 0, BanReason.GAME_DECLINE),
+          banStatus: new BanStatus(false, "", BanReason.GAME_DECLINE),
         })),
         MatchmakingMode.SOLOMID,
         Dota2Version.Dota_684,
